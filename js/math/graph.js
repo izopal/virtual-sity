@@ -18,26 +18,29 @@ export default class Graph{
     // Блок додавання-видалення сигменів 
     addSegment(line){
         this.segments.push(line)
-        // console.log(this.segments)
     };
     removeSegment(point) {
-        const index = this.segments.findIndex(segment => segment.p1.equals(point));
-        console.log(index)
-        this.segments.splice(index, 1);
-       
+        const allSegmetStart = this.segments.filter(segment => segment.p1.equals(point));  //знаходимо всі сегменти початок яких дорівнює точці point
+        const allSegmetEnd   = this.segments.filter(segment => segment.p2.equals(point));  //знаходимо всі сегменти кінець яких відповідає точці point
+        const allSegmet      = [...allSegmetStart, ...allSegmetEnd];                       //обєднюємо отримані масиви
+        allSegmet.forEach(segment => {
+            const index = this.segments.indexOf(segment);                                  //знаходимо індекс в масиві всіх сегменітів
+            this.segments.splice(index, 1)                                                 // видаляємо даний сегмент з масиву сегментів
+        })
+        allSegmet.splice(0, allSegmet.length);                                             //видаляємо всі елементи з обєднаного масиву
     }
 
 
     draw(ctx){
-        for(const point of this.points){
-            point.draw(ctx);
-        };
-        
         for(const seg of this.segments){
             seg.draw(ctx);
         };
-        
-        
-
+        for(const point of this.points){
+            point.draw(ctx);
+        };
+    };
+    removeAll(){
+        this.points = [];
+        this.segments = [];
     }
 }

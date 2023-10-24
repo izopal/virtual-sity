@@ -1,68 +1,66 @@
 
 
 export default class Point {
-    constructor(x, y, data, {flag = false} = {} ){
+    constructor(x, y, data, {paint = false} = {}){
         this.x    = x;
         this.y    = y;
         this.data = data;
         // параметри точки
-        this.size  = this.data.size;
-        this.color = this.data.color;
-        this.width = this.data.width;
+        this.width = this.data.point.width;
+        this.radius  = this.data.point.radius;
+        this.color   = this.data.point.color;
         // параметри останьої точки
+        this.lastPointWidth  = this.data.lastPoint.width;
         this.lastPointRadius = this.data.lastPoint.radius;
         this.lastPointColor  = this.data.lastPoint.color;
-        this.lineWidth       = this.data.lastPoint.width;
+        // параметри активної точки
+        this.activePointWidth  = this.data.activePoint.width;
+        this.activePointRadius = this.data.activePoint.radius;
+        this.activePointColor  = this.data.activePoint.color;
 
-
-        this.flag = flag;
-      
-        this.radius = !flag ? this.size : this.width;
-        this.color =  !flag ? this.color : 'blue';
-
-
+        // параметри інструмента олівець
+        this.paint  = paint;
+        this.radius = !this.paint ? this.radius : 0;
     };
     
     equals(point){
-        return this.x == point.x && this.y == point.y;
+        return this.x === point.x && this.y === point.y;
     };
 
 
-    draw(ctx, {outline = false, fill = false} = {} ){
-       if(!this.flag){
-           ctx.beginPath();
-               ctx.fillStyle = this.color;
-               ctx.arc(this.x,
-                       this.y,
-                       this.radius,
-                       0,
-                       Math.PI * 2);
-           ctx.fill();
+    draw(ctx, {lastPoint = false, activePoint = false} = {} ){
+        // малюємо point при умові що flaf = false
+        ctx.beginPath();
+        ctx.arc(this.x,
+            this.y,
+            this.radius,
+            0,
+            Math.PI * 2);
+        ctx.fillStyle = this.color;
+        ctx.fill();
 
-       }
-
-        if(outline) {
+        // малюємо lastPoint
+        if(lastPoint && !this.paint) {
             ctx.beginPath();
-                ctx.lineWidth = this.lineWidth;
-                ctx.strokeStyle = this.lastPointColor;
-                ctx.arc(this.x,
-                    this.y,
-                    this.radius * this.lastPointRadius,
-                    0,
-                    Math.PI * 2);
+            ctx.lineWidth   = this.lastPointWidth;
+            ctx.arc(this.x,
+                this.y,
+                this.lastPointRadius,
+                0,
+                Math.PI * 2);
+            ctx.strokeStyle = this.lastPointColor;
             ctx.stroke();
         };
-
-        if(fill) {
+        // малюємо activePoint
+        if(activePoint && !this.paint) {
             ctx.beginPath();
-                ctx.fillStyle = 'yellow';
-                ctx.arc(this.x,
-                        this.y,
-                        this.radius * .8,
-                        0,
-                        Math.PI * 2);
+            ctx.arc(this.x,
+                this.y,
+                this.activePointRadius,
+                0,
+                Math.PI * 2);
+            ctx.fillStyle = this.activePointColor;
             ctx.fill();
         }
-
     }
 }

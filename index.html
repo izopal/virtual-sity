@@ -6,11 +6,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Віртуальний світ</title>
     <link rel="stylesheet" href="./style.css">
-    <script type="module" src="./main.js" defer></script>
+    <script type="module" src="./js/main.js" defer></script>
+    <!-- блок підключення SVG -->
+    <script src="https://unpkg.com/boxicons@2.1.4/dist/boxicons.js" defer></script>
 </head>
 <body>
     <canvas id="canvasMS"></canvas>
-
-    
+    <div class="controls">
+        <button class = 'button' onclick="dispose()">         <box-icon type='solid' name='trash'></box-icon>           </button>
+        <button class = 'button' onclick="save()">            <box-icon name='bookmark-alt-plus'></box-icon></ion-icon> </button>
+        <button class = 'button' onclick="setTool('curve')">  <box-icon name='paint'></box-icon>                        </button>
+        <button class = 'button' onclick="setTool('point')">  <box-icon name='radio-circle-marked'></box-icon>          </button>
+        <button class = 'button' onclick="setTool('dragging')"><box-icon name='move'></box-icon>                        </button>
+        <button class = 'button' onclick="setTool('remove')"> <box-icon type='solid' name='eraser'></box-icon>          </button>
+        <button class = 'button' onclick="zoom('plus')">      <box-icon name='zoom-in'></box-icon>                      </button>
+        <button class = 'button' onclick="zoom('minus')">     <box-icon name='zoom-out' ></box-icon>                    </button>
+    </div>
 </body>
 </html>
