@@ -1,6 +1,5 @@
 import Graph            from './math/graph.js';
-import {getAllObj,
-        findObjData, 
+import {findObjData, 
         getNearestPoint} from '../js/math/utils.js'
 import keys              from '../js/math/utils.js';
 
@@ -8,20 +7,20 @@ const body = document.body;
 
 
 export default class GraphEditor {
-    constructor(canvas){
-        this.canvas       =  canvas;
+    constructor(canvas, saveInfo){
         this.keys         = keys;
+        this.canvas       = canvas;
         console.table(this.keys);
-        this.graph        = new Graph();
-
-        this.allObj       = getAllObj();
+      
         this.vieportData  = findObjData(keys[0]);
         this.pointData    = findObjData(keys[1]);
         this.segmentData  = findObjData(keys[2]);
 
         this.vieportClas  = this.vieportData.class;
+        this.pointClass   = this.pointData.class;
+        this.segmentClass = this.segmentData.class;
+        
         this.vieport      = new this.vieportClas(this)
-    
         
         this.minDicnance   = this.pointData.point.radius;
         this.sizeRemove    = this.minDicnance;
@@ -30,24 +29,31 @@ export default class GraphEditor {
         this.point         = null;
         this.lastPoint     = null;
         this.activePoint   = null;
-
+        
         this.pressed       = false;
 
         // параметри інструментів графічного редагування  
         this.tools          = {dragging: false,        // параметри вкл.-викл. редактора (пересування точок)
                                remove:   false,        // параметр вкл.-викл резинки
-                               curve:    false,        // парамет малювання кривої лінії
-                               point:    true,        // параметр малювання точки
+                               curve:    true,        // парамет малювання кривої лінії
+                               point:    false,        // параметр малювання точки
                             };
         this.#addEventListener(canvas);
+
+        this.graph        = saveInfo ? this.#load(saveInfo) : new Graph();
+
     };
 
+   #load(saveInfo){
+        const points = saveInfo.points.map((point) => new this.pointClass(point.x, point.y, this.pointData));
+        const segments    = saveInfo.segments.map((line) => new this.segmentClass(line.p1, line.p2, this.segmentData));
+        return new Graph (points, segments)
+    }
    
     //  функція вкл обраного інструмента (true) і викл решта неактивних (false)
     setTool(tool) {
         for (const key in this.tools) this.tools[key] = key === tool;
     }
-
 
     #addEventListener(canvas){
         body.addEventListener  ('keydown',    this.#inputKeydown.bind(this));
@@ -62,6 +68,9 @@ export default class GraphEditor {
         if(['R', 'r', 'К', 'к'].includes(e.key)) this.setTool('remove');
         if(['D', 'd', 'В', 'в'].includes(e.key)) this.setTool('dragging');
         if(['C', 'c', 'С', 'с'].includes(e.key)) this.setTool('curve');
+        if(['S', 's'].includes(e.key)) save();
+        if(['=', '+'].includes(e.key)) zoom('plus');
+        if(['-', '_'].includes(e.key)) zoom('minus');
         if(e.key === 'Escape') this.lastPoint = null;
     };
     #inputMouseWheel(e){
@@ -79,7 +88,7 @@ export default class GraphEditor {
     #inputMouseDown(e){
         this.pressed = true;
         if(e.buttons == 1 && !Object.values(this.tools).some(Boolean)){
-            this.point       = this.vieport.getPoint(e, this.pointData, {paint: false, subtractDragOffset: true});
+            this.point       = this.vieport.getPoint(e, {paint: false, subtractDragOffset: true});
             // провірка якщо вибрали активну точку, вона стає послідньою
             if(this.activePoint){
                 this.#addSegment(this.activePoint)
@@ -109,7 +118,7 @@ export default class GraphEditor {
     #inputMouseMove(e){
         // умова переміщення точки
         this.tools.point = false;
-        this.point       = this.vieport.getPoint(e, this.pointData, {paint: true, subtractDragOffset: true});
+        this.point       = this.vieport.getPoint(e, {paint: true, subtractDragOffset: true});
         if(this.tools.dragging && this.pressed && this.activePoint !== null){
             this.activePoint.x = this.point.x;
             this.activePoint.y = this.point.y;

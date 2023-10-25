@@ -13,8 +13,23 @@
 <body>
     <canvas id="canvasMS"></canvas>
     <div class="controls">
+        <div class="load">
+            <select id="load"> </select>
+            
+            <button class = 'button' onclick="getGraph()">    <box-icon name='folder-open' type='solid' ></box-icon>   </button>
+        </div>
+
+        <div class="input-wrapper">
+            <input type="text"  placeholder="Введіть ваш запит сюди..." autocomplete="off">
+            <span class="icon close">
+                <svg class="ionicon" viewBox="0 0 224 224">
+                    <path stroke-width="32" d="M0 0L224 224M0 224L224 0" />
+                </svg>
+            </span>
+            <span class="line"></span>
+            <button class = 'button' onclick="inputSave()">            <box-icon name='bookmark-alt-plus'></box-icon></ion-icon> </button>
+        </div>
         <button class = 'button' onclick="dispose()">         <box-icon type='solid' name='trash'></box-icon>           </button>
-        <button class = 'button' onclick="save()">            <box-icon name='bookmark-alt-plus'></box-icon></ion-icon> </button>
         <button class = 'button' onclick="setTool('curve')">  <box-icon name='paint'></box-icon>                        </button>
         <button class = 'button' onclick="setTool('point')">  <box-icon name='radio-circle-marked'></box-icon>          </button>
         <button class = 'button' onclick="setTool('dragging')"><box-icon name='move'></box-icon>                        </button>

@@ -1,28 +1,30 @@
-import {operate} from '../js/math/utils.js'
+import {operate}         from '../js/math/utils.js'
+
+
+
 export default class Vieport{
-    constructor(graphEditor){
-        this.graphEditor  = graphEditor;
-        this.canvas       = this.graphEditor.canvas;
-       
-        this.vieportData  = this.graphEditor.vieportData;
-        this.pointData    = this.graphEditor.pointData;
-        this.class       = this.pointData.class;
+    constructor(grafEditor){
+        this.grafEditor   = grafEditor;
+        this.canvas       = this.grafEditor.canvas;
 
+        this.pointData    = this.grafEditor.pointData;
+        this.point        = this.grafEditor.pointClass;
+        
+        this.vieportData  = this.grafEditor.vieportData
+        this.scale        = this.vieportData.scale;
+        this.zoom         = this.scale.zoom;
+        this.step         = this.scale.step;
+        this.minZoom      = this.scale.min;
+        this.maxZoom      = this.scale.max;
 
-        this.scale   = this.vieportData.scale;
-        this.zoom    = this.scale.zoom;
-        this.step    = this.scale.step;
-        this.minZoom = this.scale.min;
-        this.maxZoom = this.scale.max;
-
-        this.center  = new this.class (this.canvas.width * .5, 
+        this.center  = new this.point (this.canvas.width * .5, 
                                  this.canvas.height * .5, 
                                  this.pointData);
         this.offset = operate(this.center, '*', -1);
        
-        this.drag   = {start:  new this.class (0, 0, this.pointData),
-                       end:    new this.class (0, 0, this.pointData),
-                       offset: new this.class (0, 0, this.pointData),
+        this.drag   = {start:  new this.point (0, 0, this.pointData),
+                       end:    new this.point (0, 0, this.pointData),
+                       offset: new this.point (0, 0, this.pointData),
                        active: false};
     
         this.#addEventListener();
@@ -53,17 +55,16 @@ export default class Vieport{
     };
     #inputMouseUp(){
         this.offset = operate(this.offset, '+', this.drag.offset);
-        this.drag   = {start:  new this.class (0, 0, this.pointData),
-                        end:    new this.class (0, 0, this.pointData),
-                        offset: new this.class (0, 0, this.pointData),
-                        active: false};
+        this.drag   = {start:   new this.point (0, 0, this.pointData),
+                       end:    new this.point (0, 0, this.pointData),
+                       offset: new this.point (0, 0, this.pointData),
+                       active: false};
     }
 
-    getPoint(e, obj, {paint = false, subtractDragOffset = false} = {}){
+    getPoint(e, {paint = false, subtractDragOffset = false} = {}){
         this.x       = (e.offsetX - this.center.x) * this.zoom - this.offset.x;
         this.y       = (e.offsetY - this.center.y) * this.zoom - this.offset.y;
-        const Class  = obj.class;
-        const point  = new Class(this.x, this.y, obj, {paint});
+        const point  = new this.point (this.x, this.y, this.pointData, {paint});
         return subtractDragOffset ? operate(point, '-', this.drag.offset, {paint}) : point;
     };
 

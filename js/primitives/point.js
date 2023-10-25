@@ -1,12 +1,10 @@
-
-
 export default class Point {
     constructor(x, y, data, {paint = false} = {}){
         this.x    = x;
         this.y    = y;
         this.data = data;
         // параметри точки
-        this.width = this.data.point.width;
+        this.width   = this.data.point.width;
         this.radius  = this.data.point.radius;
         this.color   = this.data.point.color;
         // параметри останьої точки

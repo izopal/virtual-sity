@@ -1,6 +1,7 @@
 :root{
     --index: calc(1vw + 1vh);
     --textColor: #8baaba;
+    --menuColor: #6a7b70;
 }
 
 *{
@@ -22,34 +23,148 @@ body{
 .controls{
     display: flex;
     flex-direction: column;
-    gap: calc(var(--index) * .5);
-    height: 100vh;
+    gap: calc(var(--index) * .75);
     justify-content: center;
+    height: 100vh;
     position: absolute;
     right: 0;
-    padding-right: calc(var(--index) * 1.25)
+    padding-right: calc(var(--index) * 1.25);
+    opacity: 1;
+    transition: opacity .3s linear;
 };
 
 .controls button {
+    display: flex;
+   
     position: absolute;
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
+    
+
+   
 }
 .button{
     height: calc(var(--index) * 3);
     width: calc(var(--index) * 3);
-    border-radius: .625rem;
+    margin-left: auto;
+    background-color: transparent;
     border: .25rem solid transparent;
+    border-radius: .625rem;
     box-shadow: -.25rem -.25rem .5rem rgba(255, 255, 255, .1),       
                  .25rem  .25rem .5rem rgba(0, 0, 0, .35);
-    background-color: transparent;
-    
-    
+    cursor: pointer;
 }
 .button:active {
     border: 0rem solid var(--textColor);
     box-shadow:        
           inset -.5rem -.5rem 1rem rgba(255, 255, 255, .1),
           inset  .5rem  .5rem 1rem rgba(0, 0, 0, .35);
+}
+
+
+/* =========================================================================> */
+
+
+.controls .input-wrapper{
+   display: flex;
+   position: relative;
+}
+.controls .input-wrapper input {
+    display: none;
+    height: calc(var(--index) * 3);
+    width: calc(var(--index) * 13);
+    margin-right: calc(var(--index) * .6);
+    text-align: center;
+    font-size: calc(var(--index) * 1);
+    background-color: transparent;
+    color: var(--textColor);
+    opacity: 0;
+    border: none;
+    outline: none;
+    user-select: none;
+    cursor: pointer;
+}
+@keyframes slideRight {
+    0%{
+        transform: translatex(-10vh);
+        opacity: 0;
+    }
+    100%{
+        transform: translatex(0);
+        opacity: 1;
+    }
+} 
+@keyframes slideLeft {
+    0%{
+        transform: translatex(0);
+        opacity: 1;
+    }
+    100%{
+        transform: translatex(-10vh);
+        opacity: 0;
+    }
+} 
+.controls .input-wrapper .line {
+    position: absolute;
+    left: 0;
+    bottom: calc(var(--index) * .7);
+    width: calc(var(--index) * 13);
+    height: 1px;
+    border-radius: 5px;
+    background: var(--textColor);
+    box-shadow: -.25rem -.25rem .5rem rgba(255, 255, 255, .1),       
+                 .25rem  .25rem .5rem rgba(0, 0, 0, .35),
+          inset -.25rem -.25rem .5rem rgba(255, 255, 255, .1),
+          inset  .25rem  .25rem .5rem rgba(0, 0, 0, .35);
+    transform-origin: left;
+    transform: scaleX(0);
+    transition: transform .5s;    
+}
+
+
+
+.controls .input-wrapper .icon.close {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: calc(var(--index) * .675);
+    width: calc(var(--index) * .675);
+    transform: scale(0);
+    transition: transform .5s linear; 
+}
+
+.controls .input-wrapper .icon.close .ionicon {
+    height: 100%;
+    width: auto;
+    stroke: var(--textColor);
+    fill: rgba(255, 255, 255, .1);
+    filter: 
+    drop-shadow(1px 1px 1px rgba(0, 0, 0, .65));
+}
+
+
+
+.load {
+    display: flex;
+    
+}
+select {
+    display: none;
+    width: calc(var(--index) * 13);
+    margin-right:auto;
+    background-color: transparent;
+    font-size:  calc(var(--index) * 1);
+    color: var(--menuColor);
+    opacity: 0;
+    border: none;
+    outline: none;
+    user-select: none;
+    cursor: pointer;
+    }
+.load option::-webkit-menu {
+    background-color: transparent;
+}
+.load option{
+    background-color: transparent;
 }

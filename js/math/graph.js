@@ -1,12 +1,9 @@
-
-
-
 export default class Graph{
     constructor(points   = [], segments = []){
         this.points      = points;
         this.segments    = segments;
     };
-
+    
     addPoint(point){
         this.points.push(point)
     };

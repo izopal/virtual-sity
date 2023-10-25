@@ -1,4 +1,3 @@
-
 export default class Segment{
     constructor(p1, p2, data, tool = {}){
         this.data = data;
@@ -31,6 +30,15 @@ export default class Segment{
             ctx.moveTo(this.p1.x, this.p1.y);
             ctx.lineTo(this.p2.x, this.p2.y);
         ctx.stroke();
-        ctx.setLineDash([])
+        ctx.setLineDash([]);
+        
+        ctx.beginPath();
+        ctx.arc(this.p2.x,
+                this.p2.y,
+                this.width * .5,
+                0,
+                Math.PI * 2);
+        ctx.fillStyle = this.color;
+        ctx.fill();
     }
 }
