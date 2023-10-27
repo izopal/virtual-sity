@@ -1,5 +1,5 @@
 export default class Segment{
-    constructor(p1, p2, data, tool = {}){
+    constructor(p1, p2, data, tools = {}){
         this.data = data;
         this.p1 = p1;
         this.p2 = p2;
@@ -14,9 +14,9 @@ export default class Segment{
         this.dashInterval = this.data.dash.interval;
 
         // параметри інструментів графічного редактора
-        this.tool  = tool;
+        this.tools  = tools;
         // параметри при вкл. крива лінія
-        if(this.tool.curve){
+        if(this.tools.curve){
             this.width = this.data.paint.width;
             this.color = this.data.paint.color
         };
@@ -31,7 +31,7 @@ export default class Segment{
             ctx.lineTo(this.p2.x, this.p2.y);
         ctx.stroke();
         ctx.setLineDash([]);
-        
+
         ctx.beginPath();
         ctx.arc(this.p2.x,
                 this.p2.y,

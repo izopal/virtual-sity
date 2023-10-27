@@ -61,11 +61,11 @@ export default class Vieport{
                        active: false};
     }
 
-    getPoint(e, {paint = false, subtractDragOffset = false} = {}){
+    getPoint(e, tools, {subtractDragOffset = false} = {}){
         this.x       = (e.offsetX - this.center.x) * this.zoom - this.offset.x;
         this.y       = (e.offsetY - this.center.y) * this.zoom - this.offset.y;
-        const point  = new this.point (this.x, this.y, this.pointData, {paint});
-        return subtractDragOffset ? operate(point, '-', this.drag.offset, {paint}) : point;
+        const point  = new this.point (this.x, this.y, this.pointData, tools);
+        return subtractDragOffset ? operate(point, '-', this.drag.offset, tools) : point;
     };
 
     draw(ctx){

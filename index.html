@@ -6,6 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Віртуальний світ</title>
     <link rel="stylesheet" href="./style.css">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+
+
     <script type="module" src="./js/main.js" defer></script>
     <!-- блок підключення SVG -->
     <script src="https://unpkg.com/boxicons@2.1.4/dist/boxicons.js" defer></script>
@@ -13,10 +16,12 @@
 <body>
     <canvas id="canvasMS"></canvas>
     <div class="controls">
+        <button class = 'button' id="buttonSave" onclick="save()">    <i class='bx bx-save' ></i>        </button>
         <div class="load">
-            <select id="load"> </select>
-            
-            <button class = 'button' onclick="getGraph()">    <box-icon name='folder-open' type='solid' ></box-icon>   </button>
+            <select id="load">
+                <option value="default"></option>
+            </select>
+            <button class = 'button' id="buttonload" onclick="load()"> <i class='bx bx-folder'></i>      </button>
         </div>
 
         <div class="input-wrapper">
@@ -27,15 +32,18 @@
                 </svg>
             </span>
             <span class="line"></span>
-            <button class = 'button' onclick="inputSave()">            <box-icon name='bookmark-alt-plus'></box-icon></ion-icon> </button>
+            <button class = 'button' id="buttonInputSave" onclick="inputSave()">    <i class='bx bx-bookmark-alt-plus'></i>   </button>
         </div>
-        <button class = 'button' onclick="dispose()">         <box-icon type='solid' name='trash'></box-icon>           </button>
-        <button class = 'button' onclick="setTool('curve')">  <box-icon name='paint'></box-icon>                        </button>
-        <button class = 'button' onclick="setTool('point')">  <box-icon name='radio-circle-marked'></box-icon>          </button>
-        <button class = 'button' onclick="setTool('dragging')"><box-icon name='move'></box-icon>                        </button>
-        <button class = 'button' onclick="setTool('remove')"> <box-icon type='solid' name='eraser'></box-icon>          </button>
-        <button class = 'button' onclick="zoom('plus')">      <box-icon name='zoom-in'></box-icon>                      </button>
-        <button class = 'button' onclick="zoom('minus')">     <box-icon name='zoom-out' ></box-icon>                    </button>
+        <button class = 'button' onclick="dispose()">                              <i class='bx bx-trash'></i>               </button>
+        <button class = 'button' data-tool = 'curve'    onclick="setTool(this)"> <i class='bx bx-paint'></i>               </button>
+        <button class = 'button' data-tool = 'point'    onclick="setTool(this)"> <i class='bx bx-radio-circle-marked'></i> </button>
+        <button class = 'button' data-tool = 'dragging' onclick="setTool(this)"> <i class='bx bx-move'></i>                </button>
+        <button class = 'button' data-tool = 'remove'   onclick="setTool(this)"> <i class='bx bxs-eraser' ></i>            </button>
+        <button class = 'button' data-tool = 'polygon'  onclick="setTool(this)"> <i class='bx bx-shape-polygon' ></i>      </button>
+    </div>
+    <div class="scale-bar">
+        <button class = 'button' onclick="zoom('plus')">       <i class='bx bx-zoom-in' ></i>             </button>
+        <button class = 'button' onclick="zoom('minus')">      <i class='bx bx-zoom-out' ></i>            </button>
     </div>
 </body>
 </html>

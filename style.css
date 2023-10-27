@@ -2,6 +2,7 @@
     --index: calc(1vw + 1vh);
     --textColor: #8baaba;
     --menuColor: #6a7b70;
+    --backgroundColor: #2a5
 }
 
 *{
@@ -10,52 +11,58 @@
     box-sizing: border-box;
 }
 body{
-    display: flex;
     position: relative;
-    background-color: black;
-    text-align: center;
+    display: flex;
     overflow: hidden;
 }
 #canvasMS{
     position: absolute;
-    background-color: #2a5;
+    background-color: var(--backgroundColor);
+    z-index: -1;
 }
 .controls{
+    position: absolute;
+    right: 0;
+    
     display: flex;
     flex-direction: column;
     gap: calc(var(--index) * .75);
     justify-content: center;
+    
     height: 100vh;
-    position: absolute;
-    right: 0;
     padding-right: calc(var(--index) * 1.25);
-    opacity: 1;
+
     transition: opacity .3s linear;
+    
 };
+
 
 .controls button {
     display: flex;
-   
     position: absolute;
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
-    
-
-   
 }
+
+
 .button{
     height: calc(var(--index) * 3);
     width: calc(var(--index) * 3);
+    /* розмір SVG */
+    line-height: calc(var(--index) * 3);
+    font-size: calc(calc(1vw + 1vh) * 2.125);
+   
     margin-left: auto;
     background-color: transparent;
-    border: .25rem solid transparent;
+    border: calc(var(--index) * .35) solid transparent;
     border-radius: .625rem;
     box-shadow: -.25rem -.25rem .5rem rgba(255, 255, 255, .1),       
                  .25rem  .25rem .5rem rgba(0, 0, 0, .35);
     cursor: pointer;
 }
-.button:active {
+.button.active { 
+    line-height: calc(var(--index) * 2);
     border: 0rem solid var(--textColor);
     box-shadow:        
           inset -.5rem -.5rem 1rem rgba(255, 255, 255, .1),
@@ -63,6 +70,13 @@ body{
 }
 
 
+.button:active { 
+    line-height: calc(var(--index) * 2);
+    border: 0rem solid var(--textColor);
+    box-shadow:        
+          inset -.5rem -.5rem 1rem rgba(255, 255, 255, .1),
+          inset  .5rem  .5rem 1rem rgba(0, 0, 0, .35);
+}
 /* =========================================================================> */
 
 
@@ -121,9 +135,6 @@ body{
     transform: scaleX(0);
     transition: transform .5s;    
 }
-
-
-
 .controls .input-wrapper .icon.close {
     position: absolute;
     top: 0;
@@ -133,7 +144,6 @@ body{
     transform: scale(0);
     transition: transform .5s linear; 
 }
-
 .controls .input-wrapper .icon.close .ionicon {
     height: 100%;
     width: auto;
@@ -147,12 +157,11 @@ body{
 
 .load {
     display: flex;
-    
 }
 select {
     display: none;
     width: calc(var(--index) * 13);
-    margin-right:auto;
+    margin-right: calc(var(--index) * .6);
     background-color: transparent;
     font-size:  calc(var(--index) * 1);
     color: var(--menuColor);
@@ -162,9 +171,7 @@ select {
     user-select: none;
     cursor: pointer;
     }
-.load option::-webkit-menu {
-    background-color: transparent;
-}
-.load option{
-    background-color: transparent;
+
+select#load option{
+    background: var(--backgroundColor);
 }

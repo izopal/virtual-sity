@@ -68,12 +68,12 @@ export function getNearestPoint(A, B, d = Number.MAX_SAFE_INTEGER){
 };
 
 // 
-export function operate(p1, operator, p2, {paint = false} = {}) {
+export function operate(p1, operator, p2, tools) {
   const objData = findObjData('point');
   const Class   = objData.class;
-  if (operator === '+')  return new Class(p1.x + p2.x, p1.y + p2.y, objData, {paint});
-  if (operator === '-')  return new Class(p1.x - p2.x, p1.y - p2.y, objData, {paint});
-  if (operator === '*')  return new Class(p1.x * p2,   p1.y * p2,   objData, {paint});
+  if (operator === '+')  return new Class(p1.x + p2.x, p1.y + p2.y, objData, tools);
+  if (operator === '-')  return new Class(p1.x - p2.x, p1.y - p2.y, objData, tools);
+  if (operator === '*')  return new Class(p1.x * p2,   p1.y * p2,   objData, tools);
 }
 
 

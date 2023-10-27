@@ -1,5 +1,5 @@
 export default class Point {
-    constructor(x, y, data, {paint = false} = {}){
+    constructor(x, y, data, tools = {}){
         this.x    = x;
         this.y    = y;
         this.data = data;
@@ -16,9 +16,9 @@ export default class Point {
         this.activePointRadius = this.data.activePoint.radius;
         this.activePointColor  = this.data.activePoint.color;
 
-        // параметри інструмента олівець
-        this.paint  = paint;
-        this.radius = !this.paint ? this.radius : 0;
+        // параметри інструментів
+        this.tools  = tools;
+        this.radius = !this.tools.curve ? this.radius : 0;
     };
     
     equals(point){
@@ -38,7 +38,7 @@ export default class Point {
         ctx.fill();
 
         // малюємо lastPoint
-        if(lastPoint && !this.paint) {
+        if(lastPoint && !this.tools.curve) {
             ctx.beginPath();
             ctx.lineWidth   = this.lastPointWidth;
             ctx.arc(this.x,
@@ -50,7 +50,7 @@ export default class Point {
             ctx.stroke();
         };
         // малюємо activePoint
-        if(activePoint && !this.paint) {
+        if(activePoint && !this.tools.curve) {
             ctx.beginPath();
             ctx.arc(this.x,
                 this.y,
