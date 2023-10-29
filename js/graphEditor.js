@@ -66,6 +66,11 @@ export class GraphEditor {
         canvas.addEventListener('mousedown',  this.#inputMouseDown.bind(this));
         canvas.addEventListener('mousemove',  this.#inputMouseMove.bind(this));
         canvas.addEventListener('mouseup',    this.#inputMouseUp.bind(this));
+
+        canvas.addEventListener('touchstart', this.#inputMouseDown.bind(this));
+        canvas.addEventListener('touchmove',  this.#inputMouseMove.bind(this));
+        canvas.addEventListener('touchend',   this.#inputMouseUp.bind(this));
+
         canvas.addEventListener('contextmenu', (e) => e.preventDefault())
     }
     #inputKeydown(e){
