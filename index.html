@@ -25,7 +25,7 @@
         </div>
 
         <div class="input-wrapper">
-            <input type="text"  placeholder="Введіть ваш запит сюди..." autocomplete="off">
+            <input type="text"  placeholder="Введіть ваш запит сюди..." autocomplete="off" maxlength="13">
             <span class="icon close">
                 <svg class="ionicon" viewBox="0 0 224 224">
                     <path stroke-width="32" d="M0 0L224 224M0 224L224 0" />
@@ -34,12 +34,13 @@
             <span class="line"></span>
             <button class = 'button' id="buttonInputSave" onclick="inputSave()">    <i class='bx bx-bookmark-alt-plus'></i>   </button>
         </div>
-        <button class = 'button' onclick="dispose()">                              <i class='bx bx-trash'></i>               </button>
-        <button class = 'button' data-tool = 'curve'    onclick="setTool(this)"> <i class='bx bx-paint'></i>               </button>
-        <button class = 'button' data-tool = 'point'    onclick="setTool(this)"> <i class='bx bx-radio-circle-marked'></i> </button>
+        <button class = 'button' onclick="dispose()">                            <i class='bx bx-trash'></i>               </button>
+        <button class = 'button' data-tool = 'curve'    onclick="setTool(this)"> <i class='bx bx-pencil'></i>              </button>
+        <button class = 'button' data-tool = 'point'    onclick="setTool(this)"> <i class='bx bx-pin'></i>                 </button>
         <button class = 'button' data-tool = 'dragging' onclick="setTool(this)"> <i class='bx bx-move'></i>                </button>
         <button class = 'button' data-tool = 'remove'   onclick="setTool(this)"> <i class='bx bxs-eraser' ></i>            </button>
         <button class = 'button' data-tool = 'polygon'  onclick="setTool(this)"> <i class='bx bx-shape-polygon' ></i>      </button>
+        <button class = 'button' data-tool = 'road'     onclick="setTool(this)"> <i class='bx bx-trip'></i>                </button>
     </div>
     <div class="scale-bar">
         <button class = 'button' onclick="zoom('plus')">       <i class='bx bx-zoom-in' ></i>             </button>

@@ -1,6 +1,8 @@
-export default class Segment{
-    constructor(p1, p2, data, tools = {}){
-        this.data = data;
+import {findObjData} from '../math/utils.js'
+
+export class Segment{
+    constructor(p1, p2, tools = {}){
+        this.data = findObjData('segment');
         this.p1 = p1;
         this.p2 = p2;
                 
@@ -23,22 +25,24 @@ export default class Segment{
     };
     
     draw(ctx, {dash = false} = {}){
-        ctx.beginPath();
-            ctx.lineWidth   = !dash ? this.width : this.dashWidth;
-            if(dash) ctx.setLineDash([this.dashLength, this.dashInterval]);           //штрихпунтрина лінія
-            ctx.strokeStyle = !dash ? this.color : this.dashColor;
-            ctx.moveTo(this.p1.x, this.p1.y);
-            ctx.lineTo(this.p2.x, this.p2.y);
-        ctx.stroke();
-        ctx.setLineDash([]);
-
-        ctx.beginPath();
-        ctx.arc(this.p2.x,
-                this.p2.y,
-                this.width * .5,
-                0,
-                Math.PI * 2);
-        ctx.fillStyle = this.color;
-        ctx.fill();
+        if(!this.tools.road && !this.tools.polygon){
+            ctx.beginPath();
+                ctx.lineWidth   = !dash ? this.width : this.dashWidth;
+                if(dash) ctx.setLineDash([this.dashLength, this.dashInterval]);           //штрихпунтрина лінія
+                ctx.strokeStyle = !dash ? this.color : this.dashColor;
+                ctx.moveTo(this.p1.x, this.p1.y);
+                ctx.lineTo(this.p2.x, this.p2.y);
+            ctx.stroke();
+            ctx.setLineDash([]);
+    
+            ctx.beginPath();
+            ctx.arc(this.p2.x,
+                    this.p2.y,
+                    this.width * .5,
+                    0,
+                    Math.PI * 2);
+            ctx.fillStyle = this.color;
+            ctx.fill();
+        }
     }
 }

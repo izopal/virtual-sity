@@ -1,8 +1,10 @@
-export default class Point {
-    constructor(x, y, data, tools = {}){
-        this.x    = x;
-        this.y    = y;
-        this.data = data;
+import {findObjData} from '../math/utils.js'
+
+export class Point {
+    constructor(coordinates = {x: 0, y: 0}, tools = {}){
+        this.x    = coordinates.x;
+        this.y    = coordinates.y;
+        this.data = findObjData('point');
         // параметри точки
         this.width   = this.data.point.width;
         this.radius  = this.data.point.radius;

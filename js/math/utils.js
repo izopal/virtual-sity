@@ -1,4 +1,5 @@
-import data from '../constants.js'
+import data from '../constants.js';
+import {Point} from '../primitives/point.js';
 
 //функція дл пошуку всіх обєктів по знайдених ключах
 export function getAllObj(){
@@ -68,17 +69,28 @@ export function getNearestPoint(A, B, d = Number.MAX_SAFE_INTEGER){
 };
 
 // 
-export function operate(p1, operator, p2, tools) {
-  const objData = findObjData('point');
-  const Class   = objData.class;
-  if (operator === '+')  return new Class(p1.x + p2.x, p1.y + p2.y, objData, tools);
-  if (operator === '-')  return new Class(p1.x - p2.x, p1.y - p2.y, objData, tools);
-  if (operator === '*')  return new Class(p1.x * p2,   p1.y * p2,   objData, tools);
+export function operate(p1, operator, p2) {
+
+  if (operator === '+')  return {x: p1.x + p2.x, y: p1.y + p2.y};
+  if (operator === '-')  return {x: p1.x - p2.x, y: p1.y - p2.y};
+  if (operator === '*')  return {x: p1.x * p2,   y: p1.y * p2};
+}
+
+export function translateMetod(loc, angle, offset){
+  const coordinates = {x: loc.x + Math.cos(angle) * offset,
+                       y: loc.y + Math.sin(angle) * offset}
+  return new Point(coordinates)
 }
 
 
-
-
-
+// функція сортування oбєктів за вказаними інструментами
+export function sortObject(obj, tools, Objects){
+  for (const tool in tools) {
+      if (tools[tool]) {
+          if (!Objects[tool]) Objects[tool] = [];
+          Objects[tool].push(obj);
+      }
+  }
+}
 export default keys;
 

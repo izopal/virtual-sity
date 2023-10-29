@@ -1,21 +1,30 @@
-export default class Graph{
+import {sortObject} from './utils.js'
+
+export class Graph{
     constructor(points   = [], segments = []){
         this.points      = points;
         this.segments    = segments;
+        this.key        = 'road'
+        this.sortedSegments = {};
+        this.sortedPoints   = {};
     };
     
-    addPoint(point){
-        this.points.push(point)
+    addPoint(point, tools){
+        sortObject(point, tools, this.sortedPoints)
+        this.points.push(point);
+
     };
+    // Блок додавання сигменів 
+    addSegment(line, tools){
+        sortObject(line, tools, this.sortedSegments);
+        this.segments.push(line);
+    };
+   
     removePoint(point){
         const index = this.points.indexOf(point)  
         this.points.splice(index, 1)
     }
     
-    // Блок додавання-видалення сигменів 
-    addSegment(line){
-        this.segments.push(line)
-    };
     removeSegment(point) {
         const allSegmetStart = this.segments.filter(segment => segment.p1.equals(point));  //знаходимо всі сегменти початок яких дорівнює точці point
         const allSegmetEnd   = this.segments.filter(segment => segment.p2.equals(point));  //знаходимо всі сегменти кінець яких відповідає точці point
@@ -29,6 +38,19 @@ export default class Graph{
 
 
     draw(ctx){
+        
+        // for (const key in tools){
+        //     if (tools[key]){
+               
+        //         this.sortedSegments[key].draw(ctx);
+        //     }
+        // }
+        // this.polygons = this.sortedPoints.polygon || [];
+   
+        // for(const polygon of this.polygons){
+        //     polygon.draw(ctx);
+        // };
+        // console.log(this.polygons)
         for(const seg of this.segments){
             seg.draw(ctx);
         };

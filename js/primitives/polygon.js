@@ -1,19 +1,21 @@
-export default class Polygon {
-    constructor(data, points, tools ={}){
-        this.data        = data;
+import {findObjData} from '../math/utils.js'
+
+export class Polygon {
+    constructor(points){
+        this.data        = findObjData('polygon');
 
         this.width       = this.data.width;
         this.colorFill   = this.data.colorFill;
         this.colorStroke = this.data.colorStroke; 
         
         this.points = points;
-
-        this.tools = tools;
     };
-    draw(ctx){
+
+    remove
+    draw(ctx, colorStroke, colorFill){
         ctx.beginPath();
-            ctx.fillStyle   = this.colorFill;
-            ctx.strokeStyle = this.colorStroke;
+            ctx.fillStyle   = colorFill   ? colorFill   : this.colorFill;
+            ctx.strokeStyle = colorStroke ? colorStroke : this.colorStroke;
             ctx.lineWidth   = this.width;
             // малюємо лінію
             if (this.points.length > 0){

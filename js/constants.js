@@ -1,24 +1,20 @@
-import Point  from './primitives/point.js';
-import Polygon from './primitives/polygon.js';
-import Segment  from './primitives/segment.js';
-import Vieport from './vieport.js';
-
-
-// const vieportInstance = new Vieport()
-
-const data =      { game:     { },
-
-
-// =============================================================================================>
-                vieport:       {name:                  'vieport',
-                                class:                  Vieport,
+const data =  { graphEditor:   {name:                   'graphEditor',
+                                class:                  'GraphEditor',
+                                minDistance:            10,
+                                sizeRemove:             30,
+                },     
+                vieport:       {name:                   'vieport',
+                                class:                  'Vieport',
                                 scale: {zoom:           1,
                                         min:            0.1,
                                         max:            10,
                                         step:           0.05},    
                 },
-                primitives:    {point: {name:          'point',
-                                        class:          Point,
+                world:         {name:                   'world',
+                                class:                  'World',
+                },
+                primitives:    {point: {name:           'point',
+                                        class:          'Point',
                                         point:          {width: 2,
                                                          radius: 10,
                                                          color: 'blue'},
@@ -29,8 +25,8 @@ const data =      { game:     { },
                                                          radius: 6,
                                                          color: 'yellow'}
                                 },
-                                segment:{name:        'segment',
-                                         class:        Segment,
+                                segment:{name:         'segment',
+                                         class:        'Segment',
                                          line:         {width: 4,
                                                         color: 'red'},
                                          paint:        {width: 2,
@@ -41,10 +37,17 @@ const data =      { game:     { },
                                                         interval: 2}
                                 },
                                 polygon:{name:         'polygon',
-                                        class:          Polygon, 
-                                        width:          2,
-                                        colorFill:      'rgba(0, 0, 255, .3)',
-                                        colorStroke:    'blue'
+                                        class:         'Polygon', 
+                                        width:         2,
+                                        colorFill:     'rgba(0, 0, 255, .3)',
+                                        colorStroke:   'blue'
+                                },
+                                envelope:{name:          'envelope',
+                                         class:         'Envelope', 
+                                         width:         50,
+                                         current:       20,
+                                         colorFill:     'green',
+                                         colorStroke:   'yellow',
                                 },
                 },
 };

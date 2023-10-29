@@ -1,5 +1,5 @@
 
-import GraphEditor      from './graphEditor.js';
+import {GraphEditor}      from './graphEditor.js';
 
 const canvas        = document.getElementById('canvasMS');
       canvas.width  = innerWidth;
@@ -12,6 +12,7 @@ const input         = document.querySelector('.controls .input-wrapper input');
 const inputLine     = document.querySelector('.controls .input-wrapper .line');
 const iconClose     = document.querySelector('.controls .input-wrapper .icon.close');
 
+const buttonTools        = document.querySelectorAll(`.button[data-tool]`);
 const buttonInputSave    = document.getElementById('buttonInputSave');
 const buttonSave         = document.getElementById('buttonSave');
 const buttonload         = document.getElementById('buttonload');
@@ -54,16 +55,26 @@ function newSave(){
       saveNames  = Object.keys(localStorage)
       clearInput();
 };
+const maxLength     = input.getAttribute('maxlength');
 // умова появи/зникнення лінії під полем для збереження
 input.addEventListener('input', function() {
-      if(input.value.trim() !== '') {
+      if(input.value.trim() !== ''){
             inputLine.style.transform       = 'scaleX(1)';
             inputLine.style.transformOrigin = 'left';
             iconClose.style.transform       = 'scale(1)';
+            limitInputLength(maxLength)
       } else {
             clearInput()
       }
 });
+
+// функція для обмеження кількості символів у полі "input"
+function limitInputLength(maxLength) {
+      const text = input.value;
+      if (text.length > maxLength) {
+          input.value = text.slice(0, maxLength);                          // Обрізаємо текст, якщо він занадто довгий
+      }
+  }
 // очищаємо поле для введення "input" і зникнення лінії підкреслення при натисканні на іконку закриття
 iconClose.addEventListener('click', () => {
       clearInput();
@@ -113,7 +124,6 @@ let saveInfo    = graphString ? JSON.parse(graphString) : null;
 let graphEditor = new GraphEditor (canvas, saveInfo);
 
 selectElement.addEventListener('change', function(e){
-      console.log(e.target)
       saveName    = e.target.value;
       graphString = localStorage.getItem(`${saveName}`);
       saveInfo    = graphString ? JSON.parse(graphString) : null;
@@ -126,23 +136,22 @@ selectElement.addEventListener('change', function(e){
       setTimeout(function() {selectElement.style.display = 'none'}, 1000);
 });
 
-const tools = graphEditor.tools
+
 // Блок керування кнопками 
 window.setTool = function(button){
-      const tool = button.getAttribute('data-tool');
-      graphEditor.setTool(tool);
-      updateButtonStyles();
+      const toolActive = button.getAttribute('data-tool');
+      graphEditor.setTool(toolActive);
+      for (const tool in tools) updateButtonStyles(tool);
 };
 
-// Поелементне додавання/видалення класів для кнопок
-function updateButtonStyles() {
-      for (const tool in tools) {
-            const button       = document.querySelector(`.button[data-tool='${tool}']`);
-            const toolIsActive = tools[tool];
-            toolIsActive ? button.classList.toggle('active') : button.classList.remove('active')
-      }
+const tools = graphEditor.tools
+// зміна стилю кнопок приактивації деактивації    
+window.updateButtonStyles = function(tool) {
+      const button        = document.querySelector(`.button[data-tool='${tool}']`);
+      const toolIsTrue    = tools[tool];
+      toolIsTrue ? button.classList.toggle('active') : button.classList.remove('active')
 }
-    
+// функція zoom
 window.zoom = function(key){
       if(key === 'plus')  graphEditor.vieport.zoom -= 5 * graphEditor.vieport.step;
       if(key === 'minus') graphEditor.vieport.zoom += 5 * graphEditor.vieport.step;
@@ -161,11 +170,13 @@ window.dispose = function(){
       if(save){
             saveName = ''
             graphEditor.dispose();
+            buttonTools.forEach(button => button.classList.remove('active'));        //деактивуємо всі кнопки інструментів
             localStorage.setItem(saveName, JSON.stringify(graphEditor.graph));
             saveNames  = Object.keys(localStorage)
             save = false;
       };
 };
+
 // функція збереження поточного graph
 let save = false 
 window.save = function() {
@@ -182,9 +193,7 @@ window.save = function() {
 };
 
 function animate(){
-      
       graphEditor.draw(ctx);
       requestAnimationFrame(animate);
 }
-
 animate(0);
