@@ -121,7 +121,7 @@ export class GraphEditor {
     
         if (isPointBtnLeft || isRoadBtnLeft || isPolygonBtnLeft) {
             this.point = this.vieport.getPoint(e, { ...this.tools }, this.activeTool, { subtractDragOffset: true });
-            if (this.activePoint && e.type === 'mousedown') {
+            if (this.activePoint) {
                 this.#addSegment(this.activePoint);
                 return;
             }
