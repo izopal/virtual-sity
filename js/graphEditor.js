@@ -117,8 +117,8 @@ export class GraphEditor {
         const isPointBtnLeft   = this.tools.point   && e.buttons === 1;
         const isRoadBtnLeft    = this.tools.road    && e.buttons === 1;
         const isPolygonBtnLeft = this.tools.polygon && e.buttons === 1;
-
-        console.log(e)
+        const isRemoveBtnLeft  = this.tools.remove  && e.buttons === 1;
+    
         if (isPointBtnLeft || isRoadBtnLeft || isPolygonBtnLeft) {
             this.point = this.vieport.getPoint(e, { ...this.tools }, this.activeTool, { subtractDragOffset: true });
             if (this.activePoint && e.type === 'mousedown') {
@@ -127,6 +127,11 @@ export class GraphEditor {
             }
             this.graph.addPoint(this.point, { ...this.tools });
             this.#addSegment(this.point);
+        };
+        // умова видалення точки
+        if(isRemoveBtnLeft){
+            this.removePoint = getNearestPoint(this.point, this.graph.points, this.minDicnance = this.sizeRemove)
+            if(this.activePoint) this.#remove(this.removePoint); 
         };
         
         // умови при натиску правої кнопки
