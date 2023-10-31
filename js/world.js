@@ -18,7 +18,7 @@ export class World{
         for(const segment of this.segmentsRoad){
             this.roads.push(new Envelope(segment))
         };
-        console.log(this.roads)
+        // console.log(this.roads)
         // перехрестя
         // this.intersections = Polygon.break(
         //     this.roads[0].road,

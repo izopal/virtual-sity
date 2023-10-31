@@ -175,10 +175,9 @@ export class GraphEditor {
         this.lastPoint   = point;
     }
     #remove(point){
-        this.world.removeRoad(point);
-        // this.world.removePolygon(point);
         this.graph.removePoint(point);
         this.graph.removeSegment(point);
+        this.world.removeRoad(point);
         if (this.lastPoint === point) this.lastPoint = null;
         this.activePoint   = null;
     }
