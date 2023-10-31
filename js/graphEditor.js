@@ -83,7 +83,7 @@ export class GraphEditor {
 
         canvas.addEventListener('touchstart', (e) => this.#inputMouseDown(this.getMouseEventFromTouchEvent(e)));
         canvas.addEventListener('touchmove',  (e) => this.#inputMouseMove(this.getMouseEventFromTouchEvent(e)));
-        canvas.addEventListener('touchend', this.#inputMouseUp.bind(this));
+        canvas.addEventListener('touchend',   (e) => this.#inputMouseUp(this.getMouseEventFromTouchEvent(e)));
 
         canvas.addEventListener('contextmenu', (e) => e.preventDefault())
     };
@@ -112,55 +112,54 @@ export class GraphEditor {
         if(e.key === 'Escape') this.lastPoint = null;
     };
     #inputMouseDown(e){
-        // умова використання інструменту point
-        if((this.tools.point || this.tools.road || this.tools.polygon) && e.buttons === 1){
-            this.point       = this.vieport.getPoint(e, {...this.tools}, this.activeTool, {subtractDragOffset: true});
-            // провірка якщо вибрали активну точку, вона стає послідньою
-            if(this.activePoint ){
-                this.#addSegment(this.activePoint)
-                return                           // при виконнанні умови код дальше не виконється
-            };
-            this.graph.addPoint(this.point, {...this.tools});     // додаємо точку
-            this.#addSegment(this.point);        // додаємо лінію         
-        };
-        if((this.tools.point || this.tools.road) && e.buttons === 2) this.lastPoint = null;
-        if((this.tools.polygon) && e.buttons === 2) this.lastPoint = null;
+        // умлви при настику лівої кнопки
+        const isPointBtnLeft   = this.tools.point   && e.buttons === 1;
+        const isRoadBtnLeft    = this.tools.road    && e.buttons === 1;
+        const isPolygonBtnLeft = this.tools.polygon && e.buttons === 1;
 
+        if (isPointBtnLeft || isRoadBtnLeft || isPolygonBtnLeft) {
+            this.point = this.vieport.getPoint(e, { ...this.tools }, this.activeTool, { subtractDragOffset: true });
+            if (this.activePoint) {
+                this.#addSegment(this.activePoint);
+                return;
+            }
+            if (!e.touches) this.graph.addPoint(this.point, { ...this.tools });
+            this.#addSegment(this.point);
+        };
+        
+        // умови при натиску правої кнопки
+        const isPointBtnRight  = this.tools.point && e.buttons   === 2;
+        const isRoadBtnRight   = this.tools.road && e.buttons    === 2;
 
-        // умова використання інструменту remove
-        if(this.tools.remove && e.buttons === 1){
-            this.removePoint = getNearestPoint(this.point, this.graph.points, this.minDicnance = this.sizeRemove);
-            if(this.activePoint) this.#remove(this.removePoint); 
-        };
-        // умова використання інструменту dragging
-        if(this.tools.dragging && this.activePoint !== null && e.buttons === 1){
-            this.activePoint.x = this.point.x;
-            this.activePoint.y = this.point.y;
-        };
-        // 
-        if(this.tools.curve) this.lastPoint = null;
+        if(isPointBtnRight || isRoadBtnRight) this.lastPoint = null;
     };
+
     #inputMouseMove(e){
+        const isCurveBtnLeft   = this.tools.curve    && e.buttons === 1;
+        const isDragingBtnLeft = this.tools.dragging && e.buttons === 1;
+        const isRemoveBtnLeft  = this.tools.remove   && e.buttons === 1;
+        
         this.point       = this.vieport.getPoint(e, {...this.tools}, this.activeTool, {subtractDragOffset: true});
         // умова використання інструменту curve
-        if(this.tools.curve && e.buttons === 1){
+        if(isCurveBtnLeft){
             this.graph.addPoint(this.point, {...this.tools});
             this.#addSegment(this.point);
         };
         // умова використання інструменту dragging
-        if(this.tools.dragging && this.activePoint !== null && e.buttons === 1){
+        if(isDragingBtnLeft && this.activePoint){
             this.activePoint.x = this.point.x;
             this.activePoint.y = this.point.y;
         }else{
             this.activePoint = getNearestPoint(this.point, this.graph.points, this.minDicnance);
         };
        // умова використання інструменту remove
-        if(this.tools.remove && e.buttons === 1){
+        if(isRemoveBtnLeft){
             this.removePoint = getNearestPoint(this.point, this.graph.points, this.minDicnance = this.sizeRemove)
             if(this.activePoint) this.#remove(this.removePoint); 
         };
     };
-    #inputMouseUp(){
+    #inputMouseUp(e){
+        if(e.touches && e.touches.length > 0)this.graph.addPoint(this.point, {...this.tools});     // додаємо точку
         if(this.tools.curve) this.lastPoint = null;
     };
 

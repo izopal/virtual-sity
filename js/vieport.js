@@ -67,7 +67,6 @@ export class Vieport{
     };
 
     getPoint(e, tools, {subtractDragOffset = false} = {}){
-        console.log(e)
         const coordinates = {x: (e.pageX - this.coordinatesCentre.x) * this.zoom - this.offset.x,
                              y: (e.pageY - this.coordinatesCentre.y) * this.zoom - this.offset.y};
         // console.log(e.offsetX, this.zoom, this.coordinatesCentre.x, this.offset.x)
