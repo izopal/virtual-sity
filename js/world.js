@@ -24,7 +24,12 @@ export class World{
     };
     
     removeAll(){
-        this.sortedSegments.road = [];
+        for(const key in  this.graph.sortedSegments){
+            this.graph.sortedSegments[key] = [];
+        }
+        for(const key in  this.graph.sortedPoints){
+            this.graph.sortedPoints[key] = [];
+        }
     }
 
     draw(ctx){

@@ -39,8 +39,6 @@ export class Graph{
     };
     removeAll(){
         this.points         = [];
-        this.sortedPoints   = {};
         this.segments       = [];
-        this.sortedSegments = {};
     }
 }

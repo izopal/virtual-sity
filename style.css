@@ -10,7 +10,11 @@
     padding: 0;
     box-sizing: border-box;
 }
+html{
+    overscroll-behavior: none;
+}
 body{
+    overscroll-behavior-y: contain;
     position: relative;
     display: flex;
     overflow: hidden;
