@@ -1,17 +1,17 @@
 import {findObjData} from '../math/utils.js'
 
 export class Polygon {
-    constructor(points){
-        this.data        = findObjData('polygon');
+    constructor(points = []){
+        this.data        = findObjData('polygon') || {};
 
-        this.width       = this.data.width;
+        this.width       = Math.max(0, this.data.width);
         this.colorFill   = this.data.colorFill;
         this.colorStroke = this.data.colorStroke; 
         
         this.points = points;
     };
 
-    remove
+   
     draw(ctx, colorStroke, colorFill){
         ctx.beginPath();
             ctx.fillStyle   = colorFill   ? colorFill   : this.colorFill;
@@ -28,6 +28,6 @@ export class Polygon {
         ctx.closePath();
         ctx.stroke();
         ctx.fill();
-
-    }
+    };
+   
 }

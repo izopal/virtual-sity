@@ -12,7 +12,6 @@ export class Vieport{
         this.minZoom      = this.scale.min;
         this.maxZoom      = this.scale.max;
 
-
         this.point             = new Point();
         this.coordinatesCentre = {x: this.canvas.width * .5,
                                   y: this.canvas.height * .5}
@@ -68,8 +67,9 @@ export class Vieport{
     };
 
     getPoint(e, tools, {subtractDragOffset = false} = {}){
-        const coordinates = {x: (e.offsetX - this.coordinatesCentre.x) * this.zoom - this.offset.x,
-                             y: (e.offsetY - this.coordinatesCentre.y) * this.zoom - this.offset.y};
+        console.log(e)
+        const coordinates = {x: (e.pageX - this.coordinatesCentre.x) * this.zoom - this.offset.x,
+                             y: (e.pageY - this.coordinatesCentre.y) * this.zoom - this.offset.y};
         // console.log(e.offsetX, this.zoom, this.coordinatesCentre.x, this.offset.x)
         const point     = new Point(coordinates, tools);
         const result    = operate(point, '-', this.drag.offset);

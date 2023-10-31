@@ -25,7 +25,7 @@ export class GraphEditor {
         this.point         = null;
         this.lastPoint     = null;
         this.activePoint   = null;
-        
+
         // параметри інструментів графічного редагування  
         this.tools          = {dragging: false,        // параметри вкл.-викл. редактора (пересування точок)
                                remove:   false,        // параметр вкл.-викл резинки
@@ -42,13 +42,27 @@ export class GraphEditor {
        
     };
 
-   #load(saveInfo){
-        const points      = saveInfo.points.map((point) => new Point(point, point.tools));
+    #load(saveInfo){
+        const points        = saveInfo.points.map((point) => new Point(point, point.tools));
+       
         const segments    = saveInfo.segments.map((line) => new Segment(
             points.find(point => point.equals(line.p1)),
             points.find(point => point.equals(line.p2)),
             line.tools));
-        return new Graph (points, segments);
+
+        const sortedPoints   = {};
+        for(const key in saveInfo.sortedPoints){
+            sortedPoints[key] = saveInfo.sortedPoints[key].map((point) => new Point(point, point.tools));
+        };
+
+        const sortedSegments = {};
+        for(const key in saveInfo.sortedSegments){
+            sortedSegments[key]    = saveInfo.sortedSegments[key].map((line) => new Segment(
+                points.find(point => point.equals(line.p1)),
+                points.find(point => point.equals(line.p2)),
+                line.tools));
+        };
+        return new Graph (points, sortedPoints, segments, sortedSegments);
     }
    
     //  функція вкл обраного інструмента (true) і викл решта неактивних (false)
@@ -67,12 +81,27 @@ export class GraphEditor {
         canvas.addEventListener('mousemove',  this.#inputMouseMove.bind(this));
         canvas.addEventListener('mouseup',    this.#inputMouseUp.bind(this));
 
-        canvas.addEventListener('touchstart', this.#inputMouseDown.bind(this));
-        canvas.addEventListener('touchmove',  this.#inputMouseMove.bind(this));
-        canvas.addEventListener('touchend',   this.#inputMouseUp.bind(this));
+        canvas.addEventListener('touchstart', (e) => this.#inputMouseDown(this.getMouseEventFromTouchEvent(e)));
+        canvas.addEventListener('touchmove',  (e) => this.#inputMouseMove(this.getMouseEventFromTouchEvent(e)));
+        canvas.addEventListener('touchend', this.#inputMouseUp.bind(this));
 
         canvas.addEventListener('contextmenu', (e) => e.preventDefault())
-    }
+    };
+
+    getMouseEventFromTouchEvent(e) {
+        if (e.touches && e.touches.length > 0) {
+          return {
+            pageX: e.touches[0].pageX,
+            pageY: e.touches[0].pageY,
+            buttons: 1,
+          };
+        }
+        return null;
+      }
+
+
+
+
     #inputKeydown(e){
         if(['P', 'p', 'З', 'з'].includes(e.key)) this.setTool('point');
         if(['R', 'r', 'К', 'к'].includes(e.key)) this.setTool('remove');
@@ -83,10 +112,9 @@ export class GraphEditor {
         if(e.key === 'Escape') this.lastPoint = null;
     };
     #inputMouseDown(e){
-        
         // умова використання інструменту point
         if((this.tools.point || this.tools.road || this.tools.polygon) && e.buttons === 1){
-            this.point       = this.vieport.getPoint(e, {...this.tools}, {subtractDragOffset: true});
+            this.point       = this.vieport.getPoint(e, {...this.tools}, this.activeTool, {subtractDragOffset: true});
             // провірка якщо вибрали активну точку, вона стає послідньою
             if(this.activePoint ){
                 this.#addSegment(this.activePoint)
@@ -113,7 +141,7 @@ export class GraphEditor {
         if(this.tools.curve) this.lastPoint = null;
     };
     #inputMouseMove(e){
-        this.point       = this.vieport.getPoint(e, {...this.tools}, {subtractDragOffset: true});
+        this.point       = this.vieport.getPoint(e, {...this.tools}, this.activeTool, {subtractDragOffset: true});
         // умова використання інструменту curve
         if(this.tools.curve && e.buttons === 1){
             this.graph.addPoint(this.point, {...this.tools});
@@ -137,26 +165,26 @@ export class GraphEditor {
     };
 
     #addSegment(point){
-        const line       = new Segment(this.lastPoint, point, {... this.tools});
-        if(this.lastPoint) this.graph.addSegment(line, {... this.tools});          // додаємо лінію
+        const line       = new Segment(this.lastPoint, point, {...this.tools}, this.activeTool);
+        if(this.lastPoint) this.graph.addSegment(line, {...this.tools});          // додаємо лінію
         this.lastPoint   = point;
     }
     #remove(point){
-        this.world.remove();
+        this.world.removeRoad(point);
+        // this.world.removePolygon(point);
         this.graph.removePoint(point);
         this.graph.removeSegment(point);
         if (this.lastPoint === point) this.lastPoint = null;
         this.activePoint   = null;
     }
-    
-
     draw(ctx){
 
-        this.pointsPolygon = this.graph.sortedPoints.polygon || [];
         this.vieport.draw(ctx);
+        this.pointsPolygon = this.graph.sortedPoints.polygon || [];
       
         
-        this.world.generate();
+        this.world.generateRoad();
+        
         this.world.draw(ctx);
         
         this.graph.draw(ctx);
@@ -171,9 +199,8 @@ export class GraphEditor {
             this.lastPoint.draw(ctx, {lastPoint: true})
         }
     };
-
     dispose(){
-        this.world.remove();
+        this.world.removeAll();
         this.graph.removeAll();
         this.lastPoint     = null;
         this.activePoint   = null;

@@ -90,7 +90,7 @@ export function sortObject(obj, tools, Objects){
           if (!Objects[tool]) Objects[tool] = [];
           Objects[tool].push(obj);
       }
-  }
+  };
 }
 export default keys;
 

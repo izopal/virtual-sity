@@ -123,7 +123,13 @@ let graphString = localStorage.getItem(`${saveName}`);
 let saveInfo    = graphString ? JSON.parse(graphString) : null;
 let graphEditor = new GraphEditor (canvas, saveInfo);
 
+const buttons = document.querySelectorAll('.button[data-tool]');
+
+
 selectElement.addEventListener('change', function(e){
+      // деактивація всіх кнопок при загрузці
+      buttons.forEach((button) =>  button.classList.remove('active'));
+      // загрузка вибраного saveName
       saveName    = e.target.value;
       graphString = localStorage.getItem(`${saveName}`);
       saveInfo    = graphString ? JSON.parse(graphString) : null;
@@ -141,16 +147,20 @@ selectElement.addEventListener('change', function(e){
 window.setTool = function(button){
       const toolActive = button.getAttribute('data-tool');
       graphEditor.setTool(toolActive);
-      for (const tool in tools) updateButtonStyles(tool);
+      updateButtonStyles()
 };
 
-const tools = graphEditor.tools
 // зміна стилю кнопок приактивації деактивації    
-window.updateButtonStyles = function(tool) {
-      const button        = document.querySelector(`.button[data-tool='${tool}']`);
-      const toolIsTrue    = tools[tool];
-      toolIsTrue ? button.classList.toggle('active') : button.classList.remove('active')
+window.updateButtonStyles = function() {
+      const tools   = graphEditor.tools
+
+      buttons.forEach((button) => {
+            const tool = button.getAttribute('data-tool');
+            const toolIsTrue = tools[tool];
+            toolIsTrue ? button.classList.add('active') : button.classList.remove('active');
+      });
 }
+
 // функція zoom
 window.zoom = function(key){
       if(key === 'plus')  graphEditor.vieport.zoom -= 5 * graphEditor.vieport.step;

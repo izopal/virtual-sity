@@ -15,14 +15,12 @@ const data =  { graphEditor:   {name:                   'graphEditor',
                 },
                 primitives:    {point: {name:           'point',
                                         class:          'Point',
-                                        point:          {width: 2,
-                                                         radius: 10,
+                                        point:          {radius: 10,
                                                          color: 'blue'},
-                                        activePoint:    {width: 2,
-                                                         radius: 8,
+                                        activePoint:    {radius: .8,
                                                          color: 'yellow'},
-                                        lastPoint:      {width: 2,
-                                                         radius: 6,
+                                        lastPoint:      {width: .2,
+                                                         radius: .7,
                                                          color: 'yellow'}
                                 },
                                 segment:{name:         'segment',
@@ -52,4 +50,3 @@ const data =  { graphEditor:   {name:                   'graphEditor',
                 },
 };
 export default data;
-

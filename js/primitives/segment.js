@@ -24,6 +24,7 @@ export class Segment{
         };
     };
     
+    
     draw(ctx, {dash = false} = {}){
         if(!this.tools.road && !this.tools.polygon){
             ctx.beginPath();
