@@ -94,7 +94,7 @@ export class GraphEditor {
             pageX: e.touches[0].pageX,
             pageY: e.touches[0].pageY,
             buttons: 1,
-            touches: 'touchend',
+            touches: true,
           };
         }
         return null;
@@ -113,13 +113,13 @@ export class GraphEditor {
         if(e.key === 'Escape') this.lastPoint = null;
     };
     #inputMouseDown(e){
-        console.log(e)
         // умлви при настику лівої кнопки
         const isPointBtnLeft   = this.tools.point   && e.buttons === 1;
         const isRoadBtnLeft    = this.tools.road    && e.buttons === 1;
         const isPolygonBtnLeft = this.tools.polygon && e.buttons === 1;
 
-        if (e.type === 'mousedown' && (isPointBtnLeft || isRoadBtnLeft || isPolygonBtnLeft)){
+        console.log(e)
+        if (isPointBtnLeft || isRoadBtnLeft || isPolygonBtnLeft) {
             this.point = this.vieport.getPoint(e, { ...this.tools }, this.activeTool, { subtractDragOffset: true });
             if (this.activePoint && e.type === 'mousedown') {
                 this.#addSegment(this.activePoint);
@@ -161,13 +161,6 @@ export class GraphEditor {
         };
     };
     #inputMouseUp(e){
-        console.log(e)
-        if(e.touches === 'touchend'){
-            this.point = this.vieport.getPoint(e, { ...this.tools }, this.activeTool, { subtractDragOffset: true });
-
-            this.graph.addPoint(this.point, { ...this.tools });
-            this.#addSegment(this.point);
-        }
         if(this.tools.curve) this.lastPoint = null;
     };
 
