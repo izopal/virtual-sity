@@ -1,4 +1,5 @@
 import {Envelope}  from './primitives/envelope.js';
+import {Polygon}  from './primitives/polygon.js';
 
 export class World{
     constructor(graph){
@@ -7,8 +8,8 @@ export class World{
         this.sortedPoints   = this.graph.sortedPoints;
         this.envelop  = new Envelope()
         this.roads = [];
-        
         this.generateRoad();
+        
         
     };
     generateRoad(){
@@ -16,7 +17,14 @@ export class World{
         this.roads.length = 0;
         for(const segment of this.segmentsRoad){
             this.roads.push(new Envelope(segment))
-        }
+        };
+        // console.log(this.roads)
+        // перехрестя
+        // this.intersections = Polygon.break(
+        //     this.roads[0].road,
+        //     this.roads[1].road,
+        // )
+
     };
 
     removeRoad(point){
@@ -34,6 +42,7 @@ export class World{
 
     draw(ctx){
         for(const env of this.roads) env.draw(ctx);
+        // for(const int of this.intersections) int.draw(ctx);
     };
 
 }

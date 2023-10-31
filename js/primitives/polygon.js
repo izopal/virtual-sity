@@ -1,4 +1,5 @@
 import {findObjData} from '../math/utils.js'
+import { Segment } from './segment.js';
 
 export class Polygon {
     constructor(points = []){
@@ -9,6 +10,11 @@ export class Polygon {
         this.colorStroke = this.data.colorStroke; 
         
         this.points = points;
+
+        this.segments = [];
+        for(let i = 0; i <= points.length; ++i){
+            this.segments.push(new Segment(points[i - 1], points[i % points.length]))
+        }
     };
 
    

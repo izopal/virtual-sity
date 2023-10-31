@@ -94,6 +94,7 @@ export class GraphEditor {
             pageX: e.touches[0].pageX,
             pageY: e.touches[0].pageY,
             buttons: 1,
+            touches: 'touchend',
           };
         }
         return null;
@@ -112,18 +113,19 @@ export class GraphEditor {
         if(e.key === 'Escape') this.lastPoint = null;
     };
     #inputMouseDown(e){
+        console.log(e)
         // умлви при настику лівої кнопки
         const isPointBtnLeft   = this.tools.point   && e.buttons === 1;
         const isRoadBtnLeft    = this.tools.road    && e.buttons === 1;
         const isPolygonBtnLeft = this.tools.polygon && e.buttons === 1;
 
-        if (isPointBtnLeft || isRoadBtnLeft || isPolygonBtnLeft) {
+        if (e.type === 'mousedown' && (isPointBtnLeft || isRoadBtnLeft || isPolygonBtnLeft)){
             this.point = this.vieport.getPoint(e, { ...this.tools }, this.activeTool, { subtractDragOffset: true });
-            if (this.activePoint) {
+            if (this.activePoint && e.type === 'mousedown') {
                 this.#addSegment(this.activePoint);
                 return;
             }
-            if (!e.touches) this.graph.addPoint(this.point, { ...this.tools });
+            this.graph.addPoint(this.point, { ...this.tools });
             this.#addSegment(this.point);
         };
         
@@ -138,7 +140,7 @@ export class GraphEditor {
         const isCurveBtnLeft   = this.tools.curve    && e.buttons === 1;
         const isDragingBtnLeft = this.tools.dragging && e.buttons === 1;
         const isRemoveBtnLeft  = this.tools.remove   && e.buttons === 1;
-        
+
         this.point       = this.vieport.getPoint(e, {...this.tools}, this.activeTool, {subtractDragOffset: true});
         // умова використання інструменту curve
         if(isCurveBtnLeft){
@@ -159,7 +161,13 @@ export class GraphEditor {
         };
     };
     #inputMouseUp(e){
-        if(e.touches && e.touches.length > 0)this.graph.addPoint(this.point, {...this.tools});     // додаємо точку
+        console.log(e)
+        if(e.touches === 'touchend'){
+            this.point = this.vieport.getPoint(e, { ...this.tools }, this.activeTool, { subtractDragOffset: true });
+
+            this.graph.addPoint(this.point, { ...this.tools });
+            this.#addSegment(this.point);
+        }
         if(this.tools.curve) this.lastPoint = null;
     };
 
