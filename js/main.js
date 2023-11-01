@@ -147,7 +147,8 @@ selectElement.addEventListener('change', function(e){
 window.setTool = function(button){
       const toolActive = button.getAttribute('data-tool');
       graphEditor.setTool(toolActive);
-      updateButtonStyles()
+      graphEditor.lastPoint = null;
+      updateButtonStyles();
 };
 
 // зміна стилю кнопок приактивації деактивації    

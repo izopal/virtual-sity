@@ -1,67 +1,79 @@
-import {findObjData} from '../math/utils.js'
+import * as utils from '../math/utils.js';
 
 export class Point {
-    constructor(coordinates = {x: 0, y: 0}, tools = {}){
+    constructor(coordinates = { x: 0, y: 0 }, tools = {}) {
         this.x    = coordinates.x;
         this.y    = coordinates.y;
-        this.data = findObjData('point') || {};
-        // параметри інструментів
-        this.tools  = tools;
+        this.data = utils.findObjData('point') || {};
+
         // параметри точки
-        this.radius  = Math.max(0, this.data.point.radius);
-        this.color   = this.data.point.color;
+        const point      = this.data.point
+        this.color       = point.color;
+        this.radius      = utils.getValidValue(point.radius, 0);
+        this.globalAlpha = utils.getValidValue(point.globalAlpha, 0, 1);
+
         // параметри останьої точки
-        this.lastPointMultiplier = Math.max(0, Math.min(1, this.data.lastPoint.radius));
-        this.lastPointRadius     = this.radius * this.lastPointMultiplier;
-        this.multiplierWidth     = Math.max(0, Math.min(1, this.data.lastPoint.width))
-        this.lastPointWidth      = this.lastPointRadius * this.multiplierWidth;
-        this.lastPointColor      = this.data.lastPoint.color;
+        const lastPoint = this.data.lastPoint;
+        this.multiplierLastRadius    = utils.getValidValue(lastPoint.radius, 0, 1);
+        this.multiplierLastWidth     = utils.getValidValue(lastPoint.width, 0, 1);
+        this.lastPointRadius         = this.radius * this.multiplierLastRadius;
+        this.lastPointWidth          = this.lastPointRadius * this.multiplierLastWidth;
+        this.lastPointColor          = lastPoint.color;
+        this.lastGlobalAlpha         = utils.getValidValue(lastPoint.globalAlpha, 0, 1);
+
         // параметри активної точки
-        this.activePointMultiplier = Math.max(0, Math.min(1, this.data.activePoint.radius));
-        this.activePointRadius     = this.radius * this.activePointMultiplier;
-        this.activePointColor      = this.data.activePoint.color;
-    };
-    
-    equals(point){
+        const activePoint           = this.data.activePoint;
+        this.multiplierActiveRadius = utils.getValidValue(activePoint.radius, 0, 1);
+        this.activePointColor       = activePoint.color;
+        this.activeGlobalAlpha      = utils.getValidValue(activePoint.globalAlpha, 0, 1);
+
+        // параметри інструментів
+        this.tools = tools;
+    }
+
+    equals(point) {
         return this.x === point.x && this.y === point.y;
-    };
+    }
 
+    draw(ctx, options = {}) {
 
-    draw(ctx, {lastPoint = false, activePoint = false} = {} ){
-        // малюємо point при умові що flaf = false
-        if(!this.tools.curve){
-            ctx.beginPath();
-            ctx.arc(this.x,
-                this.y,
-                this.radius,
-                0,
-                Math.PI * 2);
-            ctx.fillStyle = this.color;
-            ctx.fill();
-        }
+        const { 
+            lastPoint   = false, 
+            activePoint = false, 
+            color       = '',
+            radius      = null,
+            globalAlpha = null,
+        } = options
 
-        // малюємо lastPoint
-        if(lastPoint && !this.tools.curve) {
-            ctx.beginPath();
-            ctx.lineWidth   = this.lastPointWidth;
-            ctx.arc(this.x,
-                this.y,
-                this.lastPointRadius,
-                0,
-                Math.PI * 2);
-            ctx.strokeStyle = this.lastPointColor;
+        this.color       = color        || this.color; 
+        this.radius      = radius       || this.radius; 
+        this.globalAlpha = globalAlpha  || this.globalAlpha; 
+
+        this.activePointRadius     = this.radius * this.multiplierActiveRadius;
+        this.lastPointRadius       = this.radius * this.multiplierLastRadius;
+
+        if (!this.tools.curve)                this.drawCircle(ctx, this.radius, this.color, {globalAlpha: this.globalAlpha});
+        if (lastPoint && !this.tools.curve)   this.drawCircle(ctx, this.lastPointRadius, this.lastPointColor, {lineWidth: this.lastPointWidth});
+        if (activePoint && !this.tools.curve) this.drawCircle(ctx, this.activePointRadius, this.activePointColor);
+    }
+
+    drawCircle(ctx, radius, fillColor, {lineWidth = 0, globalAlpha = 1} = {}) {
+        ctx.save();
+        ctx.globalAlpha = globalAlpha;
+        ctx.beginPath();
+            ctx.arc(this.x, 
+                    this.y, 
+                    radius, 
+                    0, 
+                    Math.PI * 2);
+            ctx.fillStyle = fillColor;
+        ctx.fill();
+        
+        if (lineWidth > 0) {
+            ctx.lineWidth   = lineWidth;
+            ctx.strokeStyle = fillColor;
             ctx.stroke();
         };
-        // малюємо activePoint
-        if(activePoint && !this.tools.curve) {
-            ctx.beginPath();
-            ctx.arc(this.x,
-                this.y,
-                this.activePointRadius,
-                0,
-                Math.PI * 2);
-            ctx.fillStyle = this.activePointColor;
-            ctx.fill();
-        }
+        ctx.restore();
     }
 }

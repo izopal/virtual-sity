@@ -1,10 +1,9 @@
-import {findObjData, getNearestPoint} from '../js/math/utils.js'
-import keys              from '../js/math/utils.js';
+import * as utils  from './math/utils.js';
 
-import {Graph}    from './math/graph.js';
-import {Vieport}  from './vieport.js';
-import {Point}  from './primitives/point.js';
-import {Segment}  from './primitives/segment.js';
+import {Graph}     from './math/graph.js';
+import {Vieport}   from './vieport.js';
+import {Point}     from './primitives/point.js';
+import {Segment}   from './primitives/segment.js';
 import { Polygon } from './primitives/polygon.js';
 
 import {World}  from './world.js';
@@ -13,8 +12,8 @@ const body               = document.body;
 
 export class GraphEditor {
     constructor(canvas, saveInfo){
-        this.keys         = keys;
-        this.data         = findObjData('graphEditor');
+        this.keys         = utils.keys;
+        this.data         = utils.findObjData('graphEditor');
         this.canvas       = canvas;
         console.table(this.keys);
         
@@ -74,7 +73,6 @@ export class GraphEditor {
         };
     }
 
-
     #addEventListener(canvas){
         body.addEventListener  ('keydown',    this.#inputKeydown.bind(this));
         canvas.addEventListener('mousedown',  this.#inputMouseDown.bind(this));
@@ -99,9 +97,6 @@ export class GraphEditor {
         }
         return null;
       }
-
-
-
 
     #inputKeydown(e){
         if(['P', 'p', 'З', 'з'].includes(e.key)) this.setTool('point');
@@ -130,7 +125,7 @@ export class GraphEditor {
         };
         // умова видалення точки
         if(isRemoveBtnLeft){
-            this.removePoint = getNearestPoint(this.point, this.graph.points, this.minDicnance = this.sizeRemove)
+            this.removePoint = utils.getNearestPoint(this.point, this.graph.points, this.minDicnance = this.sizeRemove)
             if(this.activePoint) this.#remove(this.removePoint); 
         };
         
@@ -157,11 +152,11 @@ export class GraphEditor {
             this.activePoint.x = this.point.x;
             this.activePoint.y = this.point.y;
         }else{
-            this.activePoint = getNearestPoint(this.point, this.graph.points, this.minDicnance);
+            this.activePoint = utils.getNearestPoint(this.point, this.graph.points, this.minDicnance);
         };
        // умова використання інструменту remove
         if(isRemoveBtnLeft){
-            this.removePoint = getNearestPoint(this.point, this.graph.points, this.minDicnance = this.sizeRemove)
+            this.removePoint = utils.getNearestPoint(this.point, this.graph.points, this.minDicnance = this.sizeRemove)
             if(this.activePoint) this.#remove(this.removePoint); 
         };
     };
@@ -199,7 +194,7 @@ export class GraphEditor {
         
         // уомва малювання останьої вибраної точки (якщо виконується передаємо значення outline: true  )
         if(this.lastPoint && this.tools.point){
-            new Segment (this.lastPoint, this.point).draw(ctx, {dash: true});
+            new Segment (this.lastPoint, this.point).draw(ctx, {dash: {active: true}});
             this.lastPoint.draw(ctx, {lastPoint: true})
         }
     };

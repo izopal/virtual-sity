@@ -1,49 +1,88 @@
-import {findObjData} from '../math/utils.js'
+import * as utils from '../math/utils.js';
 
 export class Segment{
     constructor(p1, p2, tools = {}){
-        this.data = findObjData('segment');
+        this.data = utils.findObjData('segment');
         this.p1 = p1;
         this.p2 = p2;
                 
-        this.width = this.data.line.width;
-        this.color = this.data.line.color;
+
+        // параметри лінії 
+        const line = this.data.line;
+        this.color       = line.color;
+        this.size        = utils.getValidValue(line.size, 0);
+        this.globalAlpha = utils.getValidValue(line.globalAlpha, 0, 1);
 
         // параметри штрих-пунтирної лінії
-        this.dashWidth    = this.data.dash.width;
-        this.dashColor    = this.data.dash.color;
-        this.dashLength   = this.data.dash.length;
-        this.dashInterval = this.data.dash.interval;
+        const dash = this.data.dash;
+        this.dashColor       = dash.color;
+        this.dashSize        = utils.getValidValue(dash.size, 0);
+        this.dashLength      = utils.getValidValue(dash.length, 0);
+        this.dashInterval    = utils.getValidValue(dash.interval, 0);
+        this.dashGlobalAlpha = utils.getValidValue(dash.globalAlpha, 0, 1);
 
         // параметри інструментів графічного редактора
         this.tools  = tools;
-        // параметри при вкл. крива лінія
+        // параметри при вкл. інструменту ручка
         if(this.tools.curve){
-            this.width = this.data.paint.width;
-            this.color = this.data.paint.color
+            const paint = this.data.paint
+            this.color       = paint.color;    
+            this.size        = utils.getValidValue(paint.size, 0);
+            this.globalAlpha = utils.getValidValue(paint.globalAlpha, 0, 1);
         };
     };
     
     
-    draw(ctx, {dash = false} = {}){
-        if(!this.tools.road && !this.tools.polygon){
+    draw(ctx, options = {}){
+       
+        const {
+            color       = '',
+            size        = null,
+            globalAlpha = 1,
+            dash  = {
+                active:   false,
+                line:     this.dashLength,
+                interval: this.dashInterval,
+            },
+        } = options;
+
+        this.color         = color        || this.color; 
+        this.size          = size         || this.size; 
+       
+        if(!this.tools.polygon ){
+            ctx.save();
+            ctx.globalAlpha = globalAlpha  || this.globalAlphal;
             ctx.beginPath();
-                ctx.lineWidth   = !dash ? this.width : this.dashWidth;
-                if(dash) ctx.setLineDash([this.dashLength, this.dashInterval]);           //штрихпунтрина лінія
-                ctx.strokeStyle = !dash ? this.color : this.dashColor;
-                ctx.moveTo(this.p1.x, this.p1.y);
-                ctx.lineTo(this.p2.x, this.p2.y);
+   
+                // малюємо штрихпунтрина лінія
+                if (dash.active){
+                    dash.line       = dash.line || this.dashLength;
+                    dash.interval       = dash.interval || this.dashInterval;
+                    ctx.lineWidth   = size || this.dashSize;
+                    ctx.strokeStyle = color || this.dashColor;
+                    ctx.setLineDash([dash.line, dash.interval]);
+                    ctx.moveTo(this.p1.x, this.p1.y);
+                    ctx.lineTo(this.p2.x, this.p2.y);
+                }else if(!this.tools.road){
+                    ctx.lineWidth   =  this.size;
+                    ctx.strokeStyle =  this.color;
+                    ctx.moveTo(this.p1.x, this.p1.y);
+                    ctx.lineTo(this.p2.x, this.p2.y);
+                }
+            
             ctx.stroke();
             ctx.setLineDash([]);
     
             ctx.beginPath();
             ctx.arc(this.p2.x,
                     this.p2.y,
-                    this.width * .5,
+                    this.size * .5,
                     0,
                     Math.PI * 2);
             ctx.fillStyle = this.color;
             ctx.fill();
+
+            ctx.restore();
         }
     }
 }

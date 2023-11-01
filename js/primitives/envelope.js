@@ -1,31 +1,27 @@
-import {findObjData, translateMetod, operate} from '../math/utils.js';
-import {Polygon} from './polygon.js';
-
-
+import * as utils  from '../math/utils.js';
+import {Polygon}   from './polygon.js';
 
 export class Envelope{
     constructor(skeleton = {p1: 0, p2: 0}){
-        this.envelopData = findObjData('envelope');
+        this.envelopData = utils.findObjData('envelope');
         
         this.skeleton    = skeleton;
 
-        this.width       = Math.max(0, this.envelopData.width);
-        this.current     = Math.max(1, Math.floor(this.envelopData.current));
+        this.width       = utils.getValidValue(this.envelopData.width, 0);
+        this.current     = utils.getValidValue(Math.floor(this.envelopData.current), 1);
         this.colorStroke = this.envelopData.colorStroke;
         this.colorFill   = this.envelopData.colorFill;
       
         this.points =  [];
         
-        this.road        = this.#generateRoad();
-        
-
+        this.segmentRoad        = this.#generateRoad();
     };
 
     #generateRoad(){
         const {p1, p2} = this.skeleton;
         
         const radius = this.width * .5;
-        const result = operate(p1, '-', p2)
+        const result = utils.operate(p1, '-', p2);
         const alpha  = Math.atan2(result.y, result.x);
 
         const alpha_cw     = alpha + Math.PI * .5;
@@ -34,16 +30,17 @@ export class Envelope{
         const step         = Math.PI / this.current;
         
         for(let i = alpha_ccw; i <= roundedAlpha; i += step){
-            this.points.push(translateMetod(p1, i, radius));
+            this.points.push(utils.translateMetod(p1, i, radius));
         }
         for(let i = alpha_ccw; i <= roundedAlpha; i += step){
-            this.points.push(translateMetod(p2, Math.PI + i, radius));
+            this.points.push(utils.translateMetod(p2, Math.PI + i, radius));
         }
-        return new Polygon(this.points)
+        return new Polygon(this.points) || {}
     };
 
-    draw(ctx){
-        this.road.draw(ctx, this.colorStroke, this.colorFill);
+    draw(ctx, configuration){
+        this.segmentRoad.draw(ctx, configuration);
+        // this.segmentRoad.drawSegments(ctx);
       
     };
 

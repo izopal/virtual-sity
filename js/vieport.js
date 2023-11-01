@@ -1,23 +1,23 @@
-import {findObjData, operate}         from '../js/math/utils.js'
-import {Point}    from './primitives/point.js';
+import * as utils  from './math/utils.js';
+import {Point}     from './primitives/point.js';
 
 
 export class Vieport{
     constructor(canvas){
         this.canvas       = canvas;
-        this.vieportData  = findObjData('vieport')
+        this.vieportData  = utils.findObjData('vieport')
         this.scale        = this.vieportData.scale;
-        this.zoom         = this.scale.zoom;
-        this.step         = this.scale.step;
-        this.minZoom      = this.scale.min;
-        this.maxZoom      = this.scale.max;
+        this.zoom         = utils.getValidValue(this.scale.zoom, 0);
+        this.step         = utils.getValidValue(this.scale.step, 0);
+        this.minZoom      = utils.getValidValue(this.scale.min, 0);
+        this.maxZoom      = utils.getValidValue(this.scale.max, 0);
 
         this.point             = new Point();
         this.coordinatesCentre = {x: this.canvas.width * .5,
                                   y: this.canvas.height * .5}
         this.center            = new Point(this.coordinatesCentre);
 
-        this.result            = operate(this.center, '*', -1);
+        this.result            = utils.operate(this.center, '*', -1);
         this.offset            = new Point(this.result);
        
         this.drag   = {start:  this.point,
@@ -49,12 +49,12 @@ export class Vieport{
     #inputMouseMove(e){
         if((e.buttons === 4 || e.buttons === 3) && this.drag.active){
             this.drag.end    = this.getPoint(e); 
-            const result     = operate(this.drag.end, '-', this.drag.start)
+            const result     = utils.operate(this.drag.end, '-', this.drag.start)
             this.drag.offset = new Point(result);
         }
     };
     #inputMouseUp(){
-        const result = operate(this.offset, '+', this.drag.offset)
+        const result = utils.operate(this.offset, '+', this.drag.offset)
         this.offset  = new Point(result);
         this.drag    = {start:  this.point,
                         end:    this.point,
@@ -69,9 +69,9 @@ export class Vieport{
     getPoint(e, tools, {subtractDragOffset = false} = {}){
         const coordinates = {x: (e.pageX - this.coordinatesCentre.x) * this.zoom - this.offset.x,
                              y: (e.pageY - this.coordinatesCentre.y) * this.zoom - this.offset.y};
-        // console.log(e.offsetX, this.zoom, this.coordinatesCentre.x, this.offset.x)
+       
         const point     = new Point(coordinates, tools);
-        const result    = operate(point, '-', this.drag.offset);
+        const result    = utils.operate(point, '-', this.drag.offset);
         const dragPoint = new Point(result, tools); 
         return subtractDragOffset ? dragPoint : point;
     };
@@ -82,7 +82,7 @@ export class Vieport{
         ctx.save();
         ctx.translate(this.coordinatesCentre.x, this.coordinatesCentre.y);
         ctx.scale(1 / this.zoom, 1 / this.zoom);
-        const result  = operate(this.offset, '+', this.drag.offset)
+        const result  = utils.operate(this.offset, '+', this.drag.offset)
         const offset  = new Point(result);
         ctx.translate(offset.x, offset.y);        
     }

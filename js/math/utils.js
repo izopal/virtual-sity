@@ -1,4 +1,4 @@
-import data from '../constants.js';
+import {data} from '../constants.js';
 import {Point} from '../primitives/point.js';
 
 //функція дл пошуку всіх обєктів по знайдених ключах
@@ -11,11 +11,10 @@ export function getAllObj(){
   return allObj
 }
 
-
-const value = 'name'
-const keys = extractNames(data, value);
-
 // Функція для пошуку всіх значень ключів "name"
+const value = 'name'
+export const keys = extractNames(data, value);
+
 function extractNames(obj, value) {
   const keys = [];
 
@@ -28,8 +27,6 @@ function extractNames(obj, value) {
   findNames(obj);
   return keys;
 }
-
-
 
 // Функція пошуку  значення обєкта за вказаним ключем
 export  function findObjData(targetKey) {
@@ -51,8 +48,6 @@ export  function findObjData(targetKey) {
   return null;
 };
 
-
-
 // функція пошуку найближчої точки
 export function getNearestPoint(A, B, d = Number.MAX_SAFE_INTEGER){
   let minDicnance = Number.MAX_SAFE_INTEGER;                   // мінімальна відстань між точками
@@ -71,17 +66,19 @@ export function getNearestPoint(A, B, d = Number.MAX_SAFE_INTEGER){
 // 
 export function operate(p1, operator, p2) {
 
-  if (operator === '+')  return {x: p1.x + p2.x, y: p1.y + p2.y};
-  if (operator === '-')  return {x: p1.x - p2.x, y: p1.y - p2.y};
-  if (operator === '*')  return {x: p1.x * p2,   y: p1.y * p2};
-}
+  if (operator === '+')        return {x: p1.x + p2.x, y: p1.y + p2.y};
+  if (operator === '-')        return {x: p1.x - p2.x, y: p1.y - p2.y};
+  if (operator === '*')        return {x: p1.x * p2,   y: p1.y * p2};
+  if (operator === 'average')  return {x: (p1.x + p2.x) * .5, 
+                                       y: (p1.y + p2.y) * .5 } 
+};
 
+// 
 export function translateMetod(loc, angle, offset){
   const coordinates = {x: loc.x + Math.cos(angle) * offset,
                        y: loc.y + Math.sin(angle) * offset}
   return new Point(coordinates)
-}
-
+};
 
 // функція сортування oбєктів за вказаними інструментами
 export function sortObject(obj, tools, Objects){
@@ -91,6 +88,45 @@ export function sortObject(obj, tools, Objects){
           Objects[tool].push(obj);
       }
   };
+};
+
+
+// функція для визначення положення на прямій
+export function lerp(A, B, t){
+  return A + (B - A) * t
+};
+
+// функція визначення перетину двох прямих  за методом Крамера 
+export function getIntersection(A, B, C, D){
+  const tTop   = (D.x - C.x) * (A.y - C.y) - (D.y - C.y) * (A.x - C.x); 
+  const uTop   = (C.y - A.y) * (A.x - B.x) - (C.x - A.x) * (A.y - B.y); 
+  const bottom = (D.y - C.y) * (B.x - A.x) - (D.x - C.x) * (B.y - A.y);
+  
+  if(bottom !== 0){
+      const t = tTop / bottom;
+      const u = uTop / bottom;
+      if (t >= 0 && t <= 1 && u >= 0 && u <=1){
+          return {
+              x:      lerp(A.x, B.x, t),   
+              y:      lerp(A.y, B.y, t),
+              offset: t
+          }
+      }
+  }
+  return null;
+};
+
+// функція випадкового кольору
+export function getRandomColor() {
+  const red   = Math.floor(Math.random() * 256);     
+  const green = Math.floor(Math.random() * 256);  
+  const blue  = Math.floor(Math.random() * 256);
+  const alpha = Math.random() * .4 + .6;    
+  return `rgba(${red}, ${green}, ${blue}, ${alpha})`;      
+};
+
+// функція обмеження значень, щоб не вводити мінусові і більші за вказані нами  
+export function getValidValue(value, minValue = Number.NEGATIVE_INFINITY, maxValue = Number.POSITIVE_INFINITY) {
+  return Math.max(minValue, Math.min(maxValue, value));
 }
-export default keys;
 

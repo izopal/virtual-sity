@@ -1,30 +1,24 @@
 import {Envelope}  from './primitives/envelope.js';
-import {Polygon}  from './primitives/polygon.js';
+import {Polygon}   from './primitives/polygon.js';
 
 export class World{
-    constructor(graph){
-        this.graph = graph;
+    constructor(graph = {}){
+        this.graph          = graph;
         this.sortedSegments = this.graph.sortedSegments;
         this.sortedPoints   = this.graph.sortedPoints;
-        this.envelop  = new Envelope()
-        this.roads = [];
+        this.roads          = [];
+        this.roadBorders    = [];
         this.generateRoad();
-        
-        
     };
+
     generateRoad(){
-        this.segmentsRoad = this.sortedSegments.road || [];
         this.roads.length = 0;
-        for(const segment of this.segmentsRoad){
+        this.roadSegments = this.sortedSegments.road || [];
+        for(const segment of this.roadSegments){
             this.roads.push(new Envelope(segment))
         };
-        // console.log(this.roads)
         // перехрестя
-        // this.intersections = Polygon.break(
-        //     this.roads[0].road,
-        //     this.roads[1].road,
-        // )
-
+        this.roadBorders = Polygon.union(this.roads.map(road => road.segmentRoad));
     };
 
     removeRoad(point){
@@ -41,8 +35,10 @@ export class World{
     }
 
     draw(ctx){
-        for(const env of this.roads) env.draw(ctx);
-        // for(const int of this.intersections) int.draw(ctx);
+        for(const road of this.roads)                  road.draw(ctx,    {fill: '#BBB', stroke: '#BBB', lineWidth: 15});
+        for(const border of this.roadBorders)          border.draw(ctx,  {color: 'white', size: 2}); 
+        for(const segment of this.sortedSegments.road) segment.draw(ctx, {color: 'white', size: 1, globalAlpha: .8, dash: {active: true, line: 15, interval: 10}});
+        for(const point of this.sortedPoints.road)     point.draw(ctx,   {color: 'white', radius: 5, globalAlpha: 0.1});
     };
 
 }

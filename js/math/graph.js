@@ -1,4 +1,4 @@
-import {sortObject} from './utils.js'
+import * as utils from './utils.js';
 
 export class Graph{
     constructor(points   = [], sortedPoints = {}, segments = [], sortedSegments = {},){
@@ -9,13 +9,13 @@ export class Graph{
     };
     
     addPoint(point, tools){
-        sortObject(point, tools, this.sortedPoints)
+        utils.sortObject(point, tools, this.sortedPoints)
         this.points.push(point);
 
     };
     // Блок додавання сигменів 
     addSegment(line, tools){
-        sortObject(line, tools, this.sortedSegments);
+        utils.sortObject(line, tools, this.sortedSegments);
         this.segments.push(line);
     };
    
