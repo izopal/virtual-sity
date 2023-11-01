@@ -76,7 +76,7 @@ export class Vieport{
     };
 
     #inputTouchStart(e) {
-        console.log(e.touches[0])
+       
         if (e.touches.length === 2) {
            
             this.flag  = true;
@@ -84,11 +84,9 @@ export class Vieport{
         }
     };
     #inputTouchMove(e) {
-        console.log(e.touches[0])
         if (this.flag && e.touches.length === 2) {
-            
             this.currentDistance = this.#touchDistance(e);
-            const scale = this.currentDistance / this.startDistance;
+            const scale = this.startDistance / this.currentDistance  ;
             
             this.zoom *= scale;
             this.zoom = Math.max(this.minZoom, Math.min(this.maxZoom, this.zoom));
