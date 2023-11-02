@@ -9,11 +9,10 @@ export class World{
         this.config         = data.world || {};
         this.configRoad     = this.config.road;
 
-
         this.roads          = [];
         this.roadBorders    = [];
         this.buildings      = [];
-
+        
         this.generateRoad();
     };
     

@@ -38,7 +38,7 @@ export class GraphEditor {
         // підключаємо необхідні нам класи
         this.vieport       = new Vieport(canvas, saveInfo);
         this.graph         = !saveInfo ? new Graph() : this.#load(saveInfo);
-        this.world         = new World(this.graph);
+        this.world         = new World({...this.graph});
        
     };
 
@@ -116,13 +116,14 @@ export class GraphEditor {
         const isRemoveBtnLeft  = this.tools.remove  && e.buttons === 1;
     
         if (isPointBtnLeft || isRoadBtnLeft || isPolygonBtnLeft) {
-            this.point = this.vieport.getPoint(e, { ...this.tools }, this.activeTool, { subtractDragOffset: true });
+            this.point = this.vieport.getPoint(e, { ...this.tools }, { subtractDragOffset: true });
             if (this.activePoint) {
                 this.#addSegment(this.activePoint);
                 return;
             }
             this.graph.addPoint(this.point, { ...this.tools });
             this.#addSegment(this.point);
+            this.lastPoint = this.point;
         };
         // умова видалення точки
         if(isRemoveBtnLeft){
@@ -142,7 +143,7 @@ export class GraphEditor {
         const isDragingBtnLeft = this.tools.dragging && e.buttons === 1;
         const isRemoveBtnLeft  = this.tools.remove   && e.buttons === 1;
 
-        this.point       = this.vieport.getPoint(e, {...this.tools}, this.activeTool, {subtractDragOffset: true});
+        this.point       = this.vieport.getPoint(e, {...this.tools}, {subtractDragOffset: true});
         // умова використання інструменту curve
         if(isCurveBtnLeft){
             this.graph.addPoint(this.point, {...this.tools});
@@ -166,7 +167,7 @@ export class GraphEditor {
     };
 
     #addSegment(point){
-        const line       = new Segment(this.lastPoint, point, {...this.tools}, this.activeTool);
+        const line       = new Segment(this.lastPoint, point, {...this.tools});
         if(this.lastPoint) this.graph.addSegment(line, {...this.tools});          // додаємо лінію
         this.lastPoint   = point;
     }
