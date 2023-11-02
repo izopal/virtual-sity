@@ -4,6 +4,7 @@ import {Polygon}   from './polygon.js';
 
 export class Envelope{
     constructor(skeleton = {p1: 0, p2: 0}, roadData){
+        
         this.envelopData = data.primitives.envelope || {};
         
         this.skeleton    = skeleton;
@@ -11,7 +12,6 @@ export class Envelope{
         this.roadData   = roadData;
         this.width       = utils.getValidValue(this.roadData.width, 0);
         this.current     = utils.getValidValue(Math.floor(this.roadData.current), 1);
-      
       
         this.points =  [];
         
@@ -42,7 +42,6 @@ export class Envelope{
     draw(ctx, configuration){
         this.segmentRoad.draw(ctx, configuration);
         // this.segmentRoad.drawSegments(ctx);
-      
     };
 
 }

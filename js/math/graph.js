@@ -9,16 +9,16 @@ export class Graph{
     };
     
     addPoint(point, tools){
-        utils.sortObject(point, tools, this.sortedPoints)
+        this.sortedPoints = utils.sortObject(point, tools, this.sortedPoints)
         this.points.push(point);
 
     };
     // Блок додавання сигменів 
     addSegment(line, tools){
-        utils.sortObject(line, tools, this.sortedSegments);
+        this.sortedSegments = utils.sortObject(line, tools, this.sortedSegments);
         this.segments.push(line);
     };
-   
+    
     removePoint(point){
         const index = this.points.indexOf(point)  
         this.points.splice(index, 1)

@@ -88,6 +88,7 @@ export function sortObject(obj, tools, Objects){
           Objects[tool].push(obj);
       }
   };
+  return Objects
 };
 
 

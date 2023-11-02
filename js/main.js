@@ -18,9 +18,7 @@ const buttonSave         = document.getElementById('buttonSave');
 const buttonload         = document.getElementById('buttonload');
 
 
-window.addEventListener('load',  () => { 
-      animate(0);
-});
+
 
 let saveName   = '';
 let saveNames  = Object.keys(localStorage);  // отримуємо всі ключі з localStorage і поміщаємо їх в окремий масив;
@@ -214,3 +212,6 @@ function animate(){
       graphEditor.draw(ctx);
       requestAnimationFrame(animate);
 }
+window.addEventListener('load',  () => { 
+      animate(0);
+});
