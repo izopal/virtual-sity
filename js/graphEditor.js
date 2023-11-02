@@ -152,6 +152,7 @@ export class GraphEditor {
         // умови при натиску правої кнопки
         const isBtnRight  = this.tools.point        || 
                             this.tools.road         || 
+                            this.tools.building     ||
                             this.tools.city;
 
         if(isBtnRight && e.buttons   === 2) this.lastPoint = null;
@@ -212,7 +213,6 @@ export class GraphEditor {
             this.world.generateCity();
             this.OldGraphHash = this.graph.hash()
         }
-        // this.world.generate();
        
         const viewPoint = utils.operate(this.vieport.getOfFset(), '*', -1)
         this.world.draw(ctx, viewPoint, this.vieport.zoom);

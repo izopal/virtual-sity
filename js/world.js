@@ -27,13 +27,18 @@ export class World{
         // параметри класу Будинок
         this.building       = new Building();
         this.configBuilding = this.building.config;
-        this.buildings      = [];
+        this.buildings      = {};
+        // параметри класу City
+        this.buildingsCity      = [];
+        this.treesCity          = [];
+       
+
     };
 
     generateCity(){
         this.road.generate();
-        this.buildings = this.#generateBuilding();
-        this.trees     = this.#generateTrees(); 
+        this.buildingsCity = this.#generateBuilding();
+        this.treesCity     = this.#generateTrees(); 
     };
     #generateBuilding(){
         const citySegments = this.graph.sortedSegments.city || [];
@@ -90,14 +95,13 @@ export class World{
                 }
             }
         }
-        return bases
+        return bases.map(b => new Building(b))
     };
     #generateTrees() {
         // збираємо всі можливі полігони в один масив
-        const illegalPolys = [...this.buildings, ...this.road.layers.map(e => e.polygon )]
+        const illegalPolys = [...this.buildingsCity.map(b => b.base), ...this.road.layers.map(e => e.polygon )]
         // збираємо всі можливі точки в один масив
         const points       = [...illegalPolys.map(e => e.points).flat()];
-        
         // збираємо всі можливі сегменти в один масив
         const segments     = [...illegalPolys.map(e => e.segments).flat()];
         // створююємо обмежуючу рамку для полігону
@@ -129,7 +133,7 @@ export class World{
             if(overlap){
                 for(const tree of trees){
                     const distance       = utils.distance(p, tree.center);
-                    const sumOffRadius   = this.configTree.size;
+                    const sumOffRadius   = (1 - 1 / this.configTree.forestDensity) * this.configTree.forestDensity;
                     if (distance < sumOffRadius){
                         overlap = false;
                         break;
@@ -140,7 +144,7 @@ export class World{
             if(overlap){
                 let close = false;
                 for (const polygon of illegalPolys){
-                    if ( polygon.distanceToPoint(p) < this.configTree.size * this.configTree.numberRows){
+                    if ( polygon.distanceToPoint(p) < this.configTree.radius.max * this.configTree.numberRows){
                         close = true;
                         break;
                     }
@@ -161,6 +165,7 @@ export class World{
     draw(ctx, viewPoint, zoom){
         this.drawPolygon(ctx);
         this.drawRoad(ctx);
+        
         this.drawTree(ctx, viewPoint, zoom)
         this.drawBuilding(ctx, viewPoint)
         this.drawCity(ctx, viewPoint, zoom);
@@ -177,21 +182,25 @@ export class World{
     };
     drawTree(ctx, viewPoint, zoom){
         const treePoints = this.graph.sortedPoints.tree   || [];
-        const trees      = [...treePoints.map(point=> new Tree(point)).flat()];
-        for(const tree of trees) tree.draw(ctx, viewPoint, zoom)
+        this.trees      = [...treePoints.map(point=> new Tree(point)).flat()];
+        this.trees.sort((a, b) => b.base.distanceToPoint(viewPoint) - a.base.distanceToPoint(viewPoint))
+        for(const tree of this.trees) tree.draw(ctx, viewPoint, zoom)
     };
-    drawBuilding(ctx, viewPoint){
-        const buildingPoints = this.graph.sortedPoints.building   || [];
-        const buildings      = [...buildingPoints.map(point=> new Building(point)).flat()];
-        for(const building of buildings) building.draw(ctx, viewPoint)
+    drawBuilding(ctx, viewPoint, zoom){
+        // const buildingPoints = this.graph.sortedPoints.building   || [];
+        // const newPoint = utils.pointFrom3D(point, viewPoint, height);
+        // this.buildingsPolygon       =  new Polygon(buildingPoints, this.configBuilding) || {};
+        // this.buildings              = new Building(this.buildingsPolygon, this.configBuilding)
+        // console.log(this.buildings)
+        // this.buildings.draw(ctx, viewPoint, zoom)
     };
     
     drawCity(ctx, viewPoint, zoom){
         this.road = new Road(this.roadSegments,  this.roadPoints, 'city')
         this.road.draw(ctx)
-       
-        for(const tree of this.trees)            {tree.draw(ctx, viewPoint, zoom)}
-        for(const building of this.buildings )   {building.draw(ctx, this.configBuilding)};
+        this.items = [...this.buildingsCity, ...this.treesCity];
+        this.items.sort((a, b) => b.base.distanceToPoint(viewPoint) - a.base.distanceToPoint(viewPoint))
+        for(const item of this.items) {item.draw(ctx, viewPoint, zoom)}
     };
 
     remove(point){

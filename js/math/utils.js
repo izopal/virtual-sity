@@ -80,6 +80,13 @@ export function operate(p1, operator, p2) {
   if (operator === '-dot')       return p1.x * p2.x - p1.y * p2.y;
 };
 
+export function pointFrom3D(p1, p2, height){
+  const distanceVector = operate(p1, '-', p2);
+  const scaledVector   = operate(distanceVector, '*', height);
+  const point          = operate(p1, '+', scaledVector);
+  return point
+};
+
 export function normalize(p){
   return operate(p, "*", 1 / Math.hypot(p.x, p.y))
 }
