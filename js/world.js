@@ -1,13 +1,18 @@
+import {data}      from './constants.js';
 import {Envelope}  from './primitives/envelope.js';
 import {Polygon}   from './primitives/polygon.js';
 
 export class World{
     constructor(graph = {}){
         this.graph          = graph;
+        this.config         = data.world || {};
+
         this.sortedSegments = this.graph.sortedSegments;
         this.sortedPoints   = this.graph.sortedPoints;
+
         this.roads          = [];
         this.roadBorders    = [];
+        this.buildings      = [];
         this.generateRoad();
     };
 
@@ -15,13 +20,15 @@ export class World{
         this.roads.length = 0;
         this.roadSegments = this.sortedSegments.road || [];
         for(const segment of this.roadSegments){
-            this.roads.push(new Envelope(segment))
+            this.roads.push(new Envelope(segment, this.config.road))
         };
         // перехрестя
         this.roadBorders = Polygon.union(this.roads.map(road => road.segmentRoad));
     };
 
     removeRoad(point){
+        const index = this.sortedPoints.road.indexOf(point);  
+        this.sortedPoints.road.splice(index, 1);
         this.sortedSegments.road = this.sortedSegments.road.filter(segment => !segment.p1.equals(point) && !segment.p2.equals(point))
     };
     
@@ -35,10 +42,10 @@ export class World{
     }
 
     draw(ctx){
-        for(const road of this.roads)                  road.draw(ctx,    {fill: '#BBB', stroke: '#BBB', lineWidth: 15});
-        for(const border of this.roadBorders)          border.draw(ctx,  {color: 'white', size: 2}); 
-        for(const segment of this.sortedSegments.road) segment.draw(ctx, {color: 'white', size: 1, globalAlpha: .8, dash: {active: true, line: 15, interval: 10}});
-        for(const point of this.sortedPoints.road)     point.draw(ctx,   {color: 'white', radius: 5, globalAlpha: 0.1});
+        for(const road of this.roads)                  road.draw(ctx,    this.config.road);
+        for(const border of this.roadBorders)          border.draw(ctx,  this.config.road.border); 
+        for(const segment of this.sortedSegments.road) segment.draw(ctx, this.config.road.marking );
+        for(const point of this.sortedPoints.road)     point.draw(ctx,   this.config.road.point);
     };
 
 }

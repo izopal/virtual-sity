@@ -1,4 +1,5 @@
 import * as utils  from '../math/utils.js';
+import { data }    from '../constants.js';
 import { Point }   from './point.js';
 import { Segment } from './segment.js';
 
@@ -6,11 +7,11 @@ export class Polygon {
     constructor(points = []){
 
         // параметри полігону
-        const data  = utils.findObjData('polygon') || {};
-        this.width       = utils.getValidValue(data.width, 0);
-        this.colorFill   = data.colorFill;
-        this.colorStroke = data.colorStroke; 
-        this.globalAlpha = utils.getValidValue(data.globalAlpha, 0, 1); 
+        const polygon       = data.primitives.polygon || {};
+        this.width       = utils.getValidValue(polygon.width, 0);
+        this.colorFill   = polygon.colorFill;
+        this.colorStroke = polygon.colorStroke; 
+        this.globalAlpha = utils.getValidValue(polygon.globalAlpha, 0, 1); 
         
         this.segments = [];
         this.points = points;
@@ -99,9 +100,9 @@ export class Polygon {
     
     draw(ctx, configuration = {}){
         const {
-            fill      = '',
-            stroke    = '',
-            lineWidth = null,
+            fill         = '',
+            stroke       = '',
+            lineWidth    = null,
             globalAlpha  = 1,
 
         } = configuration;

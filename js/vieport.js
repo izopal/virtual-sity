@@ -1,12 +1,13 @@
 import * as utils  from './math/utils.js';
+import { data }    from './constants.js';
 import {Point}     from './primitives/point.js';
 
 
 export class Vieport{
     constructor(canvas){
         this.canvas       = canvas;
-        this.vieportData  = utils.findObjData('vieport')
-        this.scale        = this.vieportData.scale;
+        this.config       = data.vieport;
+        this.scale        = this.config.scale;
         this.zoom         = utils.getValidValue(this.scale.zoom, 0);
         this.step         = utils.getValidValue(this.scale.step, 0);
         this.minZoom      = utils.getValidValue(this.scale.min, 0);

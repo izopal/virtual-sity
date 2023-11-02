@@ -1,4 +1,5 @@
 import * as utils  from './math/utils.js';
+import { data }    from './constants.js';
 
 import {Graph}     from './math/graph.js';
 import {Vieport}   from './vieport.js';
@@ -13,12 +14,12 @@ const body               = document.body;
 export class GraphEditor {
     constructor(canvas, saveInfo){
         this.keys         = utils.keys;
-        this.data         = utils.findObjData('graphEditor');
+        this.config       = data.graphEditor;
         this.canvas       = canvas;
         console.table(this.keys);
         
-        this.minDicnance   = this.data.minDistance;                   
-        this.sizeRemove    = this.data.sizeRemove;
+        this.minDicnance   = this.config.minDistance;                   
+        this.sizeRemove    = this.config.sizeRemove;
         
         // парметр обєкта який обираємо
         this.point         = null;

@@ -1,10 +1,11 @@
+import { data } from '../constants.js';
 import * as utils from '../math/utils.js';
 
 export class Point {
     constructor(coordinates = { x: 0, y: 0 }, tools = {}) {
         this.x    = coordinates.x;
         this.y    = coordinates.y;
-        this.data = utils.findObjData('point') || {};
+        this.data = data.primitives.point || {};
 
         // параметри точки
         const point      = this.data.point

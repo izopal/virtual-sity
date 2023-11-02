@@ -1,16 +1,17 @@
 import * as utils  from '../math/utils.js';
+import { data }    from '../constants.js';
 import {Polygon}   from './polygon.js';
 
 export class Envelope{
-    constructor(skeleton = {p1: 0, p2: 0}){
-        this.envelopData = utils.findObjData('envelope');
+    constructor(skeleton = {p1: 0, p2: 0}, roadData){
+        this.envelopData = data.primitives.envelope || {};
         
         this.skeleton    = skeleton;
 
-        this.width       = utils.getValidValue(this.envelopData.width, 0);
-        this.current     = utils.getValidValue(Math.floor(this.envelopData.current), 1);
-        this.colorStroke = this.envelopData.colorStroke;
-        this.colorFill   = this.envelopData.colorFill;
+        this.roadData   = roadData;
+        this.width       = utils.getValidValue(this.roadData.width, 0);
+        this.current     = utils.getValidValue(Math.floor(this.roadData.current), 1);
+      
       
         this.points =  [];
         

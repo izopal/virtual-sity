@@ -1,20 +1,21 @@
 import * as utils from '../math/utils.js';
+import { data }   from '../constants.js';
 
 export class Segment{
     constructor(p1, p2, tools = {}){
-        this.data = utils.findObjData('segment');
+        this.segment = data.primitives.segment;
         this.p1 = p1;
         this.p2 = p2;
                 
 
         // параметри лінії 
-        const line = this.data.line;
+        const line = this.segment.line;
         this.color       = line.color;
         this.size        = utils.getValidValue(line.size, 0);
         this.globalAlpha = utils.getValidValue(line.globalAlpha, 0, 1);
 
         // параметри штрих-пунтирної лінії
-        const dash = this.data.dash;
+        const dash = this.segment.dash;
         this.dashColor       = dash.color;
         this.dashSize        = utils.getValidValue(dash.size, 0);
         this.dashLength      = utils.getValidValue(dash.length, 0);
@@ -25,7 +26,7 @@ export class Segment{
         this.tools  = tools;
         // параметри при вкл. інструменту ручка
         if(this.tools.curve){
-            const paint = this.data.paint
+            const paint = this.segment.paint
             this.color       = paint.color;    
             this.size        = utils.getValidValue(paint.size, 0);
             this.globalAlpha = utils.getValidValue(paint.globalAlpha, 0, 1);
@@ -57,7 +58,7 @@ export class Segment{
                 // малюємо штрихпунтрина лінія
                 if (dash.active){
                     dash.line       = dash.line || this.dashLength;
-                    dash.interval       = dash.interval || this.dashInterval;
+                    dash.interval   = dash.interval || this.dashInterval;
                     ctx.lineWidth   = size || this.dashSize;
                     ctx.strokeStyle = color || this.dashColor;
                     ctx.setLineDash([dash.line, dash.interval]);
