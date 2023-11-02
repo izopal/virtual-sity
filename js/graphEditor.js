@@ -30,7 +30,7 @@ export class GraphEditor {
         this.tools          = {dragging: false,        // параметри вкл.-викл. редактора (пересування точок)
                                remove:   false,        // параметр вкл.-викл резинки
                                curve:    false,        // парамет малювання кривої лінії
-                               point:    true,        // параметр малювання точки;
+                               point:    false,        // параметр малювання точки;
                                polygon:  false,        // параметр малювання полігону;
                                road:     false,        // параметр малювання дороги;
                             };
