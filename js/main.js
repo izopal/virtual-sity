@@ -11,7 +11,7 @@ const selectElement = document.getElementById('load');
 const input         = document.querySelector('.controls .input-wrapper input');
 const inputLine     = document.querySelector('.controls .input-wrapper .line');
 const iconClose     = document.querySelector('.controls .input-wrapper .icon.close');
-
+const buttons            = document.querySelectorAll('.button[data-tool]');
 const buttonTools        = document.querySelectorAll(`.button[data-tool]`);
 const buttonInputSave    = document.getElementById('buttonInputSave');
 const buttonSave         = document.getElementById('buttonSave');
@@ -19,6 +19,16 @@ const buttonload         = document.getElementById('buttonload');
 
 let saveName   = '';
 let saveNames  = Object.keys(localStorage);  // отримуємо всі ключі з localStorage і поміщаємо їх в окремий масив;
+
+let graphString = localStorage.getItem(`${saveName}`);
+let saveInfo    = graphString ? JSON.parse(graphString) : null;
+let graphEditor = new GraphEditor (canvas, saveInfo);
+
+function animate(){
+      graphEditor.draw(ctx);
+      requestAnimationFrame(animate);
+}
+animate(0);
 
 
 // фукція збереження нового graph при натисканні на кнопку
@@ -119,11 +129,9 @@ function populateSelect() {
       }
 }
 
-let graphString = localStorage.getItem(`${saveName}`);
-let saveInfo    = graphString ? JSON.parse(graphString) : null;
-let graphEditor = new GraphEditor (canvas, saveInfo);
 
-const buttons = document.querySelectorAll('.button[data-tool]');
+
+
 
 
 selectElement.addEventListener('change', function(e){
@@ -203,8 +211,3 @@ window.save = function() {
       }
 };
 
-function animate(){
-      graphEditor.draw(ctx);
-      requestAnimationFrame(animate);
-}
-animate(0);
