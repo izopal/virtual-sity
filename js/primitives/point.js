@@ -53,12 +53,14 @@ export class Point {
         this.activePointRadius     = this.radius * this.multiplierActiveRadius;
         this.lastPointRadius       = this.radius * this.multiplierLastRadius;
 
-        if (!this.tools.curve)                this.drawCircle(ctx, this.radius, this.color, {globalAlpha: this.globalAlpha});
-        if (lastPoint && !this.tools.curve)   this.drawCircle(ctx, this.lastPointRadius, this.lastPointColor, {lineWidth: this.lastPointWidth});
-        if (activePoint && !this.tools.curve) this.drawCircle(ctx, this.activePointRadius, this.activePointColor);
+        if (this.tools.point)                 this.drawCircle(ctx, this.radius, this.color);
+        if (this.tools.polygon)               this.drawCircle(ctx, this.radius, this.color);
+        if (this.tools.road)                  this.drawCircle(ctx, this.radius, this.color, this.globalAlpha)
+        if (lastPoint && !this.tools.curve)   this.drawCircle(ctx, this.lastPointRadius,    this.lastPointColor, {lineWidth: this.lastPointWidth});
+        if (activePoint && !this.tools.curve) this.drawCircle(ctx, this.activePointRadius,  this.activePointColor);
     }
 
-    drawCircle(ctx, radius, fillColor, {lineWidth = 0, globalAlpha = 1} = {}) {
+    drawCircle(ctx, radius, fillColor,  globalAlpha = 1, {lineWidth = 0} = {}) {
         ctx.save();
         ctx.globalAlpha = globalAlpha;
         ctx.beginPath();
