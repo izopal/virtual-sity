@@ -36,6 +36,10 @@ export const data =  {  graphEditor:   {name:                   'graphEditor',
                                         building:       {width:         150,
                                                         minLenght:      150,
                                                         spacing:        50,
+                                                        fill:           'yellow',
+                                                        stroke:         'yellow',
+                                                        lineWidth:       2,
+                                                        globalAlpha:     .4,
                                         }
                         },
 

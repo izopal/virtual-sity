@@ -3,22 +3,22 @@ import { data }    from '../constants.js';
 import {Polygon}   from './polygon.js';
 
 export class Envelope{
-    constructor(skeleton = {p1: 0, p2: 0}, roadData){
+    constructor(skeleton = {p1: 0, p2: 0}, dataConfig){
         
         this.envelopData = data.primitives.envelope || {};
         
         this.skeleton    = skeleton;
 
-        this.roadData   = roadData;
-        this.width       = utils.getValidValue(this.roadData.width, 0);
-        this.current     = utils.getValidValue(Math.floor(this.roadData.current), 1);
+        this.dataConfig  = dataConfig;
+        this.width       = utils.getValidValue(this.dataConfig.width, 0);
+        this.current     = utils.getValidValue(Math.floor(this.dataConfig.current), 1) || 1;
       
         this.points =  [];
         
-        this.segmentRoad        = this.#generateRoad();
+        this.polygon        = this.#generate();
     };
 
-    #generateRoad(){
+    #generate(){
         const {p1, p2} = this.skeleton;
         
         const radius = this.width * .5;
@@ -40,7 +40,7 @@ export class Envelope{
     };
 
     draw(ctx, configuration){
-        this.segmentRoad.draw(ctx, configuration);
+        this.polygon.draw(ctx, configuration);
         // this.segmentRoad.drawSegments(ctx);
     };
 

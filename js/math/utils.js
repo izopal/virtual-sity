@@ -66,12 +66,14 @@ export function getNearestPoint(A, B, d = Number.MAX_SAFE_INTEGER){
 // 
 export function operate(p1, operator, p2) {
 
-  if (operator === '+')        return {x: p1.x + p2.x, y: p1.y + p2.y};
-  if (operator === '-')        return {x: p1.x - p2.x, y: p1.y - p2.y};
-  if (operator === '*')        return {x: p1.x * p2,   y: p1.y * p2};
-  if (operator === 'average')  return {x: (p1.x + p2.x) * .5, 
-                                       y: (p1.y + p2.y) * .5 } 
+  if (operator === '+')         return {x: p1.x + p2.x, y: p1.y + p2.y};
+  if (operator === '-')         return {x: p1.x - p2.x, y: p1.y - p2.y};
+  if (operator === '*')         return {x: p1.x * p2,   y: p1.y * p2};
+  if (operator === 'average')   return {x: (p1.x + p2.x) * .5, 
+                                        y: (p1.y + p2.y) * .5 };
 };
+
+
 export function distance (a, b){
   const c =  operate(a, '-', b)
   return Math.hypot(c.x, c.y)
@@ -107,7 +109,8 @@ export function getIntersection(A, B, C, D){
   const uTop   = (C.y - A.y) * (A.x - B.x) - (C.x - A.x) * (A.y - B.y); 
   const bottom = (D.y - C.y) * (B.x - A.x) - (D.x - C.x) * (B.y - A.y);
   
-  if(bottom !== 0){
+  const eps = .0000001
+  if(Math.abs(bottom) > eps){
       const t = tTop / bottom;
       const u = uTop / bottom;
       if (t >= 0 && t <= 1 && u >= 0 && u <=1){

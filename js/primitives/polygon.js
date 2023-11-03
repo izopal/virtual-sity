@@ -42,14 +42,12 @@ export class Polygon {
     }
 
     static multiBreak (roads){
-        // console.log(roads)
         for(let i = 0; i < roads.length - 1; ++i){
             for(let j = i + 1; j < roads.length; ++j){
                 Polygon.break(roads[i], roads[j])
             }
         }
     }
-
 
     static break(road1 = {}, road2 = {}){
         const segments1    = road1.segments || [];
@@ -91,12 +89,14 @@ export class Polygon {
         return counter % 2 === 1;
     };
 
-    
-    // drawSegments(ctx){
-    //      for(const segment of this.segments){
-    //         segment.draw(ctx, {color: utils.getRandomColor(), size: 5})
-    //      }
-    // }
+    intersectsPoly(polygon){
+        for(let s1 of this.segments){
+            for(let s2 of polygon.segments){
+                if(utils.getIntersection(s1.p1, s1.p2, s2.p1, s2.p2)) return true
+            }
+        }
+        return false
+    }
     
     draw(ctx, configuration = {}){
         const {

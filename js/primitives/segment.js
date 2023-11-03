@@ -34,8 +34,14 @@ export class Segment{
     };
     length(){
         return utils.distance(this.p1, this.p2)
+    };
+
+    directionVector(){
+        const p          = utils.operate(this.p2, '-', this.p1);
+        const multiplier = 1 / Math.hypot(p.x, p.y);
+        return utils.operate(p, '*', multiplier)
     }
-    
+   
     draw(ctx, options = {}){
        
         const {

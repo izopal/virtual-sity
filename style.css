@@ -47,18 +47,17 @@ body{
 .controls button {
     display: flex;
     position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
+    /* left: 50%;
+    top: 50%; */
+    /* transform: translate(-50%, -50%); */
 }
 
 
 .button{
-    height: calc(var(--index) * 3);
-    width: calc(var(--index) * 3);
+    height: calc(var(--index) * 2);
+    width: calc(var(--index) * 2);
     /* розмір SVG */
-    line-height: calc(var(--index) * 3);
-    font-size: calc(calc(1vw + 1vh) * 2.125);
+    font-size: calc(calc(1vw + 1vh) * 1.325);
    
     margin-left: auto;
     background-color: transparent;
@@ -93,7 +92,7 @@ body{
 }
 .controls .input-wrapper input {
     display: none;
-    height: calc(var(--index) * 3);
+    height: calc(var(--index) * 2);
     width: calc(var(--index) * 13);
     margin-right: calc(var(--index) * .6);
     text-align: center;
