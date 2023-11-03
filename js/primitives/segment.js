@@ -32,7 +32,9 @@ export class Segment{
             this.globalAlpha = utils.getValidValue(paint.globalAlpha, 0, 1);
         };
     };
-    
+    length(){
+        return utils.distance(this.p1, this.p2)
+    }
     
     draw(ctx, options = {}){
        

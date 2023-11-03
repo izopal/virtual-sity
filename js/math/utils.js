@@ -72,6 +72,10 @@ export function operate(p1, operator, p2) {
   if (operator === 'average')  return {x: (p1.x + p2.x) * .5, 
                                        y: (p1.y + p2.y) * .5 } 
 };
+export function distance (a, b){
+  const c =  operate(a, '-', b)
+  return Math.hypot(c.x, c.y)
+}
 
 // 
 export function translateMetod(loc, angle, offset){

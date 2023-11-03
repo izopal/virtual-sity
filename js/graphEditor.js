@@ -33,6 +33,7 @@ export class GraphEditor {
                                point:    false,        // параметр малювання точки;
                                polygon:  false,        // параметр малювання полігону;
                                road:     false,        // параметр малювання дороги;
+                               city:     false,        // параметр малювання міста;
                             };
         this.#addEventListener(canvas);
         // підключаємо необхідні нам класи
@@ -116,11 +117,12 @@ export class GraphEditor {
     #inputMouseDown(e){
         // умлви при настику лівої кнопки
         const isPointBtnLeft   = this.tools.point   && e.buttons === 1;
-        const isRoadBtnLeft    = this.tools.road    && e.buttons === 1;
         const isPolygonBtnLeft = this.tools.polygon && e.buttons === 1;
+        const isRoadBtnLeft    = this.tools.road    && e.buttons === 1;
+        const isCityBtnLeft    = this.tools.city    && e.buttons === 1;
         const isRemoveBtnLeft  = this.tools.remove  && e.buttons === 1;
     
-        if (isPointBtnLeft || isRoadBtnLeft || isPolygonBtnLeft) {
+        if (isPointBtnLeft || isRoadBtnLeft || isPolygonBtnLeft || isCityBtnLeft) {
             this.point = this.vieport.getPoint(e, { ...this.tools }, { subtractDragOffset: true });
             if (this.activePoint) {
                 this.#addSegment(this.activePoint);
@@ -138,8 +140,9 @@ export class GraphEditor {
         // умови при натиску правої кнопки
         const isPointBtnRight  = this.tools.point && e.buttons   === 2;
         const isRoadBtnRight   = this.tools.road && e.buttons    === 2;
+        const isCityBtnRight   = this.tools.city && e.buttons    === 2;
 
-        if(isPointBtnRight || isRoadBtnRight) this.lastPoint = null;
+        if(isPointBtnRight || isRoadBtnRight || isCityBtnRight) this.lastPoint = null;
     };
 
     #inputMouseMove(e){
@@ -179,6 +182,7 @@ export class GraphEditor {
         this.graph.removePoint(point);
         this.graph.removeSegment(point);
         this.world.removeRoad(point);
+        this.world.removeCity(point);
         if (this.lastPoint === point) this.lastPoint = null;
         this.activePoint   = null;
     }
@@ -186,7 +190,7 @@ export class GraphEditor {
 
         this.vieport.draw(ctx);
         
-        this.world.generateRoad();
+        this.world.generate();
 
         this.world.draw(ctx);
         this.graph.draw(ctx);
