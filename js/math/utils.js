@@ -84,7 +84,7 @@ export function translateMetod(loc, angle, offset){
 export function sortObject(obj, tools, Objects){
   for (const tool in tools) {
       if (tools[tool]) {
-          if (!Objects[tool]) Objects[tool] = [];
+          Objects[tool] = Objects[tool] || [];
           Objects[tool].push(obj);
       }
   };

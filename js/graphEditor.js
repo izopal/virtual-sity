@@ -38,8 +38,8 @@ export class GraphEditor {
         // підключаємо необхідні нам класи
         this.vieport       = new Vieport(canvas, saveInfo);
         this.graph         = !saveInfo ? new Graph() : this.#load(saveInfo);
+      
         this.world         = new World({...this.graph});
-       
     };
 
     #load(saveInfo){
@@ -49,11 +49,16 @@ export class GraphEditor {
             points.find(point => point.equals(line.p1)),
             points.find(point => point.equals(line.p2)),
             line.tools));
-
-        const sortedPoints   = {};
-        for(const key in saveInfo.sortedPoints){
-            sortedPoints[key] = saveInfo.sortedPoints[key].map((point) => new Point(point, point.tools));
-        };
+            
+        const sortedPoints = {};
+        points.forEach((point) => {
+            for (const tool in point.tools) {
+                if (point.tools[tool]) {
+                    sortedPoints[tool] = sortedPoints[tool] || []
+                    sortedPoints[tool].push(point);
+                };
+            }
+        });
 
         const sortedSegments = {};
         for(const key in saveInfo.sortedSegments){
@@ -123,7 +128,6 @@ export class GraphEditor {
             }
             this.graph.addPoint(this.point, { ...this.tools });
             this.#addSegment(this.point);
-            this.lastPoint = this.point;
         };
         // умова видалення точки
         if(isRemoveBtnLeft){
@@ -146,8 +150,8 @@ export class GraphEditor {
         this.point       = this.vieport.getPoint(e, {...this.tools}, {subtractDragOffset: true});
         // умова використання інструменту curve
         if(isCurveBtnLeft){
-            this.graph.addPoint(this.point, {...this.tools});
             this.#addSegment(this.point);
+            this.graph.addPoint(this.point, {...this.tools});
         };
         // умова використання інструменту dragging
         if(isDragingBtnLeft && this.activePoint){
@@ -181,21 +185,18 @@ export class GraphEditor {
     draw(ctx){
 
         this.vieport.draw(ctx);
-        this.pointsPolygon = this.graph.sortedPoints.polygon || [];
-      
         
         this.world.generateRoad();
-        
+
         this.world.draw(ctx);
-        
         this.graph.draw(ctx);
 
-        new Polygon(this.pointsPolygon).draw(ctx)
+       
         // уомва малювання останьої вибраної точки (якщо виконується передаємо значення outline: true  )
         if(this.activePoint) this.activePoint.draw(ctx, {activePoint: true})
         
-        // уомва малювання останьої вибраної точки (якщо виконується передаємо значення outline: true  )
-        if(this.lastPoint && this.tools.point){
+        // умова малювання останьої вибраної точки (якщо виконується передаємо значення outline: true  )
+        if(this.lastPoint && !this.tools.curve){
             new Segment (this.lastPoint, this.point).draw(ctx, {dash: {active: true}});
             this.lastPoint.draw(ctx, {lastPoint: true})
         }

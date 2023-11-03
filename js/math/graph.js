@@ -4,6 +4,7 @@ export class Graph{
     constructor(points   = [], sortedPoints = {}, segments = [], sortedSegments = {},){
         this.points         = points;
         this.sortedPoints   = sortedPoints;
+       
         this.segments       = segments;
         this.sortedSegments = sortedSegments;
     };
@@ -31,10 +32,12 @@ export class Graph{
 
     draw(ctx){
         for(const seg of this.segments){
-            seg.draw(ctx);
-        };
-        for(const point of this.points){
-            point.draw(ctx);
+            if(seg.tools.point) {seg.draw(ctx)};
+            if(seg.tools.curve) {seg.draw(ctx)};
+        }
+
+        for(const point of this.points) {
+            if(point.tools.point) {point.draw(ctx)};
         };
     };
     removeAll(){

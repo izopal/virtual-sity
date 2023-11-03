@@ -39,28 +39,26 @@ export class Point {
     draw(ctx, options = {}) {
 
         const { 
+            color       = '',
+            radius      = NaN,
+            globalAlpha = NaN,
             lastPoint   = false, 
             activePoint = false, 
-            color       = '',
-            radius      = null,
-            globalAlpha = null,
         } = options
 
         this.color       = color        || this.color; 
         this.radius      = radius       || this.radius; 
         this.globalAlpha = globalAlpha  || this.globalAlpha; 
-
+    
         this.activePointRadius     = this.radius * this.multiplierActiveRadius;
         this.lastPointRadius       = this.radius * this.multiplierLastRadius;
 
-        if (this.tools.point)                 this.drawCircle(ctx, this.radius, this.color);
-        if (this.tools.polygon)               this.drawCircle(ctx, this.radius, this.color);
-        if (this.tools.road)                  this.drawCircle(ctx, this.radius, this.color, this.globalAlpha)
+        if (!this.tools.curve)                this.drawCircle(ctx, this.radius, this.color, this.globalAlpha);
         if (lastPoint && !this.tools.curve)   this.drawCircle(ctx, this.lastPointRadius,    this.lastPointColor, {lineWidth: this.lastPointWidth});
         if (activePoint && !this.tools.curve) this.drawCircle(ctx, this.activePointRadius,  this.activePointColor);
     }
 
-    drawCircle(ctx, radius, fillColor,  globalAlpha = 1, {lineWidth = 0} = {}) {
+    drawCircle(ctx, radius, color,  globalAlpha, {lineWidth = 0} = {}) {
         ctx.save();
         ctx.globalAlpha = globalAlpha;
         ctx.beginPath();
@@ -69,12 +67,12 @@ export class Point {
                     radius, 
                     0, 
                     Math.PI * 2);
-            ctx.fillStyle = fillColor;
+            ctx.fillStyle = color;
         ctx.fill();
         
         if (lineWidth > 0) {
             ctx.lineWidth   = lineWidth;
-            ctx.strokeStyle = fillColor;
+            ctx.strokeStyle = color;
             ctx.stroke();
         };
         ctx.restore();

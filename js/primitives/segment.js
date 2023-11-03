@@ -38,8 +38,8 @@ export class Segment{
        
         const {
             color       = '',
-            size        = null,
-            globalAlpha = 1,
+            size        = NaN,
+            globalAlpha = NaN,
             dash  = {
                 active:   false,
                 line:     this.dashLength,
@@ -50,7 +50,6 @@ export class Segment{
         this.color         = color        || this.color; 
         this.size          = size         || this.size; 
        
-        if(!this.tools.polygon ){
             ctx.save();
             ctx.globalAlpha = globalAlpha  || this.globalAlphal;
             ctx.beginPath();
@@ -73,17 +72,17 @@ export class Segment{
             
             ctx.stroke();
             ctx.setLineDash([]);
-    
+           
             ctx.beginPath();
-            ctx.arc(this.p2.x,
-                    this.p2.y,
-                    this.size * .5,
-                    0,
-                    Math.PI * 2);
-            ctx.fillStyle = this.color;
+                ctx.arc(this.p2.x,
+                        this.p2.y,
+                        this.size * .5,
+                        0,
+                        Math.PI * 2);
+                ctx.fillStyle = this.color;
             ctx.fill();
-
+            
             ctx.restore();
-        }
+      
     }
 }

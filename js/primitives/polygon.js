@@ -102,8 +102,8 @@ export class Polygon {
         const {
             fill         = '',
             stroke       = '',
-            lineWidth    = null,
-            globalAlpha  = 1,
+            lineWidth    = NaN,
+            globalAlpha  = NaN,
 
         } = configuration;
 
@@ -120,7 +120,6 @@ export class Polygon {
             ctx.lineWidth   = this.width;
             // малюємо лінію
             if (this.points.length > 0){
-
                 ctx.moveTo(this.points[0].x, this.points[0].y);
                 for(let i = 0; i < this.points.length; ++i){
                     ctx.lineTo(this.points[i].x, this.points[i].y);
