@@ -1,21 +1,12 @@
 import * as utils  from '../math/utils.js';
-import { data }    from '../constants.js';
 import { Point }   from './point.js';
 import { Segment } from './segment.js';
 
 export class Polygon {
     constructor(points = []){
-
-        // параметри полігону
-        const polygon       = data.primitives.polygon || {};
-        this.width       = utils.getValidValue(polygon.width, 0);
-        this.colorFill   = polygon.colorFill;
-        this.colorStroke = polygon.colorStroke; 
-        this.globalAlpha = utils.getValidValue(polygon.globalAlpha, 0, 1); 
-        
-        this.segments = [];
         this.points = points;
 
+        this.segments = [];
         for(let i = 1; i <= points.length; ++i){
             this.segments.push(new Segment(points[i - 1], points[i % points.length]))
         }
@@ -98,36 +89,30 @@ export class Polygon {
         return false
     }
     
-    draw(ctx, configuration = {}){
+    draw(ctx, options = {}){
         const {
-            fill         = '',
-            stroke       = '',
             lineWidth    = NaN,
+            fill         = '',
+            colorStroke  = '',
             globalAlpha  = NaN,
-
-        } = configuration;
-
-        this.colorFill   = fill        || this.colorFill; 
-        this.colorStroke = stroke      || this.colorStroke; 
-        this.width       = lineWidth   || this.width; 
-        this.globalAlpha = globalAlpha || this.globalAlpha; 
+        } = options;
 
         ctx.save();
-        ctx.globalAlpha = this.globalAlpha;
-        ctx.beginPath();
-            ctx.fillStyle   = this.colorFill;
-            ctx.strokeStyle = this.colorStroke;
-            ctx.lineWidth   = this.width;
-            // малюємо лінію
-            if (this.points.length > 0){
-                ctx.moveTo(this.points[0].x, this.points[0].y);
-                for(let i = 0; i < this.points.length; ++i){
-                    ctx.lineTo(this.points[i].x, this.points[i].y);
+            ctx.globalAlpha = globalAlpha;
+            ctx.beginPath();
+                ctx.fillStyle   = fill;
+                ctx.strokeStyle = colorStroke;
+                ctx.lineWidth   = lineWidth;
+                // малюємо лінію
+                if (this.points.length > 0){
+                    ctx.moveTo(this.points[0].x, this.points[0].y);
+                    for(let i = 0; i < this.points.length; ++i){
+                        ctx.lineTo(this.points[i].x, this.points[i].y);
+                    }
                 }
-            }
-        ctx.closePath();
-        ctx.stroke();
-        ctx.fill();
+            ctx.closePath();
+            ctx.stroke();
+            ctx.fill();
         ctx.restore();
     };
    

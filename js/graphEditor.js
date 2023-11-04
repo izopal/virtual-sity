@@ -5,7 +5,6 @@ import {Graph}     from './math/graph.js';
 import {Vieport}   from './vieport.js';
 import {Point}     from './primitives/point.js';
 import {Segment}   from './primitives/segment.js';
-import { Polygon } from './primitives/polygon.js';
 
 import {World}  from './world.js';
 
@@ -14,9 +13,13 @@ const body               = document.body;
 export class GraphEditor {
     constructor(canvas, saveInfo){
         this.keys         = utils.keys;
-        this.config       = data.graphEditor;
-        this.canvas       = canvas;
         console.table(this.keys);
+
+        this.canvas       = canvas;
+
+        this.config          = data.graphEditor;
+        this.configPoint    = data.primitives.point;
+        this.configSegment  = data.primitives.segment;
         
         this.minDicnance   = this.config.minDistance;                   
         this.sizeRemove    = this.config.sizeRemove;
@@ -41,6 +44,8 @@ export class GraphEditor {
         this.graph         = !saveInfo ? new Graph() : this.#load(saveInfo);
       
         this.world         = new World({...this.graph});
+
+        this.OldGraphHash  = this.graph.hash();    //параметри запуска малювання 
     };
 
     #load(saveInfo){
@@ -179,12 +184,8 @@ export class GraphEditor {
         this.lastPoint   = point;
     }
     #remove(point){
-        this.graph.removePoint(point);
-        this.graph.removeSegment(point);
-
-        this.world.removeRoad(point);
-        this.world.removeCity(point);
-        this.world.removePolygon(point);
+        this.graph.remove(point);
+        this.world.remove(point);
 
         if (this.lastPoint === point) this.lastPoint = null;
         this.activePoint   = null;
@@ -192,22 +193,24 @@ export class GraphEditor {
     draw(ctx){
 
         this.vieport.draw(ctx);
-        
-        this.world.generate();
+        // перевіряємо чи змінилися параметри this в класі Graph
+        if(this.OldGraphHash !== this.graph.hash()){
+            this.world.generate();
+            this.OldGraphHash = this.graph.hash()
+        }
 
         this.world.draw(ctx);
         this.graph.draw(ctx);
 
-       
-        // уомва малювання останьої вибраної точки (якщо виконується передаємо значення outline: true  )
-        if(this.activePoint) this.activePoint.draw(ctx, {activePoint: true})
+        if(this.activePoint) this.activePoint.draw(ctx, this.configPoint.lastPoint)
         
-        // умова малювання останьої вибраної точки (якщо виконується передаємо значення outline: true  )
-        if(this.lastPoint && !this.tools.curve){
-            new Segment (this.lastPoint, this.point).draw(ctx, {dash: {active: true}});
-            this.lastPoint.draw(ctx, {lastPoint: true})
+        if(this.lastPoint && this.tools.point){
+            this.lastPoint.draw(ctx, this.configPoint.lastPoint);
+            new Segment (this.lastPoint, this.point).draw(ctx, this.configSegment.dash);
         }
     };
+
+
     dispose(){
         this.world.removeAll();
         this.graph.removeAll();

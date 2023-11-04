@@ -41,7 +41,5 @@ export class Envelope{
 
     draw(ctx, configuration){
         this.polygon.draw(ctx, configuration);
-        // this.segmentRoad.drawSegments(ctx);
     };
-
 }

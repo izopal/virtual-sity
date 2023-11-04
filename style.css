@@ -23,6 +23,8 @@ body{
 #canvasMS{
     position: absolute;
     background-color: var(--backgroundColor);
+    width: 100vw;
+    height: 100vh;
     z-index: -1;
 }
 .controls{
@@ -57,7 +59,8 @@ body{
     height: calc(var(--index) * 2);
     width: calc(var(--index) * 2);
     /* розмір SVG */
-    font-size: calc(calc(1vw + 1vh) * 1.325);
+    font-size: calc(var(--index)* 1.325);
+   
    
     margin-left: auto;
     background-color: transparent;
@@ -128,7 +131,7 @@ body{
 .controls .input-wrapper .line {
     position: absolute;
     left: 0;
-    bottom: calc(var(--index) * .7);
+    bottom: calc(var(--index) * .225);
     width: calc(var(--index) * 13);
     height: 1px;
     border-radius: 5px;

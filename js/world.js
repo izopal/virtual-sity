@@ -1,6 +1,7 @@
 import {data}      from './constants.js';
 import * as utils  from './math/utils.js';
 import {Envelope}  from './primitives/envelope.js';
+import { Point } from './primitives/point.js';
 import {Polygon}   from './primitives/polygon.js';
 import { Segment } from './primitives/segment.js';
 
@@ -8,9 +9,10 @@ export class World{
     constructor(graph){
         this.graph          = graph;
        
-        this.config         = data.world || {};
+        this.config         = data.world            || {};
         this.configRoad     = this.config.road;
         this.configBuilding = this.config.building;
+        this.configTree     = this.config.tree;
 
         this.configPolygon  = data.primitives.polygon 
         
@@ -101,29 +103,36 @@ export class World{
     };
 
     #generateTrees(){
+        const trees = [];
+        const points = [
+            ...this.cityBorders.map(s => [s.p1, s.p2]).flat(),
+            ...this.buildings.map(b => b.points).flat()
+        ];
+        const left   = Math.min(...points.map(p => p.x));
+        const right  = Math.max(...points.map(p => p.x));
+        const bottom = Math.min(...points.map(p => p.y));
+        const top    = Math.max(...points.map(p => p.y));
 
+        while (trees.length < this.configTree.count) {
+            const coordinates = {
+                x: utils.lerp(left, right, Math.random()),
+                y: utils.lerp(bottom, top, Math.random()),
+            }
+            const p = new Point(coordinates);
+            trees.push(p);
+        };
+        return trees
     }
 
-    removePolygon(point){
-        if(point.tools.polygon){
-            this.graph.sortedPoints.polygon   = this.graph.sortedPoints.polygon.filter(p => !p.equals(point));
+    remove(point){
+        for(const key in point.tools){
+            if(point.tools[key]){
+                this.graph.sortedPoints[key]   = this.graph.sortedPoints[key].filter(p => !p.equals(point));
+                if (this.graph.sortedPoints[key].length === 1) this.graph.sortedPoints[key].pop();
+                this.graph.sortedSegments[key] = this.graph.sortedSegments[key].filter(segment => !segment.p1.equals(point) && !segment.p2.equals(point));
+            };
         }
     }
-    removeRoad(point){
-        if(point.tools.road){
-            this.graph.sortedPoints.road   = this.graph.sortedPoints.road.filter(p => !p.equals(point));
-            this.graph.sortedSegments.road = this.graph.sortedSegments.road.filter(segment => !segment.p1.equals(point) && !segment.p2.equals(point));
-        }
-    };
-
-    removeCity(point){
-        if(point.tools.city){
-            this.graph.sortedPoints.city   = this.graph.sortedPoints.city.filter(p => !p.equals(point));
-            this.graph.sortedSegments.city = this.graph.sortedSegments.city.filter(segment => !segment.p1.equals(point) && !segment.p2.equals(point))
-        }
-    }
-
-
     
     removeAll(){
         for(const key in  this.graph.sortedSegments){this.graph.sortedSegments[key] = []};
@@ -142,8 +151,8 @@ export class World{
         // console.log(roadSegments)
 
 
-        new Polygon(polygonPoints).draw(ctx)
-        for(const point    of polygonPoints )    {point.draw(ctx,   this.configPolygon)};
+        new Polygon(polygonPoints).draw(ctx, this.configPolygon.segment)
+        for(const point    of polygonPoints )    {point.draw(ctx,   this.configPolygon.point)};
 
         for(const road     of this.roads)        {road.draw(ctx,    this.configRoad)};
         for(const border   of this.roadBorders)  {border.draw(ctx,  this.configRoad.border)}; 
@@ -156,6 +165,7 @@ export class World{
         for(const segment  of citySegments)      {segment.draw(ctx, this.configRoad.marking)};
         for(const point    of cityPoints )       {point.draw(ctx,   this.configRoad.point)};
 
+        for(const tree of this.trees)             {tree.draw(ctx, this.configTree)}
         for(const building of this.buildings )    {building.draw(ctx, this.configBuilding)};
 
     };

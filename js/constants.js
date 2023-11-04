@@ -1,6 +1,6 @@
-const scale = (innerWidth + innerHeight) * .003;
-console.log(scale)
-export const data =  {  graphEditor:   {name:                   'graphEditor',
+
+import * as utils  from './math/utils.js';
+const parameters =   {  graphEditor:   {name:                   'graphEditor',
                                         class:                  'GraphEditor',
                                         minDistance:            10,
                                         sizeRemove:             30,
@@ -14,11 +14,11 @@ export const data =  {  graphEditor:   {name:                   'graphEditor',
                         },
                         world:         {name:           'world',
                                         class:          'World',
-                                        road:           {width:         50,
-                                                        current:        20,
-                                                        fill:           '#BBB',
-                                                        stroke:         '#BBB',
+                                        road:           {current:       20,
+                                                        width:          50,
                                                         lineWidth:      15,
+                                                        fill:           '#BBB',
+                                                        colorStroke:    '#BBB',
                                                         globalAlpha:    1,
                                                         border:         {size:         2,
                                                                         color:        'white',
@@ -26,22 +26,26 @@ export const data =  {  graphEditor:   {name:                   'graphEditor',
                                                         marking:        {size:         1,
                                                                         color:        'white',
                                                                         globalAlpha:  .8,
-                                                                        dash:   {active:   true,
-                                                                                line:     15,
-                                                                                interval: 10}},
-                                                        point:          {color:        'white', 
-                                                                        radius:        5, 
+                                                                        dash:{
+                                                                                length:   15,
+                                                                                interval: 10
+                                                                        }},
+                                                        point:          {radius:        5,
+                                                                        color:        'white', 
                                                                         globalAlpha:   .3},
                                         },
                                         building:       {width:         150,
                                                         minLenght:      150,
                                                         spacing:        50,
                                                         fill:           'yellow',
-                                                        stroke:         'red',
+                                                        colorStroke:    'red',
                                                         lineWidth:       6,
                                                         globalAlpha:     .4,
                                         },
-                                        tree:           {
+                                        tree:           {count:         10,
+                                                        radius:         40,
+                                                        color:          'green',
+                                                        globalAlpha:    1,
 
                                         },
                         },
@@ -51,40 +55,46 @@ export const data =  {  graphEditor:   {name:                   'graphEditor',
                                                 point:          {radius: 10,
                                                                  color: 'blue',
                                                                  globalAlpha: 1},
-                                                activePoint:    {radius: .8,
+                                                activePoint:    {radius: 8,
                                                                  color: 'yellow',
                                                                  globalAlpha: 1},
-                                                lastPoint:      {width: .2,
-                                                                 radius: .7,
+                                                lastPoint:      {width: 2,
+                                                                 radius: 7,
                                                                  color: 'yellow',
                                                                  globalAlpha: 1}
                                         },
                                         segment:{name:         'segment',
                                                  class:        'Segment',
-                                                 line:         {size:   4,
-                                                                color: 'red',
-                                                                globalAlpha: 1},
-                                                 paint:        {size:   2,
-                                                                color: 'yellow',
-                                                                globalAlpha: 1},
-                                                 dash:         {size:   1,
-                                                                color:  'green',
-                                                                length:  4,
-                                                                interval: 2,
-                                                                globalAlpha: 1}
+                                                 line:         {size:           4,
+                                                                color:          'red',
+                                                                globalAlpha:    1},
+                                                 curve:        {size:           2,
+                                                                color:          'yellow',
+                                                                globalAlpha:    1},
+                                                 dash:         {size:           1,
+                                                                color:          'green',
+                                                                globalAlpha:    1,
+                                                                dash:{
+                                                                        length:         4,
+                                                                        interval:       2,
+                                                                }}
                                         },
                                         polygon:{name:         'polygon',
-                                                 class:         'Polygon', 
-                                                 radius:        5,
-                                                 color:         'red',
-                                                 width:         2,
-                                                 colorFill:     'rgba(0, 0, 255, .3)',
-                                                 colorStroke:   'rgba(0, 0, 255, .3)',
-                                                 globalAlpha:   .4,
+                                                 class:         'Polygon',
+                                                 point:{
+                                                         radius:        5,
+                                                         color:         'red',
+                                                         globalAlpha:   .8,
+                                                 },
+                                                 segment: {
+                                                         lineWidth:     2,
+                                                         fill:          'red',
+                                                         colorStroke:   'yellow',
+                                                         globalAlpha:   .4,
+                                                 }
                                         },
                                         envelope:{name:          'envelope',
                                                   class:         'Envelope', 
-                                                  
                                                   colorFill:     '',
                                                   colorStroke:   '',
                                         },
@@ -92,3 +102,40 @@ export const data =  {  graphEditor:   {name:                   'graphEditor',
                         },
 };
  
+
+// Параметр масштабування розмірів взалежності від розмірів екрану
+const screenWidth = window.screen.width; // ширина екрану
+const screenHeight = window.screen.height; // висота екрану
+
+console.log(`Розміри екрану: ${screenWidth} x ${screenHeight}`);
+
+
+const windowWidth = document.documentElement.clientWidth;
+const windowHeight = document.documentElement.clientHeight;
+
+const devicePixelRatio = window.devicePixelRatio
+console.log(`розмір пікселів: ${devicePixelRatio}`)
+
+console.log(`Розміри вікна браузера: ${windowWidth} x ${windowHeight}`);
+
+
+
+
+const scale = ((screenWidth / 1280) + (screenHeight / 800)) * .5;
+
+// Параметри які будуть змінюватися взалежності від розмірів екрану
+const options = {
+        radius:         NaN,
+        width:          NaN,
+        size:           NaN,
+
+        lineWidth:      NaN,
+        length:         NaN,
+        interval:       NaN,
+   
+        minLenght:      NaN,
+        spacing:        NaN, 
+};
+
+export const data = utils.multiplyKeys(parameters, scale, options)
+console.log(data)

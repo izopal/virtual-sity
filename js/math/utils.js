@@ -137,4 +137,11 @@ export function getRandomColor() {
 export function getValidValue(value, minValue = Number.NEGATIVE_INFINITY, maxValue = Number.POSITIVE_INFINITY) {
   return Math.max(minValue, Math.min(maxValue, value));
 }
-
+// функція зміни значень ключів при масштабуванні (зміни розімірів екрану)
+export function multiplyKeys(obj, scale, options) {
+  for (const key in obj) {
+    if (key in options)               obj[key] *= scale; 
+    if (typeof obj[key] === 'object') multiplyKeys(obj[key], scale, options);
+  };
+  return obj
+}
