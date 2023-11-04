@@ -24,7 +24,7 @@ export class Segment{
             globalAlpha = NaN,
             dash  = {
                 size:       NaN,
-                length:       NaN,
+                length:     NaN,
                 interval:   NaN,
                 color:      '',
             },

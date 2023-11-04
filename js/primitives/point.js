@@ -17,6 +17,7 @@ export class Point {
             radius      = NaN,
             globalAlpha = NaN,
             lineWidth   = NaN,
+            colorStroke = '',
         } = options
 
         if (!this.tools.curve){
@@ -28,13 +29,15 @@ export class Point {
                         radius, 
                         0, 
                         Math.PI * 2);
-                ctx.fillStyle = color;
+                ctx.fillStyle =  color;
             ctx.fill();
             
             if (lineWidth > 0) {
                 ctx.lineWidth   = lineWidth;
-                ctx.strokeStyle = color;
+                ctx.strokeStyle = colorStroke;
+                ctx.fillStyle = '';
                 ctx.stroke();
+                // ctx.fill();
             };
             ctx.restore();
         }             

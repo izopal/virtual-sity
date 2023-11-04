@@ -202,7 +202,7 @@ export class GraphEditor {
         this.world.draw(ctx);
         this.graph.draw(ctx);
 
-        if(this.activePoint) this.activePoint.draw(ctx, this.configPoint.lastPoint)
+        if(this.activePoint) this.activePoint.draw(ctx, this.configPoint.activePoint)
         
         if(this.lastPoint && this.tools.point){
             this.lastPoint.draw(ctx, this.configPoint.lastPoint);

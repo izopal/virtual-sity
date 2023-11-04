@@ -140,34 +140,41 @@ export class World{
     }
 
     draw(ctx){
-        const polygonPoints   = this.graph.sortedPoints.polygon || [];
+       
 
-        const roadPoints      = this.graph.sortedPoints.road    || [];
-        const roadSegments    = this.graph.sortedSegments.road  || [];
+        this.drawPolygon(ctx)
+        this.drawCity(ctx);
+        this.drawRoad(ctx)
+       
 
-        const cityPoints      = this.graph.sortedPoints.city    || [];
-        const citySegments    = this.graph.sortedSegments.city  || [];
-        
-        // console.log(roadSegments)
-
-
-        new Polygon(polygonPoints).draw(ctx, this.configPolygon.segment)
-        for(const point    of polygonPoints )    {point.draw(ctx,   this.configPolygon.point)};
+    };
+    drawRoad(ctx, tool){
+        this.roadPoints      = this.graph.sortedPoints.road   || [];
+        this.roadDash       = this.graph.sortedSegments.road  || [];
 
         for(const road     of this.roads)        {road.draw(ctx,    this.configRoad)};
         for(const border   of this.roadBorders)  {border.draw(ctx,  this.configRoad.border)}; 
-        for(const segment  of roadSegments)      {segment.draw(ctx, this.configRoad.marking)};
-        for(const point    of roadPoints )       {point.draw(ctx,   this.configRoad.point)};
-        
+        for(const segment  of this.roadDash)     {segment.draw(ctx, this.configRoad.dash)};
+        for(const point    of this.roadPoints )  {point.draw(ctx,   this.configRoad.point)};
+    };
+    drawPolygon(ctx){
+        const polygonPoints   = this.graph.sortedPoints.polygon || [];
+        new Polygon(polygonPoints).draw(ctx, this.configPolygon.segment)
+        for(const point    of polygonPoints )    {point.draw(ctx,   this.configPolygon.point)};
+    }
+
+
+    drawCity(ctx){
+        this.cityPoints      = this.graph.sortedPoints.city    || [];
+        this.cityDash    = this.graph.sortedSegments.city  || [];
 
         for(const road     of this.cities)       {road.draw(ctx,    this.configRoad)};
         for(const border   of this.cityBorders)  {border.draw(ctx,  this.configRoad.border)}; 
-        for(const segment  of citySegments)      {segment.draw(ctx, this.configRoad.marking)};
-        for(const point    of cityPoints )       {point.draw(ctx,   this.configRoad.point)};
+        for(const segment  of this.cityDash)     {segment.draw(ctx, this.configRoad.dash)};
+        for(const point    of this.cityPoints )  {point.draw(ctx,   this.configRoad.point)};
 
-        for(const tree of this.trees)             {tree.draw(ctx, this.configTree)}
-        for(const building of this.buildings )    {building.draw(ctx, this.configBuilding)};
-
-    };
+        for(const tree of this.trees)            {tree.draw(ctx, this.configTree)}
+        for(const building of this.buildings )   {building.draw(ctx, this.configBuilding)};
+    }
 
 }

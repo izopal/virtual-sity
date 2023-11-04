@@ -23,12 +23,12 @@ const parameters =   {  graphEditor:   {name:                   'graphEditor',
                                                         border:         {size:         2,
                                                                         color:        'white',
                                                                         globalAlpha:  1},
-                                                        marking:        {size:         1,
-                                                                        color:        'white',
-                                                                        globalAlpha:  .8,
+                                                        dash:           {globalAlpha:  .8,
                                                                         dash:{
+                                                                                size:     1,
                                                                                 length:   15,
-                                                                                interval: 10
+                                                                                interval: 10,
+                                                                                color:    'white',
                                                                         }},
                                                         point:          {radius:        5,
                                                                         color:        'white', 
@@ -52,16 +52,17 @@ const parameters =   {  graphEditor:   {name:                   'graphEditor',
 
                         primitives:    {point: {name:           'point',
                                                 class:          'Point',
-                                                point:          {radius: 10,
-                                                                 color: 'blue',
-                                                                 globalAlpha: 1},
-                                                activePoint:    {radius: 8,
-                                                                 color: 'yellow',
-                                                                 globalAlpha: 1},
-                                                lastPoint:      {width: 2,
-                                                                 radius: 7,
-                                                                 color: 'yellow',
-                                                                 globalAlpha: 1}
+                                                point:          {radius:        10,
+                                                                 color:         'blue',
+                                                                 globalAlpha:   1},
+                                                activePoint:    {radius:        8,
+                                                                 color:         'yellow',
+                                                                 globalAlpha:   1},
+                                                lastPoint:      {radius:        6,
+                                                                 color:         'blue',
+                                                                 lineWidth:     2,
+                                                                 colorStroke:   'yellow',
+                                                                 globalAlpha:   1}
                                         },
                                         segment:{name:         'segment',
                                                  class:        'Segment',
@@ -71,12 +72,11 @@ const parameters =   {  graphEditor:   {name:                   'graphEditor',
                                                  curve:        {size:           2,
                                                                 color:          'yellow',
                                                                 globalAlpha:    1},
-                                                 dash:         {size:           1,
-                                                                color:          'green',
-                                                                globalAlpha:    1,
-                                                                dash:{
+                                                 dash:         {globalAlpha:    1,
+                                                                dash:{  size:           2,
                                                                         length:         4,
                                                                         interval:       2,
+                                                                        color:          'green',
                                                                 }}
                                         },
                                         polygon:{name:         'polygon',
@@ -117,7 +117,7 @@ console.log(`розмір пікселів: ${devicePixelRatio}`)
 
 
 
-const scale = Math.min((screenWidth / 1280), (screenHeight / 800)) * .5;
+const scale = Math.min((screenWidth / 1280), (screenHeight / 800)) * .75;
 console.log(scale)
 
 // Параметри які будуть змінюватися взалежності від розмірів екрану
