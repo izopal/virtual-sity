@@ -121,7 +121,8 @@ console.log(`Розміри вікна браузера: ${windowWidth} x ${wind
 
 
 
-const scale = ((screenWidth / 1280) + (screenHeight / 800)) * .5;
+const scale = Math.min((screenWidth / 1280), (screenHeight / 800));
+console.log(scale)
 
 // Параметри які будуть змінюватися взалежності від розмірів екрану
 const options = {
