@@ -8,9 +8,9 @@ const ctx = canvas.getContext('2d');
 
 
 const selectElement = document.getElementById('load');
-const input         = document.querySelector('.controls .input-wrapper input');
-const inputLine     = document.querySelector('.controls .input-wrapper .line');
-const iconClose     = document.querySelector('.controls .input-wrapper .icon.close');
+const input         = document.querySelector('.fail .input-wrapper input');
+const inputLine     = document.querySelector('.fail .input-wrapper .line');
+const iconClose     = document.querySelector('.fail .input-wrapper .icon.close');
 
 const buttonTools        = document.querySelectorAll(`.button[data-tool]`);
 const buttonInputSave    = document.getElementById('buttonInputSave');

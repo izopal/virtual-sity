@@ -106,22 +106,18 @@ const parameters =   {  graphEditor:   {name:                   'graphEditor',
 // Параметр масштабування розмірів взалежності від розмірів екрану
 const screenWidth = window.screen.width; // ширина екрану
 const screenHeight = window.screen.height; // висота екрану
-
 console.log(`Розміри екрану: ${screenWidth} x ${screenHeight}`);
-
 
 const windowWidth = document.documentElement.clientWidth;
 const windowHeight = document.documentElement.clientHeight;
+console.log(`Розміри вікна браузера: ${windowWidth} x ${windowHeight}`);
 
 const devicePixelRatio = window.devicePixelRatio
 console.log(`розмір пікселів: ${devicePixelRatio}`)
 
-console.log(`Розміри вікна браузера: ${windowWidth} x ${windowHeight}`);
 
 
-
-
-const scale = Math.min((screenWidth / 1280), (screenHeight / 800));
+const scale = Math.min((screenWidth / 1280), (screenHeight / 800)) * .5;
 console.log(scale)
 
 // Параметри які будуть змінюватися взалежності від розмірів екрану

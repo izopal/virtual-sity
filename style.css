@@ -13,56 +13,68 @@
 html{
     overscroll-behavior: none;
 }
-body{
-    overscroll-behavior-y: contain;
-    position: relative;
+body {
     display: flex;
+    max-height: 100vh;
+    max-width: 100vw;
+    overscroll-behavior-y: contain;
     overflow: hidden;
-  /* height: 100vh; */
 }
-#canvasMS{
+
+#canvasMS {
     position: absolute;
+    height: 100%;
+    width: 100%;
     background-color: var(--backgroundColor);
-    width: 100vw;
-    height: 100vh;
     z-index: -1;
 }
-.controls{
+
+.tools {
     position: absolute;
-    right: 0;
- 
-  
+    height: 100%;
+    left: 0;
+    top: 0;
+   
     display: flex;
     flex-direction: column;
-    gap: calc(var(--index) * .75);
+    gap: var(--index);
+    margin-left: var(--index);
     justify-content: center;
-    
-    height: 100vh;
-    padding-right: calc(var(--index) * 1.25);
-
-    transition: opacity .3s linear;
-     z-index: -1;
-    
-};
-
-
-.controls button {
-    display: flex;
+    z-index: 10;
+}
+.fail{
     position: absolute;
-    /* left: 50%;
-    top: 50%; */
-    /* transform: translate(-50%, -50%); */
+    height: 100%;
+    right: 0;
+    top: 0;
+    
+    display: flex;
+    flex-direction: column;
+    gap: var(--index);
+    margin-right: var(--index);
+    justify-content: center;
+    z-index: 10; 
+}
+.scale-bar {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    gap: var(--index);
+    margin-bottom: var(--index);
+    margin-right: var(--index);
+    justify-content: center;
+    z-index: 10;
 }
 
 
 .button{
     height: calc(var(--index) * 2);
     width: calc(var(--index) * 2);
+    margin-left: auto;
     /* розмір SVG */
     font-size: calc(var(--index)* 1.325);
    
-   
-    margin-left: auto;
     background-color: transparent;
     border: calc(var(--index) * .35) solid transparent;
     border-radius: .625rem;
@@ -89,11 +101,11 @@ body{
 /* =========================================================================> */
 
 
-.controls .input-wrapper{
+.fail .input-wrapper{
    display: flex;
    position: relative;
 }
-.controls .input-wrapper input {
+.fail .input-wrapper input {
     display: none;
     height: calc(var(--index) * 2);
     width: calc(var(--index) * 13);
@@ -128,7 +140,7 @@ body{
         opacity: 0;
     }
 } 
-.controls .input-wrapper .line {
+.fail .input-wrapper .line {
     position: absolute;
     left: 0;
     bottom: calc(var(--index) * .225);
@@ -144,7 +156,7 @@ body{
     transform: scaleX(0);
     transition: transform .5s;    
 }
-.controls .input-wrapper .icon.close {
+.fail .input-wrapper .icon.close {
     position: absolute;
     top: 0;
     left: 0;
@@ -153,7 +165,7 @@ body{
     transform: scale(0);
     transition: transform .5s linear; 
 }
-.controls .input-wrapper .icon.close .ionicon {
+.fail .input-wrapper .icon.close .ionicon {
     height: 100%;
     width: auto;
     stroke: var(--textColor);
@@ -161,8 +173,6 @@ body{
     filter: 
     drop-shadow(1px 1px 1px rgba(0, 0, 0, .65));
 }
-
-
 
 .load {
     display: flex;
