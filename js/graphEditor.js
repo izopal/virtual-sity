@@ -36,6 +36,7 @@ export class GraphEditor {
                                point:    false,        // параметр малювання точки;
                                polygon:  false,        // параметр малювання полігону;
                                road:     false,        // параметр малювання дороги;
+                               tree:     false,        // параметр малювання дерев;
                                city:     false,        // параметр малювання міста;
                             };
         this.#addEventListener(canvas);
@@ -124,10 +125,11 @@ export class GraphEditor {
         const isPointBtnLeft   = this.tools.point   && e.buttons === 1;
         const isPolygonBtnLeft = this.tools.polygon && e.buttons === 1;
         const isRoadBtnLeft    = this.tools.road    && e.buttons === 1;
+        const isTreeBtnLeft    = this.tools.tree    && e.buttons === 1;
         const isCityBtnLeft    = this.tools.city    && e.buttons === 1;
         const isRemoveBtnLeft  = this.tools.remove  && e.buttons === 1;
     
-        if (isPointBtnLeft || isRoadBtnLeft || isPolygonBtnLeft || isCityBtnLeft) {
+        if (isPointBtnLeft || isRoadBtnLeft || isPolygonBtnLeft || isCityBtnLeft || isTreeBtnLeft) {
             this.point = this.vieport.getPoint(e, { ...this.tools }, { subtractDragOffset: true });
             if (this.activePoint) {
                 this.#addSegment(this.activePoint);
@@ -145,9 +147,10 @@ export class GraphEditor {
         // умови при натиску правої кнопки
         const isPointBtnRight  = this.tools.point && e.buttons   === 2;
         const isRoadBtnRight   = this.tools.road && e.buttons    === 2;
+        const isTreeBtnRight   = this.tools.tree && e.buttons    === 2;
         const isCityBtnRight   = this.tools.city && e.buttons    === 2;
 
-        if(isPointBtnRight || isRoadBtnRight || isCityBtnRight) this.lastPoint = null;
+        if(isPointBtnRight || isRoadBtnRight || isCityBtnRight || isTreeBtnRight) this.lastPoint = null;
     };
 
     #inputMouseMove(e){
@@ -164,6 +167,7 @@ export class GraphEditor {
         // умова використання інструменту dragging
         if(isDragingBtnLeft && this.activePoint){
             this.activePoint.x = this.point.x;
+            console.log(this.point, this.activePoint)
             this.activePoint.y = this.point.y;
         }else{
             this.activePoint = utils.getNearestPoint(this.point, this.graph.points, this.minDicnance);
@@ -195,10 +199,10 @@ export class GraphEditor {
         this.vieport.draw(ctx);
         // перевіряємо чи змінилися параметри this в класі Graph
         if(this.OldGraphHash !== this.graph.hash()){
-            this.world.generate();
+            this.world.generateCity();
             this.OldGraphHash = this.graph.hash()
         }
-
+        this.world.generate();
         this.world.draw(ctx);
         this.graph.draw(ctx);
 

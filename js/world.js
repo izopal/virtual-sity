@@ -1,9 +1,10 @@
 import {data}      from './constants.js';
 import * as utils  from './math/utils.js';
-import {Envelope}  from './primitives/envelope.js';
-import { Point } from './primitives/point.js';
-import {Polygon}   from './primitives/polygon.js';
+import { Point }   from './primitives/point.js';
 import { Segment } from './primitives/segment.js';
+import {Polygon}   from './primitives/polygon.js';
+import {Envelope}  from './primitives/envelope.js';
+import {Tree}      from './items/tree.js';
 
 export class World{
     constructor(graph){
@@ -31,7 +32,6 @@ export class World{
     
     generate(){
         this.generateRoad();
-        this.generateCity();
     }
 
     generateCity(){
@@ -163,7 +163,7 @@ export class World{
             }
             // додаємо полігон (дерево) до масиву якщо всі попередні умови не виконалися;
             if (overlap){
-                trees.push(p);
+                trees.push(p || new Tree(p));
                 tryCount = 0
             };
             ++tryCount;
