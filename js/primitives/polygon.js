@@ -31,7 +31,7 @@ export class Polygon {
         };
         return keptSegments;
     }
-
+    // функція запуску break для більше чим два полігона
     static multiBreak (roads){
         for(let i = 0; i < roads.length - 1; ++i){
             for(let j = i + 1; j < roads.length; ++j){
@@ -39,7 +39,7 @@ export class Polygon {
             }
         }
     }
-
+    // функція переривання двох полігонів в місцях перехрестя 
     static break(road1 = {}, road2 = {}){
         const segments1    = road1.segments || [];
         const segments2    = road2.segments || [];
@@ -68,7 +68,7 @@ export class Polygon {
         const midpoint = new Point(coordinates);
         return this.containsPoint(midpoint);
     };
-
+    //  функція визначення чи точка всередині полігона чи ні (якщо counter непарний вона всередині(перехрестя відбулося тільки з одніє із сторін полігона) )
     containsPoint(point){
         const coordinatesOuterPoint = { x: -10000, y: -10000 };
         const outerPoint = new Point(coordinatesOuterPoint);
@@ -89,6 +89,13 @@ export class Polygon {
         return false
     }
     
+    distanceToPoint(point){
+        return Math.min(...this.segments.map((s) => s.distanceToPoint(point)))
+    };
+    distanceToPolygon(polygon){
+        return Math.min(...this.points.map(p => polygon.distanceToPoint(p)));
+    }
+
     draw(ctx, options = {}){
         const {
             lineWidth    = NaN,

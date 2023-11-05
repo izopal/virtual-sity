@@ -15,6 +15,30 @@ export class Segment{
         const p          = utils.operate(this.p2, '-', this.p1);
         const multiplier = 1 / Math.hypot(p.x, p.y);
         return utils.operate(p, '*', multiplier)
+    };
+
+    
+    distanceToPoint(point){
+        const proj = this.projectPoint(point);
+        if(proj.offset > 0 && proj.offset < 1){
+            return utils.distance(point, proj.point)
+        };
+        const distanceToP1 = utils.distance(point, this.p1);
+        const distanceToP2 = utils.distance(point, this.p2);
+        return Math.min(distanceToP1, distanceToP2);
+    }
+
+    projectPoint(point){
+        const a      = utils.operate  (point,   '-',    this.p1);
+        const b      = utils.operate  (this.p2, '-',    this.p1);
+        const normB  = utils.normalize(b);
+        const scaler = utils.operate  (a,       '+dot', normB);
+        const p2     = utils.operate  (normB,    '*',   scaler);
+        const proj = {
+            point:  utils.operate(this.p1, '+', p2),
+            offset: scaler / Math.hypot(b.x, b.y)
+        };
+        return proj
     }
    
     draw(ctx, options = {}){

@@ -1,5 +1,7 @@
+import * as utils  from '../math/utils.js';
 export class Point {
     constructor(coordinates = { x: 0, y: 0 }, tools = {}) {
+        this.coordinates = coordinates;
         this.x    = coordinates.x;
         this.y    = coordinates.y;
 
@@ -9,6 +11,24 @@ export class Point {
 
     equals(point) {
         return this.x === point.x && this.y === point.y;
+    };
+    // // функція визначення відстанні від точки до сегменту
+    distanceToSegment(p1, p2) {
+        const v1  = utils.operate(this.coordinates, '-', p1);
+        const v2  = utils.operate(p2, '-', p1);
+        const dotPlus  = utils.operate(v1, '+dot', v2);
+        const dotMinus = utils.operate(v1, '-dot', v2);
+        
+        const lengthV1 = Math.hypot(v1.x, v1.y);
+        const lengthV2 = Math.hypot(v2.x, v2.y);
+
+
+        
+
+        if (dotPlus <= 0)                    return lengthV1;
+        if (dotPlus >= lengthV2 * lengthV2)  return lengthV2;
+
+        return 2 * Math.abs(dotMinus) / lengthV2;
     }
 
     draw(ctx, options = {}) {

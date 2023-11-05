@@ -22,6 +22,7 @@ export class World{
 
         this.cities         = [];
         this.cityBorders    = [];
+
         this.buildings      = [];
         this.trees          = [];
         
@@ -90,10 +91,14 @@ export class World{
         const bases = [];
         // додаємо полігони
         for(const segment of supports) bases.push(new Envelope(segment, this.configBuilding).polygon)
+        
         // видаляємо будівлі якщо вони пересікаються
+        const eps = .00001;
         for(let i = 0; i < bases.length - 1; ++i){   
             for(let j = i + 1; j < bases.length; ++j){
-                if(bases[i].intersectsPoly(bases[j])){
+                if( bases[i].intersectsPoly(bases[j]) ||
+                    bases[i].distanceToPolygon(bases[j]) < this.configBuilding.spacing - eps
+                ){
                     bases.splice(j, 1);
                     --j;
                 }
@@ -102,27 +107,71 @@ export class World{
         return bases
     };
 
-    #generateTrees(){
-        const trees = [];
-        const points = [
-            ...this.cityBorders.map(s => [s.p1, s.p2]).flat(),
-            ...this.buildings.map(b => b.points).flat()
-        ];
+    #generateTrees() {
+        // збираємо всі можливі полігони в один масив
+        const illegalPolys = [...this.buildings, ...this.cities.map(e => e.polygon)]
+        // збираємо всі можливі точки в один масив
+        const points       = [...illegalPolys.map(e => e.points).flat()];
+        // збираємо всі можливі сегменти в один масив
+        const segments     = [...illegalPolys.map(e => e.segments).flat()];
+        // створююємо обмежуючу рамку для полігону
         const left   = Math.min(...points.map(p => p.x));
         const right  = Math.max(...points.map(p => p.x));
         const bottom = Math.min(...points.map(p => p.y));
         const top    = Math.max(...points.map(p => p.y));
-
-        while (trees.length < this.configTree.count) {
+    
+        const trees = [];
+        let tryCount = 0;
+        let attempts = 0;
+        while (tryCount < this.configTree.count && attempts < 500) {
+            // формуємо полігон з обмежувальную рамкою
             const coordinates = {
                 x: utils.lerp(left, right, Math.random()),
                 y: utils.lerp(bottom, top, Math.random()),
-            }
+            };
             const p = new Point(coordinates);
-            trees.push(p);
-        };
-        return trees
+
+            let overlap = true;
+            // // перевіряємо чи знаходиться точка p всередині полігонів або на відстані меншій за вказану
+            for (const polygon of illegalPolys){
+                if (polygon.containsPoint(p) || polygon.distanceToPoint(p) < this.configTree.radius + this.configTree.spacing){
+                    overlap = false;
+                    break
+                };
+            }
+            // перевіряємо чи знаходяться дерева на заданій відстані між собою
+            if(overlap){
+                for(const tree of trees){
+                    const distance       = utils.distance(p, tree);
+                    const sumOffRadius   = this.configTree.radius * 2;
+                    if (distance < sumOffRadius){
+                        overlap = false;
+                        break;
+                    };
+                }
+            };
+            // умова щоб кількість рядів дерев неперевищував вказаній довжині
+            if(overlap){
+                let close = false;
+                for (const polygon of illegalPolys){
+                    if ( polygon.distanceToPoint(p) < this.configTree.radius * this.configTree.numberRows){
+                        close = true;
+                        break;
+                    }
+                }
+                overlap = close;
+            }
+            // додаємо полігон (дерево) до масиву якщо всі попередні умови не виконалися;
+            if (overlap){
+                trees.push(p);
+                tryCount = 0
+            };
+            ++tryCount;
+            ++attempts;
+        }
+        return trees;
     }
+    
 
     remove(point){
         for(const key in point.tools){
