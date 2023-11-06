@@ -25,6 +25,10 @@ export class Vieport{
                        end:    this.point,
                        offset: this.point,
                        active: false};
+
+        this.touchInProgress = false;
+        this.touchStartTime  = '';
+        this.touchEndTime    = '';
     
         this.#addEventListener();
     };
@@ -83,9 +87,6 @@ export class Vieport{
             this.zoom = Math.max(this.minZoom, Math.min(this.maxZoom, this.zoom));
     
             this.startDistance = this.currentDistance;
-    
-            // Викликаємо метод для відображення зуму на канвасі
-            this.draw(this.canvas.getContext('2d'));
         }
     }   
     #inputTouchEnd(e) {
