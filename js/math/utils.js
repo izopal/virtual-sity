@@ -107,6 +107,13 @@ export function sortObject(obj, tools, Objects){
 export function lerp(A, B, t){
   return A + (B - A) * t
 };
+export function lerp2D(A, B, t){
+  const coordinates = {
+    x: lerp(A.x, B.x, t),
+    y: lerp(A.y, B.y, t)
+  }
+  return new Point(coordinates)
+}
 
 // функція визначення перетину двох прямих  за методом Крамера 
 export function getIntersection(A, B, C, D){
@@ -145,8 +152,11 @@ export function getValidValue(value, minValue = Number.NEGATIVE_INFINITY, maxVal
 // функція зміни значень ключів при масштабуванні (зміни розімірів екрану)
 export function multiplyKeys(obj, scale, options) {
   for (const key in obj) {
-    if (key in options)               obj[key] *= scale; 
-    if (typeof obj[key] === 'object') multiplyKeys(obj[key], scale, options);
+    if (typeof obj[key] === 'object') {
+      multiplyKeys(obj[key], scale, options)
+    }else{
+      if (key in options)               obj[key] *= scale; 
+    }
   };
   return obj
 }

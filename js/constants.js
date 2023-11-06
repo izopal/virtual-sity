@@ -4,7 +4,13 @@ const parameters =   {  graphEditor:   {name:                   'graphEditor',
                                         class:                  'GraphEditor',
                                         minDistance:            10,
                                         sizeRemove:             30,
-                        },     
+                                },     
+                        debug:          {state:         false,
+                                        fill:           'red',
+                                        colorStroke:    'red',
+                                        lineWidth:       6,
+                                        globalAlpha:     .4
+                        },
                         vieport:       {name:                   'vieport',
                                         class:                  'Vieport',
                                         scale: {zoom:           1,
@@ -35,6 +41,8 @@ const parameters =   {  graphEditor:   {name:                   'graphEditor',
                                                                         globalAlpha:   .3},
                                         },
                                         building:       {width:         150,
+                                                        coefficient:    .15,   //коефіцієнт висоти 
+
                                                         minLenght:      150,
                                                         spacing:        50,
                                                         fill:           'yellow',
@@ -43,12 +51,19 @@ const parameters =   {  graphEditor:   {name:                   'graphEditor',
                                                         globalAlpha:     .4,
                                         },
                                         tree:           {count:         100,
-                                                        radius:         40,
+                                                        radius:         {
+                                                                max: 40,
+                                                                min: 5
+                                                        },
+                                                        coefficient:    .25,
+                                                        levelCount:     10,
+                                                        typOfTree:      36,
+
+                                                        size:           80,
                                                         spacing:        25,
                                                         numberRows:     5,
                                                         color:          'green',
                                                         globalAlpha:    1,
-
                                         },
                         },
 
@@ -128,12 +143,17 @@ const options = {
         width:          NaN,
         size:           NaN,
 
+        max:            NaN,
+        min:            NaN,
+
         lineWidth:      NaN,
         length:         NaN,
         interval:       NaN,
    
         minLenght:      NaN,
         spacing:        NaN, 
+
+        coefficient:    NaN,
 };
 
 export const data = utils.multiplyKeys(parameters, scale, options)

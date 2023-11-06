@@ -76,6 +76,11 @@ export class Vieport{
         const dragPoint = new Point(result, tools); 
         return subtractDragOffset ? dragPoint : point;
     };
+    // повертає значення зміщення
+    getOfFset(){
+        const result  = utils.operate(this.offset, '+', this.drag.offset)
+        return  new Point(result)
+    }
 
     draw(ctx){
         ctx.restore();
@@ -83,8 +88,8 @@ export class Vieport{
         ctx.save();
         ctx.translate(this.coordinatesCentre.x, this.coordinatesCentre.y);
         ctx.scale(1 / this.zoom, 1 / this.zoom);
-        const result  = utils.operate(this.offset, '+', this.drag.offset)
-        const offset  = new Point(result);
+
+        const offset  = this.getOfFset();
         ctx.translate(offset.x, offset.y);        
     }
 }

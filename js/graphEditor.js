@@ -17,7 +17,7 @@ export class GraphEditor {
 
         this.canvas       = canvas;
 
-        this.config          = data.graphEditor;
+        this.config         = data.graphEditor;
         this.configPoint    = data.primitives.point;
         this.configSegment  = data.primitives.segment;
         
@@ -28,7 +28,7 @@ export class GraphEditor {
         this.point         = null;
         this.lastPoint     = null;
         this.activePoint   = null;
-
+        
         // параметри інструментів графічного редагування  
         this.tools          = {dragging: false,        // параметри вкл.-викл. редактора (пересування точок)
                                remove:   false,        // параметр вкл.-викл резинки
@@ -37,6 +37,7 @@ export class GraphEditor {
                                polygon:  false,        // параметр малювання полігону;
                                road:     false,        // параметр малювання дороги;
                                tree:     false,        // параметр малювання дерев;
+                               building: false,        // параметр малювання будинків;
                                city:     false,        // параметр малювання міста;
                             };
         this.#addEventListener(canvas);
@@ -47,6 +48,7 @@ export class GraphEditor {
         this.world         = new World({...this.graph});
 
         this.OldGraphHash  = this.graph.hash();    //параметри запуска малювання 
+        this.counter = 0
     };
 
     #load(saveInfo){
@@ -116,20 +118,23 @@ export class GraphEditor {
         if(['R', 'r', 'К', 'к'].includes(e.key)) this.setTool('remove');
         if(['D', 'd', 'В', 'в'].includes(e.key)) this.setTool('dragging');
         if(['C', 'c', 'С', 'с'].includes(e.key)) this.setTool('curve');
+        if(['D', 'd', 'В', 'в'].includes(e.key)) data.debug.state = !data.debug.state;
         if(['=', '+'].includes(e.key)) zoom('plus');
         if(['-', '_'].includes(e.key)) zoom('minus');
         if(e.key === 'Escape') this.lastPoint = null;
     };
     #inputMouseDown(e){
         // умлви при настику лівої кнопки
-        const isPointBtnLeft   = this.tools.point   && e.buttons === 1;
-        const isPolygonBtnLeft = this.tools.polygon && e.buttons === 1;
-        const isRoadBtnLeft    = this.tools.road    && e.buttons === 1;
-        const isTreeBtnLeft    = this.tools.tree    && e.buttons === 1;
-        const isCityBtnLeft    = this.tools.city    && e.buttons === 1;
+        const isBtnLeft   = this.tools.point        || 
+                            this.tools.polygon      || 
+                            this.tools.road         || 
+                            this.tools.tree         || 
+                            this.tools.building     ||
+                            this.tools.city;
+        
         const isRemoveBtnLeft  = this.tools.remove  && e.buttons === 1;
     
-        if (isPointBtnLeft || isRoadBtnLeft || isPolygonBtnLeft || isCityBtnLeft || isTreeBtnLeft) {
+        if (isBtnLeft && e.buttons === 1) {
             this.point = this.vieport.getPoint(e, { ...this.tools }, { subtractDragOffset: true });
             if (this.activePoint) {
                 this.#addSegment(this.activePoint);
@@ -145,16 +150,16 @@ export class GraphEditor {
         };
         
         // умови при натиску правої кнопки
-        const isPointBtnRight  = this.tools.point && e.buttons   === 2;
-        const isRoadBtnRight   = this.tools.road && e.buttons    === 2;
-        const isTreeBtnRight   = this.tools.tree && e.buttons    === 2;
-        const isCityBtnRight   = this.tools.city && e.buttons    === 2;
+        const isBtnRight  = this.tools.point        || 
+                            this.tools.road         || 
+                            this.tools.city;
 
-        if(isPointBtnRight || isRoadBtnRight || isCityBtnRight || isTreeBtnRight) this.lastPoint = null;
+        if(isBtnRight && e.buttons   === 2) this.lastPoint = null;
     };
 
     #inputMouseMove(e){
         const isCurveBtnLeft   = this.tools.curve    && e.buttons === 1;
+        const isTreeBtnLeft    = this.tools.tree     && e.buttons === 1;
         const isDragingBtnLeft = this.tools.dragging && e.buttons === 1;
         const isRemoveBtnLeft  = this.tools.remove   && e.buttons === 1;
 
@@ -164,6 +169,12 @@ export class GraphEditor {
             this.#addSegment(this.point);
             this.graph.addPoint(this.point, {...this.tools});
         };
+        // умова використання інструменту tree
+        if(isTreeBtnLeft && this.counter % 20 === 0){
+            this.graph.addPoint(this.point, {...this.tools});
+        }
+        ++this.counter;
+        
         // умова використання інструменту dragging
         if(isDragingBtnLeft && this.activePoint){
             this.activePoint.x = this.point.x;
@@ -195,7 +206,6 @@ export class GraphEditor {
         this.activePoint   = null;
     }
     draw(ctx){
-
         this.vieport.draw(ctx);
         // перевіряємо чи змінилися параметри this в класі Graph
         if(this.OldGraphHash !== this.graph.hash()){
@@ -203,7 +213,9 @@ export class GraphEditor {
             this.OldGraphHash = this.graph.hash()
         }
         this.world.generate();
-        this.world.draw(ctx);
+
+        const viewPoint = utils.operate(this.vieport.getOfFset(), '*', -1)
+        this.world.draw(ctx, viewPoint);
         this.graph.draw(ctx);
 
         if(this.activePoint) this.activePoint.draw(ctx, this.configPoint.activePoint)

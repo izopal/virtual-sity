@@ -5,6 +5,7 @@ import { Segment } from './primitives/segment.js';
 import {Polygon}   from './primitives/polygon.js';
 import {Envelope}  from './primitives/envelope.js';
 import {Tree}      from './items/tree.js';
+import {Building}  from './items/building.js';
 
 export class World{
     constructor(graph){
@@ -13,18 +14,21 @@ export class World{
         this.config         = data.world            || {};
         this.configRoad     = this.config.road;
         this.configBuilding = this.config.building;
-        this.configTree     = this.config.tree;
-
+        
         this.configPolygon  = data.primitives.polygon 
         
         this.polygons       = [];
         this.roads          = [];
         this.roadBorders    = [];
-
+        
         this.cities         = [];
         this.cityBorders    = [];
-
+        
         this.buildings      = [];
+        
+        // параметри класу Tree
+        this.tree           = new Tree();
+        this.configTree     = this.tree.config;
         this.trees          = [];
         
         this.generate()
@@ -134,7 +138,7 @@ export class World{
             let overlap = true;
             // // перевіряємо чи знаходиться точка p всередині полігонів або на відстані меншій за вказану
             for (const polygon of illegalPolys){
-                if (polygon.containsPoint(p) || polygon.distanceToPoint(p) < this.configTree.radius + this.configTree.spacing){
+                if (polygon.containsPoint(p) || polygon.distanceToPoint(p) < this.configTree.size + this.configTree.spacing){
                     overlap = false;
                     break
                 };
@@ -142,19 +146,19 @@ export class World{
             // перевіряємо чи знаходяться дерева на заданій відстані між собою
             if(overlap){
                 for(const tree of trees){
-                    const distance       = utils.distance(p, tree);
-                    const sumOffRadius   = this.configTree.radius * 2;
+                    const distance       = utils.distance(p, tree.center);
+                    const sumOffRadius   = this.configTree.size;
                     if (distance < sumOffRadius){
                         overlap = false;
                         break;
                     };
                 }
             };
-            // умова щоб кількість рядів дерев неперевищував вказаній довжині
+            // умова щоб кількість рядів дерев неперевищував вказаній ширині посадки дерев
             if(overlap){
                 let close = false;
                 for (const polygon of illegalPolys){
-                    if ( polygon.distanceToPoint(p) < this.configTree.radius * this.configTree.numberRows){
+                    if ( polygon.distanceToPoint(p) < this.configTree.size * this.configTree.numberRows){
                         close = true;
                         break;
                     }
@@ -163,7 +167,7 @@ export class World{
             }
             // додаємо полігон (дерево) до масиву якщо всі попередні умови не виконалися;
             if (overlap){
-                trees.push(p || new Tree(p));
+                trees.push(new Tree(p));
                 tryCount = 0
             };
             ++tryCount;
@@ -188,18 +192,17 @@ export class World{
         for(const key in  this.graph.sortedPoints)  {this.graph.sortedPoints[key] = []};
     }
 
-    draw(ctx){
-       
-
-        this.drawPolygon(ctx)
-        this.drawCity(ctx);
-        this.drawRoad(ctx)
-       
-
+    draw(ctx, viewPoint){
+        this.drawCity(ctx, viewPoint);
+        this.drawRoad(ctx);
+        this.drawPolygon(ctx);
+        this.drawTree(ctx, viewPoint)
+        this.drawBuilding(ctx, viewPoint)
     };
-    drawRoad(ctx, tool){
+
+    drawRoad(ctx){
         this.roadPoints      = this.graph.sortedPoints.road   || [];
-        this.roadDash       = this.graph.sortedSegments.road  || [];
+        this.roadDash        = this.graph.sortedSegments.road  || [];
 
         for(const road     of this.roads)        {road.draw(ctx,    this.configRoad)};
         for(const border   of this.roadBorders)  {border.draw(ctx,  this.configRoad.border)}; 
@@ -209,12 +212,23 @@ export class World{
     drawPolygon(ctx){
         const polygonPoints   = this.graph.sortedPoints.polygon || [];
         new Polygon(polygonPoints).draw(ctx, this.configPolygon.segment)
-        for(const point    of polygonPoints )    {point.draw(ctx,   this.configPolygon.point)};
+        for(const point of polygonPoints )    {point.draw(ctx,   this.configPolygon.point)};
+    };
+
+    drawTree(ctx, viewPoint){
+        const treePoints = this.graph.sortedPoints.tree   || [];
+        const trees      = [...treePoints.map(point=> new Tree(point)).flat()];
+        for(const tree of trees) tree.draw(ctx, viewPoint)
+    };
+
+    drawBuilding(ctx, viewPoint){
+        const buildingPoints = this.graph.sortedPoints.building   || [];
+        const buildings      = [...buildingPoints.map(point=> new Building(point)).flat()];
+        for(const building of buildings) building.draw(ctx, viewPoint)
     }
 
-
-    drawCity(ctx){
-        this.cityPoints      = this.graph.sortedPoints.city    || [];
+    drawCity(ctx, viewPoint){
+        this.cityPoints  = this.graph.sortedPoints.city    || [];
         this.cityDash    = this.graph.sortedSegments.city  || [];
 
         for(const road     of this.cities)       {road.draw(ctx,    this.configRoad)};
@@ -222,8 +236,7 @@ export class World{
         for(const segment  of this.cityDash)     {segment.draw(ctx, this.configRoad.dash)};
         for(const point    of this.cityPoints )  {point.draw(ctx,   this.configRoad.point)};
 
-        for(const tree of this.trees)            {tree.draw(ctx, this.configTree)}
+        for(const tree of this.trees)            {tree.draw(ctx, viewPoint)}
         for(const building of this.buildings )   {building.draw(ctx, this.configBuilding)};
     }
-
 }
