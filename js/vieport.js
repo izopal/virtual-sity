@@ -40,6 +40,7 @@ export class Vieport{
         this.dir   = Math.sign(e.deltaY);
         this.zoom += this.dir * this.step;
         this.zoom  = Math.max(this.minZoom, Math.min(this.maxZoom, this.zoom))  // вказуємо інтервал в якому буде збільшувати від 1 до 5
+        return this.zoom
     };
     #inputMouseDown(e){
         if(e.buttons === 4 || e.buttons === 3){

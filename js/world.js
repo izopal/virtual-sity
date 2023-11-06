@@ -115,6 +115,7 @@ export class World{
 
     #generateTrees() {
         // збираємо всі можливі полігони в один масив
+        console.log(this.cities)
         const illegalPolys = [...this.buildings, ...this.cities.map(e => e.polygon)]
         // збираємо всі можливі точки в один масив
         const points       = [...illegalPolys.map(e => e.points).flat()];
@@ -194,11 +195,11 @@ export class World{
         for(const key in  this.graph.sortedPoints)  {this.graph.sortedPoints[key] = []};
     }
 
-    draw(ctx, viewPoint){
-        this.drawCity(ctx, viewPoint);
+    draw(ctx, viewPoint, zoom){
+        this.drawCity(ctx, viewPoint, zoom);
         this.drawRoad(ctx);
         this.drawPolygon(ctx);
-        this.drawTree(ctx, viewPoint)
+        this.drawTree(ctx, viewPoint, zoom)
         this.drawBuilding(ctx, viewPoint)
     };
 
@@ -217,10 +218,10 @@ export class World{
         for(const point of polygonPoints )    {point.draw(ctx,   this.configPolygon.point)};
     };
 
-    drawTree(ctx, viewPoint){
+    drawTree(ctx, viewPoint, zoom){
         const treePoints = this.graph.sortedPoints.tree   || [];
         const trees      = [...treePoints.map(point=> new Tree(point)).flat()];
-        for(const tree of trees) tree.draw(ctx, viewPoint)
+        for(const tree of trees) tree.draw(ctx, viewPoint, zoom)
     };
 
     drawBuilding(ctx, viewPoint){
@@ -229,7 +230,7 @@ export class World{
         for(const building of buildings) building.draw(ctx, viewPoint)
     }
 
-    drawCity(ctx, viewPoint){
+    drawCity(ctx, viewPoint, zoom){
         this.cityPoints  = this.graph.sortedPoints.city    || [];
         this.cityDash    = this.graph.sortedSegments.city  || [];
 
@@ -238,7 +239,7 @@ export class World{
         for(const segment  of this.cityDash)     {segment.draw(ctx, this.configRoad.dash)};
         for(const point    of this.cityPoints )  {point.draw(ctx,   this.configRoad.point)};
 
-        for(const tree of this.trees)            {tree.draw(ctx, viewPoint)}
+        for(const tree of this.trees)            {tree.draw(ctx, viewPoint, zoom)}
         for(const building of this.buildings )   {building.draw(ctx, this.configBuilding)};
     }
 }

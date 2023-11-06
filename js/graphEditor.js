@@ -213,9 +213,9 @@ export class GraphEditor {
             this.OldGraphHash = this.graph.hash()
         }
         this.world.generate();
-
+       
         const viewPoint = utils.operate(this.vieport.getOfFset(), '*', -1)
-        this.world.draw(ctx, viewPoint);
+        this.world.draw(ctx, viewPoint, this.vieport.zoom);
         this.graph.draw(ctx);
 
         if(this.activePoint) this.activePoint.draw(ctx, this.configPoint.activePoint)

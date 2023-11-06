@@ -12,7 +12,7 @@ export function getAllObj(){
 }
 
 // Функція для пошуку всіх значень ключів "name"
-const value = 'name'
+const value = 'key'
 export const keys = extractNames(data, value);
 
 function extractNames(obj, value) {
@@ -20,8 +20,13 @@ function extractNames(obj, value) {
 
   function findNames(obj) {
     for (const key in obj) {
-      if (key === value)  keys.push(obj[key]);
-      if (typeof obj[key] === 'object')  findNames(obj[key]);
+      if (typeof obj[key] === 'object'){ 
+        findNames(obj[key])
+      }else{
+        if (key === value){
+          keys.push(obj[key])
+        };
+      };
     }
   }
   findNames(obj);
