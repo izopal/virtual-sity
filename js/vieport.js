@@ -31,6 +31,8 @@ export class Vieport{
         this.touchEndTime    = '';
     
         this.#addEventListener();
+        
+        this.flag  = false;
     };
   
 
