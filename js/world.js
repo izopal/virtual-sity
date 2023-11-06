@@ -13,7 +13,6 @@ export class World{
        
         this.config         = data.world            || {};
         this.configRoad     = this.config.road;
-        this.configBuilding = this.config.building;
         
         this.configPolygon  = data.primitives.polygon 
         
@@ -30,6 +29,9 @@ export class World{
         this.tree           = new Tree();
         this.configTree     = this.tree.config;
         this.trees          = [];
+        // параметри класу Будинок
+        this.building       = new Building();
+        this.configBuilding = this.building.config;
         
         this.generate()
     };

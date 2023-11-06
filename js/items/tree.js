@@ -17,7 +17,7 @@ export class Tree {
         const points = [];
         for(let a = 0; a < Math.PI * 2; a += Math.PI / this.config.typOfTree){
             // параметри зупинки обератання гілок
-            const stop = Math.cos(((a + this.center.x) * radius) % 17 ) ** 2;
+            const stop = Math.cos(((a + this.center.x) * radius * 2) % 17 ) ** 2;
             
             // парамтри вигляду щільності гілок дерева
             const movingRadius = radius * utils.lerp(.4, 1, stop);

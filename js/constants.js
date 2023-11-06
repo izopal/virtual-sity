@@ -52,14 +52,14 @@ const parameters =   {  graphEditor:   {name:                   'graphEditor',
                                         },
                                         tree:           {count:         100,
                                                         radius:         {
-                                                                max: 40,
+                                                                max: 80,
                                                                 min: 5
                                                         },
                                                         coefficient:    .25,
                                                         levelCount:     10,
-                                                        typOfTree:      36,
+                                                        typOfTree:      24,
 
-                                                        size:           80,
+                                                        size:           100,
                                                         spacing:        25,
                                                         numberRows:     5,
                                                         color:          'green',

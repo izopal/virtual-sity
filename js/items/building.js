@@ -1,9 +1,11 @@
 import { data } from "../constants.js";
 export class Building{
-    constructor(){
+    constructor(polygon){
+        this.base = polygon;
+        this.config = data.world.building
 
     };
-    draw(ctx){
+    draw(ctx, viewPoint){
 
     }
 }
