@@ -3,11 +3,8 @@ import { Polygon }  from '../primitives/polygon.js';
 
 export class Road {
     constructor(segments = [], points = [], config = {}) {
-       
         this.config = config;
-
         this.generate(segments, points)
-
     }
 
     generate(segments, points) {

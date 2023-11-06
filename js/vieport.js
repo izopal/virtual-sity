@@ -35,6 +35,10 @@ export class Vieport{
         this.canvas.addEventListener('mousedown',  this.#inputMouseDown.bind(this));
         this.canvas.addEventListener('mousemove',  this.#inputMouseMove.bind(this));
         this.canvas.addEventListener('mouseup',    this.#inputMouseUp.bind(this));
+
+        this.canvas.addEventListener('touchstart', this.#inputTouchStart.bind(this), { passive: true });
+        this.canvas.addEventListener('touchmove', this.#inputTouchMove.bind(this), { passive: true });
+        this.canvas.addEventListener('touchend', this.#inputTouchEnd.bind(this), { passive: true });
     };
     #inputMouseWheel(e){
         this.dir   = Math.sign(e.deltaY);
@@ -64,6 +68,34 @@ export class Vieport{
                         active: false};
     };
 
+    #inputTouchStart(e) {
+        if (e.touches.length === 2) {
+            this.flag  = true;
+            this.startDistance = utils.distance(touch1.pageX, touch2.pageX);
+        }
+    };
+    #inputTouchMove(e) {
+        if (this.flag && e.touches.length === 2) {
+            this.currentDistance = utils.distance(e.touches[0], e.touches[1]);
+            const scale = this.currentDistance / this.startDistance;
+            
+            this.zoom *= scale;
+            this.zoom = Math.max(this.minZoom, Math.min(this.maxZoom, this.zoom));
+    
+            this.startDistance = this.currentDistance;
+    
+            // Викликаємо метод для відображення зуму на канвасі
+            this.draw(this.canvas.getContext('2d'));
+        }
+    }   
+    #inputTouchEnd(e) {
+        if (e.touches.length < 2) {
+            this.flag = false;
+        }
+    }
+
+
+
     loadPoint(saveInfo){
         return saveInfo.points.map((point) => new Point(point, point.tools));
     };
@@ -91,6 +123,7 @@ export class Vieport{
         ctx.scale(1 / this.zoom, 1 / this.zoom);
 
         const offset  = this.getOfFset();
-        ctx.translate(offset.x, offset.y);        
+        ctx.translate(offset.x, offset.y);  
+        
     }
 }

@@ -41,10 +41,7 @@ export class World{
     }
 
     generateCity(){
-        const citySegments = this.graph.sortedSegments.city || [];
-        this.cities        = citySegments.map(segment => new Envelope(segment, this.configRoad));
-        this.cityBorders   = Polygon.union(this.cities.map(road => road.polygon));
-
+        this.#generateRoadCity();
         this.buildings = this.#generateBuilding();
         this.trees     = this.#generateTrees(); 
     };
@@ -54,7 +51,11 @@ export class World{
         this.roads         = roadSegments.map(segment => new Envelope(segment, this.configRoad));
         this.roadBorders   = Polygon.union(this.roads.map(road => road.polygon));
     };
-
+    #generateRoadCity(){
+        const citySegments = this.graph.sortedSegments.city || [];
+        this.cities        = citySegments.map(segment => new Envelope(segment, this.configRoad));
+        this.cityBorders   = Polygon.union(this.cities.map(road => road.polygon));
+    }
     #generateBuilding(){
         const citySegments = this.graph.sortedSegments.city || [];
         const tmpEnvelopes = [];
@@ -115,7 +116,6 @@ export class World{
 
     #generateTrees() {
         // збираємо всі можливі полігони в один масив
-        console.log(this.cities)
         const illegalPolys = [...this.buildings, ...this.cities.map(e => e.polygon)]
         // збираємо всі можливі точки в один масив
         const points       = [...illegalPolys.map(e => e.points).flat()];
