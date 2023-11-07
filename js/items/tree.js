@@ -10,11 +10,12 @@ export class Tree {
         this.coefficient = this.config.coefficient;
         // параметр коструктору debug
         this.base = this.generate(this.center, this.config.radius.max);
+       console.log()
     };
 
     generate(point, radius){
-        this.#generateTree(point, radius)
-    }
+        return this.#generateTree(point, radius)
+    }; 
 
     // алгоритм створення ялинки
     #generateTree(point, radius){

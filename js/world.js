@@ -5,26 +5,21 @@ import { Segment } from './primitives/segment.js';
 import {Polygon}   from './primitives/polygon.js';
 import {Envelope}  from './primitives/envelope.js';
 import {Tree}      from './items/tree.js';
+import {Road}      from './items/road.js';
 import {Building}  from './items/building.js';
 
 export class World{
     constructor(graph){
         this.graph          = graph;
-       
         this.config         = data.world            || {};
-        this.configRoad     = this.config.road;
         
+        // параметри класу Polygon
         this.configPolygon  = data.primitives.polygon 
-        
         this.polygons       = [];
-        this.roads          = [];
-        this.roadBorders    = [];
-        
-        this.cities         = [];
-        this.cityBorders    = [];
-        
-        this.buildings      = [];
-        
+        // параметри класу Road
+        this.configRoad   = this.config.road ;
+        this.roadSegments = this.graph.sortedSegments || {};
+        this.roadPoints   = this.graph.sortedPoints   || {};
         // параметри класу Tree
         this.tree           = new Tree();
         this.configTree     = this.tree.config;
@@ -32,30 +27,14 @@ export class World{
         // параметри класу Будинок
         this.building       = new Building();
         this.configBuilding = this.building.config;
-        
-        this.generate()
+        this.buildings      = [];
     };
-    
-    generate(){
-        this.generateRoad();
-    }
 
     generateCity(){
-        this.#generateRoadCity();
+        this.road.generate();
         this.buildings = this.#generateBuilding();
         this.trees     = this.#generateTrees(); 
     };
-
-    generateRoad(){
-        const roadSegments = this.graph.sortedSegments.road || [];
-        this.roads         = roadSegments.map(segment => new Envelope(segment, this.configRoad));
-        this.roadBorders   = Polygon.union(this.roads.map(road => road.polygon));
-    };
-    #generateRoadCity(){
-        const citySegments = this.graph.sortedSegments.city || [];
-        this.cities        = citySegments.map(segment => new Envelope(segment, this.configRoad));
-        this.cityBorders   = Polygon.union(this.cities.map(road => road.polygon));
-    }
     #generateBuilding(){
         const citySegments = this.graph.sortedSegments.city || [];
         const tmpEnvelopes = [];
@@ -113,12 +92,12 @@ export class World{
         }
         return bases
     };
-
     #generateTrees() {
         // збираємо всі можливі полігони в один масив
-        const illegalPolys = [...this.buildings, ...this.cities.map(e => e.polygon)]
+        const illegalPolys = [...this.buildings, ...this.road.layers.map(e => e.polygon )]
         // збираємо всі можливі точки в один масив
         const points       = [...illegalPolys.map(e => e.points).flat()];
+        
         // збираємо всі можливі сегменти в один масив
         const segments     = [...illegalPolys.map(e => e.segments).flat()];
         // створююємо обмежуючу рамку для полігону
@@ -178,7 +157,42 @@ export class World{
         }
         return trees;
     }
+
+    draw(ctx, viewPoint, zoom){
+        this.drawPolygon(ctx);
+        this.drawRoad(ctx);
+        this.drawTree(ctx, viewPoint, zoom)
+        this.drawBuilding(ctx, viewPoint)
+        this.drawCity(ctx, viewPoint, zoom);
+    };
+
+    drawRoad(ctx){
+        const road = new Road(this.roadSegments,  this.roadPoints, 'road')
+        road.draw(ctx)
+    };
+    drawPolygon(ctx){
+        const polygonPoints   = this.graph.sortedPoints.polygon || [];
+        new Polygon(polygonPoints).draw(ctx, this.configPolygon.segment)
+        for(const point of polygonPoints )    {point.draw(ctx,   this.configPolygon.point)};
+    };
+    drawTree(ctx, viewPoint, zoom){
+        const treePoints = this.graph.sortedPoints.tree   || [];
+        const trees      = [...treePoints.map(point=> new Tree(point)).flat()];
+        for(const tree of trees) tree.draw(ctx, viewPoint, zoom)
+    };
+    drawBuilding(ctx, viewPoint){
+        const buildingPoints = this.graph.sortedPoints.building   || [];
+        const buildings      = [...buildingPoints.map(point=> new Building(point)).flat()];
+        for(const building of buildings) building.draw(ctx, viewPoint)
+    };
     
+    drawCity(ctx, viewPoint, zoom){
+        this.road = new Road(this.roadSegments,  this.roadPoints, 'city')
+        this.road.draw(ctx)
+       
+        for(const tree of this.trees)            {tree.draw(ctx, viewPoint, zoom)}
+        for(const building of this.buildings )   {building.draw(ctx, this.configBuilding)};
+    };
 
     remove(point){
         for(const key in point.tools){
@@ -189,57 +203,8 @@ export class World{
             };
         }
     }
-    
     removeAll(){
         for(const key in  this.graph.sortedSegments){this.graph.sortedSegments[key] = []};
         for(const key in  this.graph.sortedPoints)  {this.graph.sortedPoints[key] = []};
-    }
-
-    draw(ctx, viewPoint, zoom){
-        this.drawCity(ctx, viewPoint, zoom);
-        this.drawRoad(ctx);
-        this.drawPolygon(ctx);
-        this.drawTree(ctx, viewPoint, zoom)
-        this.drawBuilding(ctx, viewPoint)
-    };
-
-    drawRoad(ctx){
-        this.roadPoints      = this.graph.sortedPoints.road   || [];
-        this.roadDash        = this.graph.sortedSegments.road  || [];
-
-        for(const road     of this.roads)        {road.draw(ctx,    this.configRoad)};
-        for(const border   of this.roadBorders)  {border.draw(ctx,  this.configRoad.border)}; 
-        for(const segment  of this.roadDash)     {segment.draw(ctx, this.configRoad.dash)};
-        for(const point    of this.roadPoints )  {point.draw(ctx,   this.configRoad.point)};
-    };
-    drawPolygon(ctx){
-        const polygonPoints   = this.graph.sortedPoints.polygon || [];
-        new Polygon(polygonPoints).draw(ctx, this.configPolygon.segment)
-        for(const point of polygonPoints )    {point.draw(ctx,   this.configPolygon.point)};
-    };
-
-    drawTree(ctx, viewPoint, zoom){
-        const treePoints = this.graph.sortedPoints.tree   || [];
-        const trees      = [...treePoints.map(point=> new Tree(point)).flat()];
-        for(const tree of trees) tree.draw(ctx, viewPoint, zoom)
-    };
-
-    drawBuilding(ctx, viewPoint){
-        const buildingPoints = this.graph.sortedPoints.building   || [];
-        const buildings      = [...buildingPoints.map(point=> new Building(point)).flat()];
-        for(const building of buildings) building.draw(ctx, viewPoint)
-    }
-
-    drawCity(ctx, viewPoint, zoom){
-        this.cityPoints  = this.graph.sortedPoints.city    || [];
-        this.cityDash    = this.graph.sortedSegments.city  || [];
-
-        for(const road     of this.cities)       {road.draw(ctx,    this.configRoad)};
-        for(const border   of this.cityBorders)  {border.draw(ctx,  this.configRoad.border)}; 
-        for(const segment  of this.cityDash)     {segment.draw(ctx, this.configRoad.dash)};
-        for(const point    of this.cityPoints )  {point.draw(ctx,   this.configRoad.point)};
-
-        for(const tree of this.trees)            {tree.draw(ctx, viewPoint, zoom)}
-        for(const building of this.buildings )   {building.draw(ctx, this.configBuilding)};
     }
 }

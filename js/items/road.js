@@ -1,23 +1,33 @@
+import {data}      from '../constants.js';
 import { Envelope } from '../primitives/envelope.js';
 import { Polygon }  from '../primitives/polygon.js';
 
 export class Road {
-    constructor(segments = [], points = [], config = {}) {
-        this.config = config;
-        this.generate(segments, points)
-    }
+    constructor(segments, points, tool) {
+        this.config = data.world.road
 
-    generate(segments, points) {
-        this.roadLayers  = segments.map(segment => new Envelope(segment, this.config)),
-        this.roadBorders = Polygon.union(this.roadLayers.map(road => road.polygon)),
-        this.roadDash    = segments,
-        this.roadPoints  = points;
+        this.points   = points;
+        this.segments = segments;
+        this.tool    = tool;
+       
+        this.layers   = [];
+        this.borders  = [];
+
+        this.generate()
+    };
+    
+    generate(){
+        this.lines   = this.segments[this.tool] || []
+        this.markers = this.points[this.tool]   || []
+        this.layers  = this.segments[this.tool].map(segment => new Envelope(segment, this.config));
+        this.borders = Polygon.union(this.layers.map(road => road.polygon));
     }
     
-    draw(ctx, config){
-        for(const layer    of this.roadLayers)   {layer.draw(ctx,   config)};
-        for(const border   of this.roadBorders)  {border.draw(ctx,  config.border)}; 
-        for(const point    of this.roadPoints )  {point.draw(ctx,   config.point)};
-        for(const segment  of this.roadDash)     {segment.draw(ctx, config.dash)};
+    
+    draw(ctx){
+        for(const layer  of this.layers)   {layer.draw(ctx,  this.config)};
+        for(const line   of this.lines)    {line.draw(ctx,   this.config.dash)};
+        for(const border of this.borders)  {border.draw(ctx, this.config.border)}; 
+        for(const marker of this.markers ) {marker.draw(ctx, this.config.point)};
     }
 }

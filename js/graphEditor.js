@@ -45,7 +45,7 @@ export class GraphEditor {
         this.vieport       = new Vieport(canvas, saveInfo);
         this.graph         = !saveInfo ? new Graph() : this.#load(saveInfo);
       
-        this.world         = new World({...this.graph});
+        this.world         = new World({...this.graph}, {...this.tools});
 
         this.OldGraphHash  = this.graph.hash();    //параметри запуска малювання 
         this.counter = 0
@@ -212,7 +212,7 @@ export class GraphEditor {
             this.world.generateCity();
             this.OldGraphHash = this.graph.hash()
         }
-        this.world.generate();
+        // this.world.generate();
        
         const viewPoint = utils.operate(this.vieport.getOfFset(), '*', -1)
         this.world.draw(ctx, viewPoint, this.vieport.zoom);

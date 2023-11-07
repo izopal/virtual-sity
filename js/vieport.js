@@ -77,12 +77,13 @@ export class Vieport{
     #inputTouchStart(e) {
         if (e.touches.length === 2) {
             this.flag  = true;
-            this.startDistance = utils.distance(touch1.pageX, touch2.pageX);
+            this.startDistance = utils.distance(e.touches[0].pageX, e.touches[1].pageX);
         }
     };
     #inputTouchMove(e) {
         if (this.flag && e.touches.length === 2) {
-            this.currentDistance = utils.distance(e.touches[0], e.touches[1]);
+            
+            this.currentDistance = utils.distance(e.touches[0].pageX, e.touches[1].pageX);
             const scale = this.currentDistance / this.startDistance;
             
             this.zoom *= scale;
