@@ -38,6 +38,7 @@ body {
     display: flex;
     flex-direction: column;
     gap: var(--index);
+  
     margin-left: var(--index);
     justify-content: center;
     z-index: 10;
