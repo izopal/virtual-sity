@@ -75,15 +75,18 @@ export class Vieport{
     };
 
     #inputTouchStart(e) {
+        console.log(e.touches[0])
         if (e.touches.length === 2) {
+           
             this.flag  = true;
-            this.startDistance = utils.distance(e.touches[0].pageX, e.touches[1].pageX);
+            this.startDistance = this.#touchDistance(e);
         }
     };
     #inputTouchMove(e) {
+        console.log(e.touches[0])
         if (this.flag && e.touches.length === 2) {
             
-            this.currentDistance = utils.distance(e.touches[0].pageX, e.touches[1].pageX);
+            this.currentDistance = this.#touchDistance(e);
             const scale = this.currentDistance / this.startDistance;
             
             this.zoom *= scale;
@@ -98,7 +101,11 @@ export class Vieport{
         }
     }
 
-
+    #touchDistance(e){
+        const dx = e.touches[0].pageX - e.touches[1].pageX;
+        const dy = e.touches[0].pageY - e.touches[1].pageY;
+        return Math.hypot(dy, dx)
+    }
 
     loadPoint(saveInfo){
         return saveInfo.points.map((point) => new Point(point, point.tools));
