@@ -45,7 +45,7 @@ export class GraphEditor {
         this.vieport       = new Vieport(canvas, saveInfo);
         this.graph         = !saveInfo ? new Graph() : this.#load(saveInfo);
       
-        this.world         = new World({...this.graph}, {...this.tools});
+        this.world         = new World(this.graph);
 
         this.OldGraphHash  = this.graph.hash();    //параметри запуска малювання 
         this.counter = 0

@@ -9,8 +9,9 @@ import {Road}      from './items/road.js';
 import {Building}  from './items/building.js';
 
 export class World{
-    constructor(graph){
+    constructor(graph = {}){
         this.graph          = graph;
+       console.log(graph)
         this.config         = data.world            || {};
         
         // параметри класу Polygon
@@ -20,6 +21,7 @@ export class World{
         this.configRoad   = this.config.road ;
         this.roadSegments = this.graph.sortedSegments || {};
         this.roadPoints   = this.graph.sortedPoints   || {};
+        console.log(this.roadSegments )
         // параметри класу Tree
         this.tree           = new Tree();
         this.configTree     = this.tree.config;
