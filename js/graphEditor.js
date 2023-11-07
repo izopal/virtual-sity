@@ -8,7 +8,7 @@ import {Segment}   from './primitives/segment.js';
 
 import {World}  from './world.js';
 
-const body               = document.body;
+const canvas               = document.canvas;
 
 export class GraphEditor {
     constructor(canvas, saveInfo){
@@ -89,7 +89,7 @@ export class GraphEditor {
     }
 
     #addEventListener(canvas){
-        body.addEventListener  ('keydown',    this.#inputKeydown.bind(this));
+        canvas.addEventListener  ('keydown',    this.#inputKeydown.bind(this));
         canvas.addEventListener('mousedown',  this.#inputMouseDown.bind(this));
         canvas.addEventListener('mousemove',  this.#inputMouseMove.bind(this));
         canvas.addEventListener('mouseup',    this.#inputMouseUp.bind(this));

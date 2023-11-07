@@ -2,6 +2,7 @@ import * as utils  from './math/utils.js';
 import { data }    from './constants.js';
 import {Point}     from './primitives/point.js';
 
+const body               = document.body;
 
 export class Vieport{
     constructor(canvas){
@@ -37,14 +38,14 @@ export class Vieport{
   
 
     #addEventListener(){
-        this.canvas.addEventListener('mousewheel', this.#inputMouseWheel.bind(this), {passive: true});
-        this.canvas.addEventListener('mousedown',  this.#inputMouseDown.bind(this));
-        this.canvas.addEventListener('mousemove',  this.#inputMouseMove.bind(this));
-        this.canvas.addEventListener('mouseup',    this.#inputMouseUp.bind(this));
+        body.addEventListener('mousewheel', this.#inputMouseWheel.bind(this), {passive: true});
+        body.addEventListener('mousedown',  this.#inputMouseDown.bind(this));
+        body.addEventListener('mousemove',  this.#inputMouseMove.bind(this));
+        body.addEventListener('mouseup',    this.#inputMouseUp.bind(this));
 
-        this.canvas.addEventListener('touchstart', this.#inputTouchStart.bind(this), { passive: true });
-        this.canvas.addEventListener('touchmove', this.#inputTouchMove.bind(this), { passive: true });
-        this.canvas.addEventListener('touchend', this.#inputTouchEnd.bind(this), { passive: true });
+        body.addEventListener('touchstart', this.#inputTouchStart.bind(this), { passive: true });
+        body.addEventListener('touchmove', this.#inputTouchMove.bind(this), { passive: true });
+        body.addEventListener('touchend', this.#inputTouchEnd.bind(this), { passive: true });
     };
     #inputMouseWheel(e){
         this.dir   = Math.sign(e.deltaY);
