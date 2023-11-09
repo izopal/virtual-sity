@@ -34,6 +34,8 @@ export class Vieport{
         this.#addEventListener();
         
         this.flag  = false;
+        this.touchStartTime  = null;
+        this.touchEndTime    = null;
     };
   
 
@@ -76,18 +78,22 @@ export class Vieport{
     };
 
     #inputTouchStart(e) {
+        this.touchStartTime  = e.timeStamp;
         if (e.touches.length == 2) {
             this.startDistance = this.#touchDistance(e);
         }
     };
     #inputTouchMove(e) {
-        if (e.touches.length == 2) {
+        this.touchEndTime  =  e.timeStamp;
+        const deltaTime    = this.touchEndTime - this.touchStartTime;
+        if (deltaTime > 100 && e.touches.length == 2) {
             this.currentDistance = this.#touchDistance(e);
             const scale = this.currentDistance / this.startDistance;
             
             this.zoom *= scale;
             this.zoom = Math.max(this.minZoom, Math.min(this.maxZoom, this.zoom));
             this.startDistance = this.currentDistance;
+            this.touchStartTime  =  this.touchEndTime;
         }
         return this.zoom  
     }   
