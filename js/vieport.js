@@ -78,20 +78,20 @@ export class Vieport{
     };
 
     #inputTouchStart(e) {
-        this.touchStartTime  = e.timeStamp;
         if (e.touches.length == 2) {
-            this.startDistance = this.#touchDistance(e);
+            this.touchStartTime  = timeStamp;
+            this.startDistance = this.#getTouchDistance (e);
         }
     };
     #inputTouchMove(e) {
         this.touchEndTime  =  e.timeStamp;
         const deltaTime    = this.touchEndTime - this.touchStartTime;
         if (deltaTime > 100 && e.touches.length == 2) {
-            this.currentDistance = this.#touchDistance(e);
+            this.currentDistance = this.#getTouchDistance (e);
             const scale = this.currentDistance / this.startDistance;
             
             this.zoom *= scale;
-            this.zoom = Math.max(this.minZoom, Math.min(this.maxZoom, this.zoom));
+            this.zoom = this.#clampZoom();
             this.startDistance = this.currentDistance;
             this.touchStartTime  =  this.touchEndTime;
         }
@@ -100,10 +100,13 @@ export class Vieport{
     #inputTouchEnd(e) {
     }
 
-    #touchDistance(e){
+    #getTouchDistance(e){
         const dx = e.touches[0].pageX - e.touches[1].pageX;
         const dy = e.touches[0].pageY - e.touches[1].pageY;
         return Math.hypot(dy, dx)
+    };
+    #clampZoom() {
+        return Math.max(this.minZoom, Math.min(this.maxZoom, this.zoom));
     }
 
     loadPoint(saveInfo){
