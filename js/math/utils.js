@@ -70,15 +70,14 @@ export function getNearestPoint(A, B, d = Number.MAX_SAFE_INTEGER){
 
 // 
 export function operate(p1, operator, p2) {
-
-  if (operator === '+')         return {x: p1.x + p2.x, y: p1.y + p2.y};
-  if (operator === '-')         return {x: p1.x - p2.x, y: p1.y - p2.y};
-  if (operator === '*')         return {x: p1.x * p2,   y: p1.y * p2};
-  if (operator === 'average')   return {x: (p1.x + p2.x) * .5, 
-                                        y: (p1.y + p2.y) * .5 };
-  if (operator === '+dot')       return p1.x * p2.x + p1.y * p2.y;
-  if (operator === '-dot')       return p1.x * p2.x - p1.y * p2.y;
-};
+  return operator === '+' ? { x: p1.x + p2.x, y: p1.y + p2.y } :
+         operator === '-' ? { x: p1.x - p2.x, y: p1.y - p2.y } :
+         operator === '*' ? { x: p1.x * p2, y: p1.y * p2 } :
+         operator === 'average' ? { x: (p1.x + p2.x) * 0.5, y: (p1.y + p2.y) * 0.5 } :
+         operator === '+dot' ? p1.x * p2.x + p1.y * p2.y :
+         operator === '-dot' ? p1.x * p2.x - p1.y * p2.y :
+         null; // Додайте власні обробники для інших випадків або повертайте null як значення за замовчуванням
+}
 
 export function pointFrom3D(p1, p2, height){
   const distanceVector = operate(p1, '-', p2);
@@ -88,12 +87,12 @@ export function pointFrom3D(p1, p2, height){
 };
 
 export function normalize(p){
-  return operate(p, "*", 1 / Math.hypot(p.x, p.y))
+  return operate(p, "*", 1 / Math.sqrt(p.x * p.x + p.y * p.y))
 }
 
 export function distance (a, b){
   const c =  operate(a, '-', b)
-  return Math.hypot(c.x, c.y)
+  return Math.sqrt(c.x * c.x + c.y * c.y)
 }
 
 // 

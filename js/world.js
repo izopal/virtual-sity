@@ -99,9 +99,11 @@ export class World{
     };
     #generateTrees() {
         // збираємо всі можливі полігони в один масив
+        // console.log(this.buildingsCity)
+        console.log(this.roadPoints)
         const illegalPolys = [...this.buildingsCity.map(b => b.base), ...this.road.layers.map(e => e.polygon )]
         // збираємо всі можливі точки в один масив
-        const points       = [...illegalPolys.map(e => e.points).flat()];
+        const points       = [...this.buildingsCity.map(b => b.base.points).flat()];
         // збираємо всі можливі сегменти в один масив
         const segments     = [...illegalPolys.map(e => e.segments).flat()];
         // створююємо обмежуючу рамку для полігону

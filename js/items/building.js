@@ -9,39 +9,37 @@ export class Building{
         this.base        = polygon;
         this.config      = data.world.building
         this.coefficient = this.config.coefficient;
-        this.sides             = [];
-        this.pointsFromCeiling = [];
     };
    
     draw(ctx, viewPoint, zoom){
-        const height =  this.coefficient / zoom
-        
+        const height =  this.coefficient / zoom;
+        const pointsFromCeiling = [];
         // створюємо стелю
         for (const point of this.base.points) {
             const newPoint = utils.pointFrom3D(point, viewPoint, height);
-            this.pointsFromCeiling.push(newPoint);
+            pointsFromCeiling.push(newPoint);
         }
-        const ceiling  = new Polygon(this.pointsFromCeiling);
+        const ceiling  = new Polygon(pointsFromCeiling);
 
         // створюємо стіни
-        ;
+        const sides = [];
         for(let point = 0; point < this.base.points.length; ++point){
             const nextPoint = (point + 1) % this.base.points.length;
             const pointsFromSide = [
                 this.base.points[point],
                 this.base.points[nextPoint],
-                this.pointsFromCeiling[nextPoint],
-                this.pointsFromCeiling[point],
+                pointsFromCeiling[nextPoint],
+                pointsFromCeiling[point],
             ];
             const side = new Polygon(pointsFromSide);
-            this.sides.push(side);
+            sides.push(side);
         }
         // сортуємо сітни    
-        this.sides.sort((a, b) => b.distanceToPoint(viewPoint) - a.distanceToPoint(viewPoint))
+        sides.sort((a, b) => b.distanceToPoint(viewPoint) - a.distanceToPoint(viewPoint))
 
 
         this.base.draw(ctx, this.config);
-        for(const side of this.sides) {side.draw(ctx, this.config)};
-        ceiling.draw(ctx, this.config);
+        for(const side of sides) {side.draw(ctx, this.config)};
+        ceiling.draw(ctx, {fill: 'rgba(84,44,29,1)'});
     }
 }

@@ -28,8 +28,8 @@ export class Vieport{
                        active: false};
 
         this.touchInProgress = false;
-        this.touchStartTime  = '';
-        this.touchEndTime    = '';
+        this.startDistance  = null;
+        this.currentDistance = null;
     
         this.#addEventListener();
         
@@ -38,14 +38,14 @@ export class Vieport{
   
 
     #addEventListener(){
-        this.canvas.addEventListener('wheel', this.#inputMouseWheel.bind(this), {passive: true});
+        this.canvas.addEventListener('wheel',      this.#inputMouseWheel.bind(this), {passive: true});
         this.canvas.addEventListener('mousedown',  this.#inputMouseDown.bind(this));
         this.canvas.addEventListener('mousemove',  this.#inputMouseMove.bind(this));
         this.canvas.addEventListener('mouseup',    this.#inputMouseUp.bind(this));
 
         this.canvas.addEventListener('touchstart', this.#inputTouchStart.bind(this), { passive: true });
-        this.canvas.addEventListener('touchmove', this.#inputTouchMove.bind(this), { passive: true });
-        this.canvas.addEventListener('touchend', this.#inputTouchEnd.bind(this), { passive: true });
+        this.canvas.addEventListener('touchmove',  this.#inputTouchMove.bind(this), { passive: true });
+        this.canvas.addEventListener('touchend',   this.#inputTouchEnd.bind(this), { passive: true });
     };
     #inputMouseWheel(e){
         this.dir   = Math.sign(e.deltaY);
@@ -76,28 +76,22 @@ export class Vieport{
     };
 
     #inputTouchStart(e) {
-       
-        if (e.touches.length === 2) {
-           
-            this.flag  = true;
+        if (e.touches.length == 2) {
             this.startDistance = this.#touchDistance(e);
         }
     };
     #inputTouchMove(e) {
-        if (this.flag && e.touches.length === 2) {
+        if (e.touches.length == 2) {
             this.currentDistance = this.#touchDistance(e);
-            const scale = this.startDistance / this.currentDistance  ;
+            const scale = this.currentDistance / this.startDistance;
             
             this.zoom *= scale;
             this.zoom = Math.max(this.minZoom, Math.min(this.maxZoom, this.zoom));
-    
             this.startDistance = this.currentDistance;
         }
+        return this.zoom  
     }   
     #inputTouchEnd(e) {
-        if (e.touches.length < 2) {
-            this.flag = false;
-        }
     }
 
     #touchDistance(e){

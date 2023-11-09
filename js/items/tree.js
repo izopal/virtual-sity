@@ -33,7 +33,7 @@ export class Tree {
 
     draw(ctx, viewPoint, zoom){
         const height = this.coefficient / zoom;
-        const top = utils.pointFrom3D(this.center, viewPoint, height);
+        const top    = utils.pointFrom3D(this.center, viewPoint, height);
 
         this.levelCount  = this.config.levelCount;
         for(let level = 0; level < this.levelCount; ++level){

@@ -152,7 +152,6 @@ export class GraphEditor {
         // умови при натиску правої кнопки
         const isBtnRight  = this.tools.point        || 
                             this.tools.road         || 
-                            this.tools.building     ||
                             this.tools.city;
 
         if(isBtnRight && e.buttons   === 2) this.lastPoint = null;
@@ -163,6 +162,7 @@ export class GraphEditor {
         const isTreeBtnLeft    = this.tools.tree     && e.buttons === 1;
         const isDragingBtnLeft = this.tools.dragging && e.buttons === 1;
         const isRemoveBtnLeft  = this.tools.remove   && e.buttons === 1;
+        const isCityBtnLeft    = this.tools.city     && e.buttons === 1;
 
         this.point       = this.vieport.getPoint(e, {...this.tools}, {subtractDragOffset: true});
         // умова використання інструменту curve
@@ -179,10 +179,10 @@ export class GraphEditor {
         // умова використання інструменту dragging
         if(isDragingBtnLeft && this.activePoint){
             this.activePoint.x = this.point.x;
-            console.log(this.point, this.activePoint)
             this.activePoint.y = this.point.y;
         }else{
             this.activePoint = utils.getNearestPoint(this.point, this.graph.points, this.minDicnance);
+            
         };
        // умова використання інструменту remove
         if(isRemoveBtnLeft){
