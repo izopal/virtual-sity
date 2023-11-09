@@ -28,7 +28,7 @@ export class Graph{
     };
     // 
     hash(){
-        return JSON.stringify(this.sortedPoints.city)
+        return JSON.stringify(this.sortedSegments.city)
     }
 
     draw(ctx){

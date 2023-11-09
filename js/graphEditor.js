@@ -127,10 +127,10 @@ export class GraphEditor {
         // умлви при настику лівої кнопки
         const isBtnLeft   = this.tools.point        || 
                             this.tools.polygon      || 
+                            this.tools.city         ||
                             this.tools.road         || 
                             this.tools.tree         || 
-                            this.tools.building     ||
-                            this.tools.city;
+                            this.tools.building;
         
         const isRemoveBtnLeft  = this.tools.remove  && e.buttons === 1;
     
@@ -162,7 +162,6 @@ export class GraphEditor {
         const isTreeBtnLeft    = this.tools.tree     && e.buttons === 1;
         const isDragingBtnLeft = this.tools.dragging && e.buttons === 1;
         const isRemoveBtnLeft  = this.tools.remove   && e.buttons === 1;
-        const isCityBtnLeft    = this.tools.city     && e.buttons === 1;
 
         this.point       = this.vieport.getPoint(e, {...this.tools}, {subtractDragOffset: true});
         // умова використання інструменту curve
@@ -208,22 +207,22 @@ export class GraphEditor {
     }
     draw(ctx){
         this.vieport.draw(ctx);
-        // перевіряємо чи змінилися параметри this в класі Graph
-        if(this.OldGraphHash !== this.graph.hash()){
-            this.world.generateCity();
-            this.OldGraphHash = this.graph.hash()
-        }
-       
+        
         const viewPoint = utils.operate(this.vieport.getOfFset(), '*', -1)
         this.world.draw(ctx, viewPoint, this.vieport.zoom);
         this.graph.draw(ctx);
-
+        
         if(this.activePoint) this.activePoint.draw(ctx, this.configPoint.activePoint)
         
         if(this.lastPoint && this.tools.point){
             this.lastPoint.draw(ctx, this.configPoint.lastPoint);
             new Segment (this.lastPoint, this.point).draw(ctx, this.configSegment.dash);
         }
+            // перевіряємо чи змінилися параметри this в класі Graph
+            if(this.OldGraphHash !== this.graph.hash()){
+                this.world.generateCity();
+                this.OldGraphHash = this.graph.hash()
+            }
     };
 
 

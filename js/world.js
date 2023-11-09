@@ -12,14 +12,15 @@ export class World{
     constructor(graph = {}){
         this.graph          = graph;
         this.config         = data.world            || {};
+        this.segments   = this.graph.sortedSegments || {};
+        this.points     = this.graph.sortedPoints   || {};
         
         // параметри класу Polygon
         this.configPolygon  = data.primitives.polygon 
         this.polygons       = [];
         // параметри класу Road
+        this.road         = new Road ();
         this.configRoad   = this.config.road ;
-        this.roadSegments = this.graph.sortedSegments || {};
-        this.roadPoints   = this.graph.sortedPoints   || {};
         // параметри класу Tree
         this.tree           = new Tree();
         this.configTree     = this.tree.config;
@@ -27,27 +28,26 @@ export class World{
         // параметри класу Будинок
         this.building       = new Building();
         this.configBuilding = this.building.config;
-        this.buildings      = {};
+        this.buildings      = [];
         // параметри класу City
         this.buildingsCity      = [];
         this.treesCity          = [];
        
-
+        this.generateCity()
     };
 
     generateCity(){
-        this.road.generate();
+        this.road          = new Road(this.segments,  this.points, 'city');
         this.buildingsCity = this.#generateBuilding();
         this.treesCity     = this.#generateTrees(); 
     };
     #generateBuilding(){
-        const citySegments = this.graph.sortedSegments.city || [];
         const tmpEnvelopes = [];
         const config = {
             width:   this.configRoad.width + this.configBuilding.width + this.configBuilding.spacing * 2,
             current: this.configRoad.current,
         };
-        for(const segment of citySegments){
+        for(const segment of this.graph.sortedSegments.city || []){
             tmpEnvelopes.push(new Envelope(segment, config))
         };
         // блок видалення частини сегментів направляющих які менше за меншу допустиму довжину будівлі    
@@ -99,8 +99,6 @@ export class World{
     };
     #generateTrees() {
         // збираємо всі можливі полігони в один масив
-        // console.log(this.buildingsCity)
-        console.log(this.roadPoints)
         const illegalPolys = [...this.buildingsCity.map(b => b.base), ...this.road.layers.map(e => e.polygon )]
         // збираємо всі можливі точки в один масив
         const points       = [...this.buildingsCity.map(b => b.base.points).flat()];
@@ -174,7 +172,7 @@ export class World{
     };
 
     drawRoad(ctx){
-        const road = new Road(this.roadSegments,  this.roadPoints, 'road')
+        const road = new Road(this.segments,  this.points, 'road')
         road.draw(ctx)
     };
     drawPolygon(ctx){
@@ -198,7 +196,7 @@ export class World{
     };
     
     drawCity(ctx, viewPoint, zoom){
-        this.road = new Road(this.roadSegments,  this.roadPoints, 'city')
+        this.road = new Road(this.segments,  this.points, 'city')
         this.road.draw(ctx)
         this.items = [...this.buildingsCity, ...this.treesCity];
         this.items.sort((a, b) => b.base.distanceToPoint(viewPoint) - a.base.distanceToPoint(viewPoint))

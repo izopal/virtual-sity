@@ -3,26 +3,22 @@ import { Envelope } from '../primitives/envelope.js';
 import { Polygon }  from '../primitives/polygon.js';
 
 export class Road {
-    constructor(segments, points, tool) {
+    constructor(segments = {}, points = {}, tool) {
         this.config = data.world.road
 
         this.points   = points;
         this.segments = segments;
-  
-        this.tool    = tool;
-       
-        this.layers   = [];
-        this.borders  = [];
+        this.tool     = tool;
 
-        this.generate()
+        this.generate(tool)
     };
     
-    generate(){
-        this.lines   = this.segments[this.tool] || []
-        this.markers = this.points[this.tool]   || []
-       
-        this.layers  = this.lines.map(segment => new Envelope(segment, this.config));
-        this.borders = Polygon.union(this.layers.map(road => road.polygon));
+    generate(tool){
+        this.lines   = this.segments[tool] || []
+        this.markers = this.points[tool]   || []
+
+        this.layers  = this.lines.map(segment => new Envelope(segment, this.config)) || [];
+        this.borders = Polygon.union(this.layers.map(road => road.polygon))          || [];
     }
     
     
