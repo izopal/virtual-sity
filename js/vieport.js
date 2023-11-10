@@ -78,13 +78,13 @@ export class Vieport{
     };
 
     #inputTouchStart(e) {
-        e.preventDefault()
-        if (e.touches.length == 2) {
+        // e.preventDefault()
+        if (e.targetTouches.length >= 2) {
             this.startDistance = this.#getTouchDistance (e);
         }
     };
     #inputTouchMove(e) {
-        if (e.touches.length == 2) {
+        if (e.targetTouches.length >= 2) {
             this.currentDistance = this.#getTouchDistance (e);
             const scale = this.currentDistance / this.startDistance || 1;
             
