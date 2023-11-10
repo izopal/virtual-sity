@@ -162,11 +162,11 @@ export function getValidValue(value, minValue = Number.NEGATIVE_INFINITY, maxVal
 }
 // функція зміни значень ключів при масштабуванні (зміни розімірів екрану)
 export function multiplyKeys(obj, scale, options) {
-  for (const key in obj){
-    if (typeof obj[key] === 'object'){
+  for (const key in obj) {
+    if (typeof obj[key] === 'object') {
       multiplyKeys(obj[key], scale, options)
     }else{
-      if (key in options) obj[key] *= scale;
+      if (key in options) obj[key] *= scale; 
     }
   };
   return obj

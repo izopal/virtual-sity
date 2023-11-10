@@ -207,7 +207,7 @@ window.save = function() {
             buttonInputSave.innerHTML = "<i class='bx bx-bookmark-alt bx-tada'></i>";
       }
 };
-
+document.addEventListener('touchstart', e => e.preventDefault());
 function animate(){
       graphEditor.draw(ctx);
       requestAnimationFrame(animate);
