@@ -89,11 +89,12 @@ export class GraphEditor {
     }
 
     #addEventListener(canvas){
+        document.addEventListener('touchstart', e => e.preventDefault());
         body.addEventListener  ('keydown',    this.#inputKeydown.bind(this));
+        
         canvas.addEventListener('mousedown',  this.#inputMouseDown.bind(this));
         canvas.addEventListener('mousemove',  this.#inputMouseMove.bind(this));
         canvas.addEventListener('mouseup',    this.#inputMouseUp.bind(this));
-
         canvas.addEventListener('touchstart', (e) => this.#inputMouseDown(this.getMouseEventFromTouchEvent(e)));
         canvas.addEventListener('touchmove',  (e) => this.#inputMouseMove(this.getMouseEventFromTouchEvent(e)));
         canvas.addEventListener('touchend',   (e) => this.#inputMouseUp(this.getMouseEventFromTouchEvent(e)));
@@ -102,7 +103,6 @@ export class GraphEditor {
     };
 
     getMouseEventFromTouchEvent(e) {
-        e.preventDefault()
         if (e.touches && e.touches.length > 0) {
           return {
             pageX: e.touches[0].pageX,
