@@ -78,16 +78,14 @@ export class Vieport{
     };
 
     #inputTouchStart(e) {
-     
         if (e.targetTouches.length >= 2) {
             this.startDistance = this.#getTouchDistance (e);
         }
     };
     #inputTouchMove(e) {
-   
         if (e.targetTouches.length >= 2) {
             this.currentDistance = this.#getTouchDistance (e);
-            const scale = this.currentDistance / this.startDistance || 1;
+            const scale = this.currentDistance / this.startDistance;
             
             this.zoom *= scale;
             this.zoom = this.#clampZoom();
