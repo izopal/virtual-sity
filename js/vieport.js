@@ -8,8 +8,7 @@ export class Vieport{
     constructor(canvas){
         this.canvas       = canvas;
         this.config       = data.vieport;
-        this.configScale  = this.config.scale;
-        this.scale        = 1;
+        this.configScale        = this.config.scale;
         this.zoom         = utils.getValidValue(this.configScale.zoom, 0);
         this.step         = utils.getValidValue(this.configScale.step, 0);
         this.minZoom      = utils.getValidValue(this.configScale.min, 0);
@@ -87,9 +86,9 @@ export class Vieport{
     #inputTouchMove(e) {
         if (e.touches.length == 2) {
             this.currentDistance = this.#getTouchDistance (e);
-            this.scale = this.currentDistance / this.startDistance;
+            const scale = this.currentDistance / this.startDistance || 1;
             
-            this.zoom *= this.scale;
+            this.zoom *= scale;
             this.zoom = this.#clampZoom();
             
         }
