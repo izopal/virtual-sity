@@ -102,6 +102,7 @@ export class GraphEditor {
     };
 
     getMouseEventFromTouchEvent(e) {
+        e.preventDefault()
         if (e.touches && e.touches.length > 0) {
           return {
             pageX: e.touches[0].pageX,
