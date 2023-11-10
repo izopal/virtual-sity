@@ -6,6 +6,7 @@ export class Graph{
         this.configPoint    = data.primitives.point;
         this.points         = points;
         this.sortedPoints   = sortedPoints;
+        
        
         this.configSegment  = data.primitives.segment;
         this.segments       = segments;
@@ -36,10 +37,8 @@ export class Graph{
             if(seg.tools.point) {seg.draw(ctx, this.configSegment.line)};
             if(seg.tools.curve) {seg.draw(ctx, this.configSegment.curve)};
         }
-
-        for(const point of this.points) {
-            if(point.tools.point) {point.draw(ctx, this.configPoint.point)};
-        };
+        const points               = this.sortedPoints.point || []
+        for(const point of points) {point.draw(ctx, this.configPoint.point)};
     };
     removeAll(){
         this.points         = [];
