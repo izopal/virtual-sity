@@ -84,20 +84,18 @@ export class Vieport{
         }
     };
     #inputTouchMove(e) {
-        e.preventDefault()
         if (e.touches.length == 2) {
             this.currentDistance = this.#getTouchDistance (e);
             const scale = this.currentDistance / this.startDistance;
             
             this.zoom *= scale;
             this.zoom = this.#clampZoom();
-            this.startDistance = this.currentDistance;
             
         }
         return this.zoom  
     }   
     #inputTouchEnd(e) {
-        e.preventDefault()
+        this.startDistance = this.currentDistance;
     }
 
     #getTouchDistance(e){
