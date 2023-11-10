@@ -78,46 +78,27 @@ export class Vieport{
     };
 
     #inputTouchStart(e) {
-        const canvasRect = this.canvas.getBoundingClientRect();
-        const touchInsideCanvas = e.touches.every(touch => (
-            touch.clientX >= canvasRect.left &&
-            touch.clientX <= canvasRect.right &&
-            touch.clientY >= canvasRect.top &&
-            touch.clientY <= canvasRect.bottom
-        ));
-    
-        if (e.touches.length == 2 && touchInsideCanvas) {
-            e.preventDefault(); // Відключення вбудованої обробки
-            this.startDistance = this.#getTouchDistance(e);
+        e.preventDefault()
+        if (e.touches.length == 2) {
+            this.startDistance = this.#getTouchDistance (e);
         }
-    }
-    
+    };
     #inputTouchMove(e) {
-        const canvasRect = this.canvas.getBoundingClientRect();
-        const touchInsideCanvas = e.touches.every(touch => (
-            touch.clientX >= canvasRect.left &&
-            touch.clientX <= canvasRect.right &&
-            touch.clientY >= canvasRect.top &&
-            touch.clientY <= canvasRect.bottom
-        ));
-    
-        if (e.touches.length == 2 && touchInsideCanvas) {
-            e.preventDefault(); // Відключення вбудованої обробки
-            this.currentDistance = this.#getTouchDistance(e);
+        e.preventDefault()
+        if (e.touches.length == 2) {
+            this.currentDistance = this.#getTouchDistance (e);
             const scale = this.currentDistance / this.startDistance;
             
             this.zoom *= scale;
             this.zoom = this.#clampZoom();
             this.startDistance = this.currentDistance;
+            
         }
-        return this.zoom;
-    }
-    
+        return this.zoom  
+    }   
     #inputTouchEnd(e) {
-        e.preventDefault(); // Відключення вбудованої обробки
-        // Ваш код обробки події touchend
+        e.preventDefault()
     }
-    
 
     #getTouchDistance(e){
         const dx = e.touches[0].pageX - e.touches[1].pageX;
