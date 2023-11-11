@@ -1,5 +1,6 @@
 import * as utils  from './math/utils.js';
 import { data }    from './constants.js';
+import { tools }    from './tools.js';
 
 import {Graph}     from './math/graph.js';
 import {Vieport}   from './vieport.js';
@@ -30,19 +31,10 @@ export class GraphEditor {
         this.activePoint   = null;
         
         // параметри інструментів графічного редагування  
-        this.tools          = {dragging: false,        // параметри вкл.-викл. редактора (пересування точок)
-                               remove:   false,        // параметр вкл.-викл резинки
-                               curve:    false,        // парамет малювання кривої лінії
-                               point:    false,        // параметр малювання точки;
-                               polygon:  false,        // параметр малювання полігону;
-                               road:     false,        // параметр малювання дороги;
-                               tree:     false,        // параметр малювання дерев;
-                               building: false,        // параметр малювання будинків;
-                               city:     false,        // параметр малювання міста;
-                            };
+        this.tools          = tools;
         this.#addEventListener(canvas);
         // підключаємо необхідні нам класи
-        this.vieport       = new Vieport(canvas, saveInfo);
+        this.vieport       = new Vieport(canvas);
         this.graph         = !saveInfo ? new Graph() : this.#load(saveInfo);
       
         this.world         = new World(this.graph);
@@ -79,19 +71,10 @@ export class GraphEditor {
         return new Graph (points, sortedPoints, segments, sortedSegments);
     }
    
-    //  функція вкл обраного інструмента (true) і викл решта неактивних (false)
-    setTool(tool) {
-        // console.log('__________________________')
-        for (const key in this.tools) {
-            this.tools[key] = key === tool ? !this.tools[key] : false
-            // console.log(tool, key, this.tools[key])
-        };
-    }
+  
 
     #addEventListener(canvas){
-        document.addEventListener('touchstart', e => e.preventDefault());
         body.addEventListener  ('keydown',    this.#inputKeydown.bind(this));
-        
         canvas.addEventListener('mousedown',  this.#inputMouseDown.bind(this));
         canvas.addEventListener('mousemove',  this.#inputMouseMove.bind(this));
         canvas.addEventListener('mouseup',    this.#inputMouseUp.bind(this));
@@ -103,6 +86,7 @@ export class GraphEditor {
     };
 
     getMouseEventFromTouchEvent(e) {
+        e.preventDefault()
         if (e.touches && e.touches.length > 0) {
           return {
             pageX: e.touches[0].pageX,
@@ -136,7 +120,7 @@ export class GraphEditor {
         const isRemoveBtnLeft  = this.tools.remove  && e.buttons === 1;
     
         if (isBtnLeft && e.buttons === 1) {
-            this.point = this.vieport.getPoint(e, { ...this.tools }, { subtractDragOffset: true });
+            this.point = this.vieport.getPoint(e, { subtractDragOffset: true });
             if (this.activePoint) {
                 this.#addSegment(this.activePoint);
                 return;
@@ -164,15 +148,15 @@ export class GraphEditor {
         const isDragingBtnLeft = this.tools.dragging && e.buttons === 1;
         const isRemoveBtnLeft  = this.tools.remove   && e.buttons === 1;
 
-        this.point       = this.vieport.getPoint(e, {...this.tools}, {subtractDragOffset: true});
+        this.point       = this.vieport.getPoint(e, {subtractDragOffset: true});
         // умова використання інструменту curve
         if(isCurveBtnLeft){
             this.#addSegment(this.point);
-            this.graph.addPoint(this.point, {...this.tools});
+            this.graph.addPoint(this.point);
         };
         // умова використання інструменту tree
         if(isTreeBtnLeft && this.counter % 20 === 0){
-            this.graph.addPoint(this.point, {...this.tools});
+            this.graph.addPoint(this.point);
         }
         ++this.counter;
         
@@ -196,7 +180,7 @@ export class GraphEditor {
 
     #addSegment(point){
         const line       = new Segment(this.lastPoint, point, {...this.tools});
-        if(this.lastPoint) this.graph.addSegment(line, {...this.tools});          // додаємо лінію
+        if(this.lastPoint) this.graph.addSegment(line);          // додаємо лінію
         this.lastPoint   = point;
     }
     #remove(point){
@@ -218,12 +202,12 @@ export class GraphEditor {
         if(this.lastPoint && this.tools.point){
             this.lastPoint.draw(ctx, this.configPoint.lastPoint);
             new Segment (this.lastPoint, this.point).draw(ctx, this.configSegment.dash);
+        };
+        // перевіряємо чи змінилися параметри this в класі Graph
+        if(this.OldGraphHash !== this.graph.hash()){
+            this.world.generateCity();
+            this.OldGraphHash = this.graph.hash()
         }
-            // перевіряємо чи змінилися параметри this в класі Graph
-            if(this.OldGraphHash !== this.graph.hash()){
-                this.world.generateCity();
-                this.OldGraphHash = this.graph.hash()
-            }
     };
 
 
@@ -232,8 +216,6 @@ export class GraphEditor {
         this.graph.removeAll();
         this.lastPoint     = null;
         this.activePoint   = null;
-        for (const key in this.tools) this.tools[key] = false;
+        for (const key in tools) tools[key] = false;
     }
-
-
 }

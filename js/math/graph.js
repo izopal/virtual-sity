@@ -1,8 +1,11 @@
 import * as utils from './utils.js';
 import { data }    from '../constants.js';
+import { tools }    from '../tools.js';
 
 export class Graph{
     constructor(points = [], sortedPoints = {}, segments = [], sortedSegments = {},){
+        this.tools          = tools;
+
         this.configPoint    = data.primitives.point;
         this.points         = points;
         this.sortedPoints   = sortedPoints;
@@ -13,13 +16,13 @@ export class Graph{
         this.sortedSegments = sortedSegments;
     };
     
-    addPoint(point, tools){
-        this.sortedPoints = utils.sortObject(point, tools, this.sortedPoints)
+    addPoint(point){
+        this.sortedPoints = utils.sortObject(point, this.tools , this.sortedPoints)
         this.points.push(point);
     };
     // Блок додавання сигменів 
-    addSegment(line, tools){
-        this.sortedSegments = utils.sortObject(line, tools, this.sortedSegments);
+    addSegment(line){
+        this.sortedSegments = utils.sortObject(line, this.tools, this.sortedSegments);
         this.segments.push(line);
     };
     

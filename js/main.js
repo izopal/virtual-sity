@@ -1,5 +1,6 @@
+import * as config    from './tools.js';
+import {GraphEditor} from './graphEditor.js';
 
-import {GraphEditor}      from './graphEditor.js';
 
 const canvas        = document.getElementById('canvasMS');
       canvas.width  = innerWidth;
@@ -98,7 +99,7 @@ let loadButton = false;
 window.load = function() {
       loadButton = !loadButton;
       if(loadButton  && saveNames.length !== 0){
-            populateSelect();
+            getListDownloads();
             selectElement.style.display   = 'block';
             selectElement.style.animation = 'slideRight 2s ease forwards';
             buttonload.innerHTML = "<i class='bx bx-folder-open'></i>"
@@ -109,7 +110,7 @@ window.load = function() {
       }
 }
 // функція створення списку з усіх отриманих ключів saveNames
-function populateSelect() {
+function getListDownloads() {
       selectElement.innerHTML = "";
       let option = document.createElement("option");
       option.text = 'Список загрузки';
@@ -151,15 +152,14 @@ selectElement.addEventListener('change', function(e){
 // Блок керування кнопками 
 window.setTool = function(button){
       const toolActive = button.getAttribute('data-tool');
-      graphEditor.setTool(toolActive);
-      graphEditor.lastPoint = null;
+      config.setTool(toolActive);
       updateButtonStyles();
+      graphEditor.lastPoint = null;
 };
 
 // зміна стилю кнопок приактивації деактивації    
 window.updateButtonStyles = function() {
-      const tools   = graphEditor.tools
-
+      const tools   = config.tools;
       buttons.forEach((button) => {
             const tool = button.getAttribute('data-tool');
             const toolIsTrue = tools[tool];
@@ -207,7 +207,7 @@ window.save = function() {
             buttonInputSave.innerHTML = "<i class='bx bx-bookmark-alt bx-tada'></i>";
       }
 };
-document.addEventListener('touchstart', e => e.preventDefault());
+
 function animate(){
       graphEditor.draw(ctx);
       requestAnimationFrame(animate);
