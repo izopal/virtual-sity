@@ -34,12 +34,9 @@ export class Vieport{
         this.currentDistance = null;
         this.touchStartTime  = null;
         this.touchEndTime  = null;
-
-        
         
         this.#addEventListener();
     };
-  
 
     #addEventListener(){
         this.canvas.addEventListener('wheel',      this.#inputMouseWheel.bind(this), {passive: true});
@@ -69,16 +66,20 @@ export class Vieport{
 
     #inputTouchStart(e){
         this.#inputStart(e.touches[0])
-        const buttonTools        = document.querySelectorAll(`.button[data-tool]`);
         if (e.targetTouches.length >= 2) {
             for (const key in tools) tools[key] = false;
-            buttonTools.forEach(button => button.classList.remove('active'));        //деактивуємо всі кнопки інструментів
             this.startDistance = this.#getTouchDistance(e);
         }
     };
     #inputTouchMove(e){
+        const buttonTools        = document.querySelectorAll(`.button[data-tool]`);
+
         const allToolFalse = Object.values(tools).every(value => value === false);
-        if(allToolFalse  && this.drag.active) this.#inputMove(e.touches[0]);
+        if(allToolFalse  && this.drag.active){
+            buttonTools.forEach(button => button.classList.remove('active'));        //деактивуємо всі кнопки інструментів
+
+            this.#inputMove(e.touches[0])
+        };
 
         if (e.targetTouches.length >= 2){
             this.currentDistance = this.#getTouchDistance(e);
@@ -97,7 +98,6 @@ export class Vieport{
             data.vieport.scale.zoom = this.zoom;
         }
     };
-
 
     #inputStart(e){
         this.drag.active = true;
@@ -129,9 +129,9 @@ export class Vieport{
         const coordinates = {x: (e.pageX - this.coordinatesCentre.x) * this.zoom - this.offset.x,
                              y: (e.pageY - this.coordinatesCentre.y) * this.zoom - this.offset.y};
        
-        const point     = new Point(coordinates, this.tools);
+        const point     = new Point(coordinates, {...this.tools});
         const result    = utils.operate(point, '-', this.drag.offset);
-        const dragPoint = new Point(result, this.tools); 
+        const dragPoint = new Point(result, {...this.tools}); 
         return subtractDragOffset ? dragPoint : point;
     };
     // повертає значення зміщення

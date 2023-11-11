@@ -175,7 +175,7 @@ export class GraphEditor {
         };
     };
     #inputMouseUp(e){
-        if(this.tools.curve) this.lastPoint = null;
+        if(this.tools.curve && this.tools.dragging) this.lastPoint = null;
     };
 
     #addSegment(point){

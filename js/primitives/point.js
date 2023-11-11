@@ -37,7 +37,7 @@ export class Point {
                 ctx.strokeStyle = colorStroke;
                 ctx.fillStyle = '';
                 ctx.stroke();
-                // ctx.fill();
+                ctx.fill();
             };
             ctx.restore();
         }             
