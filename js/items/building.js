@@ -39,7 +39,7 @@ export class Building{
 
 
         this.base.draw(ctx, this.config);
-        for(const side of sides) {side.draw(ctx, this.config)};
-        ceiling.draw(ctx, {fill: 'rgba(84,44,29,1)'});
+        for(const side of sides) {side.draw(ctx, this.config.side)};
+        ceiling.draw(ctx, this.config.ceiling);
     }
 }

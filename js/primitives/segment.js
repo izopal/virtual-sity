@@ -1,8 +1,12 @@
+import {data}      from '../constants.js';
 import * as utils  from '../math/utils.js';
+
 export class Segment{
     constructor(p1, p2, tools = {}){
         this.p1 = p1;
         this.p2 = p2;
+        this.config = data.primitives.segment;
+        this.size = this.config.curve.size
         // параметри інструментів графічного редактора
         this.tools  = tools;
     };
@@ -10,13 +14,11 @@ export class Segment{
     length(){
         return utils.distance(this.p1, this.p2)
     };
-
     directionVector(){
         const p          = utils.operate(this.p2, '-', this.p1);
         const multiplier = 1 / Math.hypot(p.x, p.y);
         return utils.operate(p, '*', multiplier)
     };
-
     
     distanceToPoint(point){
         const proj = this.projectPoint(point);
@@ -27,7 +29,6 @@ export class Segment{
         const distanceToP2 = utils.distance(point, this.p2);
         return Math.min(distanceToP1, distanceToP2);
     }
-
     projectPoint(point){
         const a      = utils.operate  (point,   '-',    this.p1);
         const b      = utils.operate  (this.p2, '-',    this.p1);
@@ -54,10 +55,13 @@ export class Segment{
             },
         } = options;
        
+        this.size = this.tools.point ? size : this.size;
+        this.size = dash.size ? dash.size : this.size
+        
         ctx.save();
             ctx.globalAlpha = globalAlpha  ;
             ctx.beginPath();
-                    ctx.lineWidth   =  size  || dash.size;
+                    ctx.lineWidth   =  this.size;
                     ctx.strokeStyle =  color || dash.color;
                     ctx.setLineDash([dash.length, dash.interval]);
                     ctx.moveTo(this.p1.x, this.p1.y);
@@ -68,7 +72,7 @@ export class Segment{
             ctx.beginPath();
                 ctx.arc(this.p2.x,
                         this.p2.y,
-                        size * .5,
+                        this.size * .5,
                         0,
                         Math.PI * 2);
                 ctx.fillStyle = color;

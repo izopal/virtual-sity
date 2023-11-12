@@ -1,5 +1,7 @@
 import * as config    from './tools.js';
 import {GraphEditor} from './graphEditor.js';
+import { data } from './constants.js';
+import { Point } from '../js/primitives/point.js';
 
 
 const canvas        = document.getElementById('canvasMS');
@@ -207,6 +209,21 @@ window.save = function() {
             buttonInputSave.innerHTML = "<i class='bx bx-bookmark-alt bx-tada'></i>";
       }
 };
+
+// let lastValue = 5;
+// функція отримання значення повзунка
+window.rangeSlider =function(value){
+      document.getElementById('rangeValue').innerHTML = value;
+      if(config.tools.curve){
+            data.primitives.segment.curve.size = value;
+      }
+      else if(config.tools.point){
+            data.primitives.point.point.radius = value
+      };
+
+}
+
+
 
 function animate(){
       graphEditor.draw(ctx);

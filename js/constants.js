@@ -48,6 +48,19 @@ const parameters =   {  graphEditor:   {name:                   'remove',
 
                                                         minLenght:      125,
                                                         spacing:        125,
+
+                                                        ceiling:{
+                                                                fill:           'rgba(84,44,29,1)',
+                                                                colorStroke:    '',
+                                                                lineWidth:       NaN,
+                                                                globalAlpha:     .8,
+                                                        },
+                                                        side:{
+                                                                fill:           'red',
+                                                                colorStroke:    'red',
+                                                                lineWidth:       2,
+                                                                globalAlpha:     .4,
+                                                        },
                                                         fill:           'yellow',
                                                         colorStroke:    'red',
                                                         lineWidth:       2,

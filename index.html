@@ -56,6 +56,16 @@
         <button class = 'button' onclick="zoom('plus')">       <i class='bx bx-zoom-in' ></i>             </button>
         <button class = 'button' onclick="zoom('minus')">      <i class='bx bx-zoom-out' ></i>            </button>
     </div>
+    <div class="box-range">
+        <input  type="range" 
+                class="range" 
+                id="range"
+                value="5"
+                min="0" 
+                max="100"
+                onmousemove="rangeSlider(this.value)">
+        <span id="rangeValue">5</span>
+    </div>
 </body>
 </html>
 

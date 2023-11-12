@@ -109,6 +109,7 @@ export class GraphEditor {
         if(e.key === 'Escape') this.lastPoint = null;
     };
     #inputMouseDown(e){
+        this.point = this.vieport.getPoint(e, { subtractDragOffset: true });
         // умлви при настику лівої кнопки
         const isBtnLeft   = this.tools.point        || 
                             this.tools.polygon      || 
@@ -120,7 +121,6 @@ export class GraphEditor {
         const isRemoveBtnLeft  = this.tools.remove  && e.buttons === 1;
     
         if (isBtnLeft && e.buttons === 1) {
-            this.point = this.vieport.getPoint(e, { subtractDragOffset: true });
             if (this.activePoint) {
                 this.#addSegment(this.activePoint);
                 return;
@@ -175,7 +175,7 @@ export class GraphEditor {
         };
     };
     #inputMouseUp(e){
-        if(this.tools.curve && this.tools.dragging) this.lastPoint = null;
+        if(this.tools.curve || this.tools.dragging) this.lastPoint = null;
     };
 
     #addSegment(point){

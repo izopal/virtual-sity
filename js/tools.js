@@ -12,12 +12,10 @@ export const tools  = {
 
 //  функція вкл обраного інструмента (true) і викл решта неактивних (false)
 export function setTool(tool) {
-    // console.log('__________________________')
     for (const key in tools) {
         tools[key] = key === tool ? !tools[key] : false
-        // console.log(tool, key, this.tools[key])
     };
-};
+} 
 
 export function dispose(){
     for (const key in this.tools) this.tools[key] = false;

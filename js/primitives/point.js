@@ -1,7 +1,10 @@
+import {data}      from '../constants.js';
 export class Point {
     constructor(coordinates = { x: 0, y: 0 }, tools = {}) {
         this.x    = coordinates.x;
         this.y    = coordinates.y;
+        this.config = data.primitives.point;
+        this.radius = this.config.point.radius
 
         // параметри інструментів
         this.tools = tools;
@@ -20,13 +23,15 @@ export class Point {
             colorStroke = '',
         } = options
 
+        // this.radius = radius || this.radius;
+
         if (!this.tools.curve){
             ctx.save();
             ctx.globalAlpha = globalAlpha;
             ctx.beginPath();
                 ctx.arc(this.x, 
                         this.y, 
-                        radius, 
+                        this.radius, 
                         0, 
                         Math.PI * 2);
                 ctx.fillStyle =  color;
