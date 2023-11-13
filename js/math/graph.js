@@ -1,10 +1,11 @@
-import * as utils from './utils.js';
-import { data }    from '../constants.js';
-import { tools }    from '../tools.js';
+import * as utils       from './utils.js';
+import { data }         from '../constants.js';
+import { ToolsMeneger } from '../tools.js';
 
 export class Graph{
     constructor(points = [], sortedPoints = {}, segments = [], sortedSegments = {},){
-        this.tools          = tools;
+        this.toolsMeneger  = new ToolsMeneger();
+        this.tools          = this.toolsMeneger.tools;
 
         this.configPoint    = data.primitives.point;
         this.points         = points;

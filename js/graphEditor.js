@@ -1,6 +1,6 @@
-import * as utils  from './math/utils.js';
-import { data }    from './constants.js';
-import { tools }    from './tools.js';
+import * as utils       from './math/utils.js';
+import { data }         from './constants.js';
+import { ToolsMeneger } from './tools.js';
 
 import {Graph}     from './math/graph.js';
 import {Vieport}   from './vieport.js';
@@ -31,7 +31,9 @@ export class GraphEditor {
         this.activePoint   = null;
         
         // параметри інструментів графічного редагування  
-        this.tools          = tools;
+        this.toolsMeneger  = new ToolsMeneger();
+        this.tools         = this.toolsMeneger.tools;
+
         this.#addEventListener(canvas);
         // підключаємо необхідні нам класи
         this.vieport       = new Vieport(canvas);
@@ -88,14 +90,17 @@ export class GraphEditor {
 
     getMouseEventFromTouchEvent(e) {
         e.preventDefault()
-        if (e.touches && e.touches.length > 0) {
+        if (e.touches && e.touches.length > 0){
           return {
             pageX: e.touches[0].pageX,
             pageY: e.touches[0].pageY,
             buttons: 1,
             touches: true,
           };
-        }
+        };
+        
+        if (e.touches && e.touches.length >= 2) return e;
+  
         return null;
       }
 
@@ -142,7 +147,6 @@ export class GraphEditor {
 
         if(isBtnRight && e.buttons   === 2) this.lastPoint = null;
     };
-
     #inputMouseMove(e){
         const isCurveBtnLeft   = this.tools.curve    && e.buttons === 1;
         const isTreeBtnLeft    = this.tools.tree     && e.buttons === 1;
@@ -162,8 +166,7 @@ export class GraphEditor {
         ++this.counter;
         
         // умова використання інструменту dragging
-        if(isDragingBtnLeft && this.activePoint && !this.point.tools.curve){
-            console.log(this.point)
+        if(isDragingBtnLeft && this.activePoint){
             this.activePoint.x = this.point.x;
             this.activePoint.y = this.point.y;
         }else{
@@ -178,7 +181,11 @@ export class GraphEditor {
         };
     };
     #inputMouseUp(e){
-        if(this.tools.curve || this.tools.dragging) this.lastPoint = null;
+        const isBtnUp =     this.tools.curve      ||
+                            this.tools.dragging   ||
+                            this.tools.tree       || 
+                            this.tools.building;
+        if(isBtnUp) this.lastPoint = null;
     };
 
     #addSegment(point){
@@ -196,7 +203,7 @@ export class GraphEditor {
     draw(ctx){
         this.vieport.draw(ctx);
         
-        const viewPoint = utils.operate(this.vieport.getOfFset(), '*', -1)
+        const viewPoint = utils.operate(this.vieport.getPointOffset(), '*', -1)
         this.world.draw(ctx, viewPoint, this.vieport.zoom);
         this.graph.draw(ctx);
         
@@ -219,6 +226,6 @@ export class GraphEditor {
         this.graph.removeAll();
         this.lastPoint     = null;
         this.activePoint   = null;
-        for (const key in tools) tools[key] = false;
+        for (const key in this.tools) this.tools[key] = false;
     }
 }
