@@ -44,12 +44,13 @@ export class GraphEditor {
     };
 
     #load(saveInfo){
-        const points        = saveInfo.points.map((point) => new Point(point, point.tools));
+        const points        = saveInfo.points.map((point) => new Point(point, point.tools, point.radius));
        
         const segments    = saveInfo.segments.map((line) => new Segment(
             points.find(point => point.equals(line.p1)),
             points.find(point => point.equals(line.p2)),
-            line.tools));
+            line.tools,
+            line.size));
             
         const sortedPoints = {};
         points.forEach((point) => {
@@ -161,7 +162,8 @@ export class GraphEditor {
         ++this.counter;
         
         // умова використання інструменту dragging
-        if(isDragingBtnLeft && this.activePoint){
+        if(isDragingBtnLeft && this.activePoint && !this.point.tools.curve){
+            console.log(this.point)
             this.activePoint.x = this.point.x;
             this.activePoint.y = this.point.y;
         }else{
@@ -172,6 +174,7 @@ export class GraphEditor {
         if(isRemoveBtnLeft){
             this.removePoint = utils.getNearestPoint(this.point, this.graph.points, this.minDicnance = this.sizeRemove)
             if(this.activePoint) this.#remove(this.removePoint); 
+            
         };
     };
     #inputMouseUp(e){

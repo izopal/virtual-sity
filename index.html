@@ -9,14 +9,13 @@
     <link rel="stylesheet" href="./style.css">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
 
-    
-
-
     <script type="module" src="./js/main.js" defer></script>
     <!-- блок підключення SVG -->
     <script src="https://unpkg.com/boxicons@2.1.4/dist/boxicons.js" defer></script>
 </head>
 <body>
+    
+    
     <canvas id="canvasMS"></canvas>
     <div class="tools">
         <button class = 'button' data-tool = 'curve'    onclick="setTool(this)"> <i class='bx bx-pencil'></i>              </button>
@@ -56,16 +55,18 @@
         <button class = 'button' onclick="zoom('plus')">       <i class='bx bx-zoom-in' ></i>             </button>
         <button class = 'button' onclick="zoom('minus')">      <i class='bx bx-zoom-out' ></i>            </button>
     </div>
-    <div class="box-range">
+
+    <div class="box">
         <input  type="range" 
                 class="range" 
-                id="range"
-                value="5"
+                value="0"
                 min="0" 
                 max="100"
-                onmousemove="rangeSlider(this.value)">
-        <span id="rangeValue">5</span>
+                onmousemove="rangeSliderMouse(this)"
+                ontouchmove="rangeSliderTouch(event, this)">
+        <span id="rangeValue">0</span>
     </div>
+    
 </body>
 </html>
 

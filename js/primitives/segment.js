@@ -2,11 +2,11 @@ import {data}      from '../constants.js';
 import * as utils  from '../math/utils.js';
 
 export class Segment{
-    constructor(p1, p2, tools = {}){
+    constructor(p1, p2, tools = {}, size){
         this.p1 = p1;
         this.p2 = p2;
         this.config = data.primitives.segment;
-        this.size = this.config.curve.size
+        this.size = size || this.config.curve.size
         // параметри інструментів графічного редактора
         this.tools  = tools;
     };

@@ -1,10 +1,13 @@
 import {data}      from '../constants.js';
 export class Point {
-    constructor(coordinates = { x: 0, y: 0 }, tools = {}) {
+    constructor(coordinates = { x: 0, y: 0 }, tools = {}, radius) {
+     
+             
         this.x    = coordinates.x;
         this.y    = coordinates.y;
         this.config = data.primitives.point;
-        this.radius = this.config.point.radius
+        this.radius = radius || this.config.point.radius;
+       
 
         // параметри інструментів
         this.tools = tools;

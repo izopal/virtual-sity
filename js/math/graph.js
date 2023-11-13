@@ -14,6 +14,7 @@ export class Graph{
         this.configSegment  = data.primitives.segment;
         this.segments       = segments;
         this.sortedSegments = sortedSegments;
+        this.filterPointsByTools = this.filterPointsByTools.bind(this);
     };
     
     addPoint(point){
@@ -25,7 +26,13 @@ export class Graph{
         this.sortedSegments = utils.sortObject(line, this.tools, this.sortedSegments);
         this.segments.push(line);
     };
-    
+    filterPointsByTools(...keys) {
+        const filterPoints = [...this.points];
+        return filterPoints.filter(point => {
+            // Перевірка, чи є хоча б один з ключів у властивості tools точки
+            return keys.some(key => point.tools[key]);
+        });
+    }
     remove(point){
         this.points   = this.points.filter(p => !p.equals(point));
         this.segments = this.segments.filter(segment => !segment.p1.equals(point) && !segment.p2.equals(point));  

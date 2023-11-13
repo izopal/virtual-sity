@@ -1,4 +1,6 @@
 import * as config    from './tools.js';
+import * as utils    from './math/utils.js';
+
 import {GraphEditor} from './graphEditor.js';
 import { data } from './constants.js';
 import { Point } from '../js/primitives/point.js';
@@ -19,6 +21,8 @@ const buttonTools        = document.querySelectorAll(`.button[data-tool]`);
 const buttonInputSave    = document.getElementById('buttonInputSave');
 const buttonSave         = document.getElementById('buttonSave');
 const buttonload         = document.getElementById('buttonload');
+
+const rangeValue   = document.getElementById('rangeValue');
 
 
 
@@ -212,8 +216,23 @@ window.save = function() {
 
 // let lastValue = 5;
 // функція отримання значення повзунка
-window.rangeSlider =function(value){
-      document.getElementById('rangeValue').innerHTML = value;
+window.rangeSliderMouse = function(input) {
+      const value = input.value
+      updateValue(value);
+  }
+window.rangeSliderTouch = function(event, input) {
+      const inputRect = input.getBoundingClientRect();
+      const width = inputRect.width;
+      const touchX = event.touches[0].clientX - inputRect.left;
+      const percentage = (touchX / width) * 100;
+      const value = (percentage * (input.max - input.min)) / 100 + input.min;
+      const roundedValue = Math.floor(value);
+      const validValue = utils.getValidValue(roundedValue, input.min, input.max);
+      
+      updateValue(validValue);
+}
+function updateValue(value){
+      rangeValue.innerHTML = value;
       if(config.tools.curve){
             data.primitives.segment.curve.size = value;
       }

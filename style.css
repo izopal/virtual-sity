@@ -9,12 +9,13 @@
     src: url(./fonts/merriweather-regular-italic.woff2);
 }
 /* ===================== Задаємо змінні ========================> */
-:root{
-    --index: calc(1vw + 1vh);
-    --textColor: #8baaba;
-    --menuColor: #6a7b70;
-    --backgroundColor: #2a5
-}
+    :root{
+        --index: calc(1vw + 1vh);
+        --textColor: #8baaba;
+        --menuColor: #6a7b70;
+        --backgroundColor: #2a5;
+        --inputColor:  #1270357d;
+    }
 
 *{
     margin: 0;
@@ -80,7 +81,7 @@ body {
     justify-content: center;
     z-index: 10;
 }
-.box-range{
+.box{
     position: absolute;
     left: 0;
     bottom: 0; 
@@ -98,42 +99,37 @@ body {
    
     cursor: pointer;
 }
-input[type=range]{
+.range {
+    --range-size:  calc(var(--index) * 1.125);
+    --border-size: calc(var(--index) * .125);
+
     width: 70%;
-    height:  calc(var(--index) * 1.125);
-    -webkit-appearance: none;  /* Override default CSS styles */
+    height:  var(--range-size);
+    -webkit-appearance: none;
     appearance: none;
     outline: none;
     background-color: transparent;
-    border: calc(var(--index) * .125) solid transparent;
-    border-radius: .625rem;
-    box-shadow: -.25rem -.25rem .5rem rgba(255, 255, 255, .1),       
+    border: var(--border-size) solid transparent;
+    border-radius: var(--range-size);
+    box-shadow: -.25rem -.25rem .5rem rgba(255, 255, 255, .1),
                  .25rem  .25rem .5rem rgba(0, 0, 0, .35),
                  inset -.25rem -.25rem .5rem rgba(255, 255, 255, .1),
                  inset  .25rem  .25rem .5rem rgba(0, 0, 0, .35);
     overflow: hidden;
-};
-input[type=range]::-webkit-slider-thumb{
-    -webkit-appearance: none;
+}
+.range::-webkit-slider-thumb {
+    position: relative;
     appearance: none;
-    background-color: red;
-    width: .125rem  ;
-    height:  .125rem;
-    /* border-radius: 50%;
-    border: 2px solid #0074cf;
-    box-shadow: -407px 0 0 400px #27a0ff;
-    cursor: pointer; */
-   
+    background-color: var(--inputColor);
+    width: calc(var(--range-size) - var(--border-size));
+    height: calc(var(--range-size) - var(--border-size));
+    border-radius: 50%;
+    box-shadow: -407px 0 0  400px var(--inputColor);
+    cursor: grab;
+    
 }
-.slider::-moz-range-thumb {
-    background-color: red;
-    width: 10% ;
-    height:  .125rem;
-    /* border-radius: 50%;
-    border: 2px solid #0074cf;
-    box-shadow: -407px 0 0 400px #27a0ff;
-    cursor: pointer;  */
-}
+
+
 #rangeValue{
     position: relative;
     text-align: center;

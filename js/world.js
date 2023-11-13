@@ -11,7 +11,8 @@ import {Building}  from './items/building.js';
 export class World{
     constructor(graph = {}){
         this.graph          = graph;
-        this.config         = data.world            || {};
+      
+        this.config     = data.world            || {};
         this.segments   = this.graph.sortedSegments || {};
         this.points     = this.graph.sortedPoints   || {};
         
