@@ -1,5 +1,6 @@
 import { GraphEditor } from "./graphEditor.js";
 
+
 const buttonSave         = document.getElementById('buttonSave');
 const buttonload         = document.getElementById('buttonload');
 const buttonInputSave    = document.getElementById('buttonInputSave');
@@ -12,9 +13,11 @@ const iconClose     = document.querySelector('.fail .input-wrapper .icon.close')
 const selectElement = document.getElementById('load');
 
 export class App{
-    constructor(canvas, buttonTools) {
+    constructor(canvas, toolsMeneger, data) {
         this.canvas = canvas;
-        this.buttonTools = buttonTools;
+        this.toolsMeneger = toolsMeneger
+        this.buttonTools  = toolsMeneger.buttonTools;
+        this.data    = data;
 
         this.buttonSave      = buttonSave;
         this.buttonload      = buttonload;
@@ -37,22 +40,22 @@ export class App{
             dispose:    false,
             save:       false
         };
+
         this.initialize();
         this.graphEditor =  this.initializeGraphEditor();
-       
-        
     };
-    initializeGraphEditor(saveName) {
-        const graphString = localStorage.getItem(saveName);
-        const saveInfo = graphString ? JSON.parse(graphString) : null;
-        return new GraphEditor(this.canvas, saveInfo);
-    }
 
+    
     initialize() {
         this.initializeCanvas();
         this.initializeDOMElements();
         this.setupEventListeners();
     };
+    initializeGraphEditor(saveName) {
+        const graphString = localStorage.getItem(saveName);
+        const saveInfo = graphString ? JSON.parse(graphString) : null;
+        return new GraphEditor(this.canvas, saveInfo,  this.toolsMeneger, this.data);
+    }
 
     initializeCanvas(){};
     initializeDOMElements(){};

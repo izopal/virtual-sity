@@ -1,26 +1,27 @@
 import * as utils  from './math/utils.js';
-import { data }    from './constants.js';
-
-import { ToolsMeneger }    from './tools.js';
 import {Point}     from './primitives/point.js';
 
 const buttonZoom        = document.querySelectorAll(`.button[data-zoom]`);
+const indicatorZoom     = document.querySelector('.indicator-zoom');
+const zoomValue         = document.getElementById('zoomValue')
 
 export class Vieport{
-    constructor(canvas){
+    constructor(canvas, toolsMeneger, data){
         this.canvas       = canvas;
         this.ctx          = this.canvas.getContext('2d');
 
         this.config       = data.vieport;
         this.configScale  = this.config.scale;
 
-        this.toolsMeneger  = new ToolsMeneger();
-        this.tools         = this.toolsMeneger.tools;
+        this.toolsMeneger  = toolsMeneger;
+        this.tools         = this.toolsMeneger.tools
+        this.buttonTools   = this.toolsMeneger.buttonTools;
+        // this.allToolFalse = Object.values(this.tools).every(value => value === false);
         
         this.zoom         = utils.getValidValue(this.configScale.zoom, 0);
         this.step         = utils.getValidValue(this.configScale.step, 0);
-        this.minZoom      = utils.getValidValue(this.configScale.min, 0);
-        this.maxZoom      = utils.getValidValue(this.configScale.max, 0);
+        this.minZoom      = utils.getValidValue(this.configScale.minZoom, 0);
+        this.maxZoom      = utils.getValidValue(this.configScale.maxZoom, 0);
 
         this.angle        = this.config.angle;
 
@@ -42,6 +43,10 @@ export class Vieport{
         this.touchStartTime  = null;
         this.touchEndTime  = null;
 
+        this.twoFingerTouch = false
+
+        this.hideTimeout = null
+
         this.addEventListener();
     };
 
@@ -50,7 +55,8 @@ export class Vieport{
        
         buttonZoom.forEach(button => button.addEventListener('click', () => {
             const buttonActive = button.getAttribute('data-zoom');
-            this.zoomButton(buttonActive);
+            this.zoom = this.zoomButton(buttonActive);
+            this.getIndicatorZoom(this.zoom)
             })
         );
         
@@ -66,15 +72,28 @@ export class Vieport{
     // функція zoom роликом
     inputMouseWheel(e){
         this.zoom += Math.sign(e.deltaY) * this.step;
-        return this.zoom  = this.#clampZoom()
+        this.getIndicatorZoom(this.zoom)
+        return this.zoom  = this.#clampZoom(this.zoom)
     };
     // функція zoom кнопками
     zoomButton(buttonActive){
-        if(buttonActive === 'plus')  this.zoom -= 5 * this.step;
-        if(buttonActive === 'minus') this.zoom += 5 * this.step;
-        return this.zoom  = this.#clampZoom()
+        if(buttonActive === 'plus')  this.zoom += this.step;
+        if(buttonActive === 'minus') this.zoom -= this.step;
+        
+        return this.#clampZoom(this.zoom);
+
     };    
-    // Блок керування мишкою
+    getIndicatorZoom(value){
+        const corectZoom = Math.round(value * 4) / 4;
+        indicatorZoom.style.display   = 'flex';
+        indicatorZoom.style.animation = 'slideAppear 2s ease forwards';
+        zoomValue.innerHTML = `${corectZoom}x`;
+            
+        clearTimeout(this.hideTimeout);
+
+        this.hideTimeout = setTimeout(() => indicatorZoom.style.animation = 'slideDisappear 2s ease forwards', 3000); 
+    }
+    // ======================== Блок керування мишкою ===============================>
     inputMouseDown(e){
         if(e.buttons === 4 || e.buttons === 3) this.inputStart(e);
     };
@@ -84,20 +103,19 @@ export class Vieport{
     inputMouseUp(){
       this.inputEnd();
     };
-    // Блок керування тачпадом
+    // ======================== Блок керування тачпадом ==============================>
     inputTouchStart(e){
-        this.inputStart(e.touches[0])
+        
         if (e.targetTouches.length >= 2) {
-            for (const key in this.tools) this.tools[key] = false;
+            this.inputStart(e.touches[0]) 
             this.startDistance = this.#getTouchDistance(e);
+            this.tools = this.toolsMeneger.resetTools();
         }
     };
     inputTouchMove(e){
-        const buttonTools        = document.querySelectorAll(`.button[data-tool]`);
-
-        const allToolFalse = Object.values(this.tools).every(value => value === false);
-        if(allToolFalse  && this.drag.active){
-            buttonTools.forEach(button => button.classList.remove('active'));        //деактивуємо всі кнопки інструментів
+        console.log(e)
+        if(this.drag.active){
+            this.buttonTools.forEach(button => button.classList.remove('active'));        //деактивуємо всі кнопки інструментів
 
             this.inputMove(e.touches[0])
         };
@@ -105,10 +123,11 @@ export class Vieport{
         if (e.targetTouches.length >= 2){
             this.currentDistance = this.#getTouchDistance(e);
             const scale = this.startDistance / this.currentDistance;
-            
-            this.zoom *= scale;
-            this.zoom = this.#clampZoom();
 
+                this.zoom *= scale;
+        
+            this.zoom = this.#clampZoom(this.zoom);
+            this.getIndicatorZoom(this.zoom)
             this.startDistance = this.currentDistance;
 
             // Обчислюємо кут повороту
@@ -119,11 +138,7 @@ export class Vieport{
     };
     inputTouchEnd(e){
         this.inputEnd();       
-        if (e.targetTouches.length < 2){
-            this.currentDistance = null;
-            data.vieport.scale.zoom = this.zoom;
-            data.vieport.angle = this.angle;
-        };
+        this.currentDistance = null;
     };
 
     inputStart(e){
@@ -167,8 +182,8 @@ export class Vieport{
            const y1 = -rotatedX * Math.sin(this.angle) + rotatedY * Math.cos(this.angle);
        
            // Повертаємо зміщення відносно кута повороту
-           const x = (x1) * this.zoom - this.offset.x;
-           const y = (y1)  * this.zoom - this.offset.y;
+           const x = (rotatedX) * this.zoom - this.offset.x;
+           const y = (rotatedY)  * this.zoom - this.offset.y;
            const coordinates = { x, y };
           
            const point     = new Point(coordinates, {...this.tools});
@@ -195,8 +210,8 @@ export class Vieport{
         return angle;
     };
     // інтервал обмеження 
-    #clampZoom() {
-        return Math.max(this.minZoom, Math.min(this.maxZoom, this.zoom));
+    #clampZoom(zoom) {
+        return  Math.max(this.minZoom, Math.min(this.maxZoom, zoom));
     };
 
     draw(ctx){

@@ -1,18 +1,16 @@
 import * as utils       from './utils.js';
-import { data }         from '../constants.js';
-import { ToolsMeneger } from '../tools.js';
 
 export class Graph{
-    constructor(points = [], sortedPoints = {}, segments = [], sortedSegments = {},){
-        this.toolsMeneger  = new ToolsMeneger();
-        this.tools          = this.toolsMeneger.tools;
+    constructor(tools, data, points = [], sortedPoints = {}, segments = [], sortedSegments = {},){
+        this.tools          = tools;
+        this.data          = data;
 
-        this.configPoint    = data.primitives.point;
+        this.configPoint    = this.data.primitives.point;
         this.points         = points;
         this.sortedPoints   = sortedPoints;
         
        
-        this.configSegment  = data.primitives.segment;
+        this.configSegment  = this.data.primitives.segment;
         this.segments       = segments;
         this.sortedSegments = sortedSegments;
         this.filterPointsByTools = this.filterPointsByTools.bind(this);
@@ -31,7 +29,7 @@ export class Graph{
         const filterPoints = [...this.points];
         return filterPoints.filter(point => {
             // Перевірка, чи є хоча б один з ключів у властивості tools точки
-            return keys.some(key => point.tools[key]);
+            return keys.some(key => !point.tools[key]);
         });
     }
     remove(point){

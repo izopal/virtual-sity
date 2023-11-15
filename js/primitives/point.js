@@ -7,10 +7,8 @@ export class Point {
         this.y    = coordinates.y;
         this.config = data.primitives.point;
         this.radius = radius || this.config.point.radius;
-       
-
-        // параметри інструментів
-        this.tools = tools;
+        
+        this.tools = tools
     }
 
     equals(point) {
@@ -27,8 +25,8 @@ export class Point {
         } = options
 
         // this.radius = radius || this.radius;
+        if(!this.tools.curve){
 
-        if (!this.tools.curve){
             ctx.save();
             ctx.globalAlpha = globalAlpha;
             ctx.beginPath();
@@ -48,6 +46,7 @@ export class Point {
                 ctx.fill();
             };
             ctx.restore();
-        }             
+        }
+                     
     }
 }

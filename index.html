@@ -49,8 +49,11 @@
     </div>
 
     <div class="scale-bar">
-        <button class = 'button' data-zoom = 'plus'>  <i class='bx bx-zoom-in' ></i>  </button>
-        <button class = 'button' data-zoom = 'minus'> <i class='bx bx-zoom-out' ></i> </button>
+        <button class = 'button' data-zoom = 'plus'>  <i class='bx bx-zoom-out' ></i>  </button>
+        <button class = 'button' data-zoom = 'minus'> <i class='bx bx-zoom-in' ></i> </button>
+    </div>
+    <div class="indicator-zoom">
+        <span id="zoomValue">1</span>
     </div>
 
     <div class="box">
@@ -60,8 +63,7 @@
                 value="0"
                 min="0" 
                 max="22"
-                onmousemove="rangeSliderMouse(this)"
-                ontouchmove="rangeSliderTouch(event, this)">
+        >
         <span id="rangeValue">0</span>
     </div>
     

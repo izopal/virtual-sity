@@ -1,4 +1,3 @@
-import {data}      from './constants.js';
 import * as utils  from './math/utils.js';
 import { Point }   from './primitives/point.js';
 import { Segment } from './primitives/segment.js';
@@ -9,7 +8,7 @@ import {Road}      from './items/road.js';
 import {Building}  from './items/building.js';
 
 export class World{
-    constructor(graph = {}){
+    constructor(data, graph = {}){
         this.graph          = graph;
       
         this.config     = data.world            || {};
