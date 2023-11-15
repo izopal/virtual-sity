@@ -93,7 +93,7 @@ export class ToolsMeneger{
     };
 
     #updateRangeValue(buttonActive) {
-        if (buttonActive === 'curve') rangeValue.innerHTML = inputValue.value = this.data.primitives.segment.curve.size;
-        if (buttonActive === 'point') rangeValue.innerHTML = inputValue.value = this.data.primitives.point.point.radius;
+        if (buttonActive === 'curve') rangeValue.innerHTML = inputValue.value = Math.floor(this.data.primitives.segment.curve.size);
+        if (buttonActive === 'point') rangeValue.innerHTML = inputValue.value = Math.floor(this.data.primitives.point.point.radius);
     }
 }

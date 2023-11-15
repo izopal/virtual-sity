@@ -84,11 +84,13 @@ export class Vieport{
 
     };    
     getIndicatorZoom(value){
-        const corectZoom = Math.round(value * 4) / 4;
+        
+        const corectZoom = Math.round((1 / value) * 4) / 4;
+        
         indicatorZoom.style.display   = 'flex';
         indicatorZoom.style.animation = 'slideAppear 2s ease forwards';
         zoomValue.innerHTML = `${corectZoom}x`;
-            
+        
         clearTimeout(this.hideTimeout);
 
         this.hideTimeout = setTimeout(() => indicatorZoom.style.animation = 'slideDisappear 2s ease forwards', 3000); 

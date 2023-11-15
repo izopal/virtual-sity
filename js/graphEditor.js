@@ -194,6 +194,7 @@ export class GraphEditor {
                             this.tools.tree       || 
                             this.tools.building;
         if(isBtnUp) this.lastPoint = null;
+        if(this.tools.dragging) this.activePoint = null;
     };
 
     #addSegment(point){
