@@ -71,7 +71,8 @@ export class Vieport{
 
     // функція zoom роликом
     inputMouseWheel(e){
-        this.zoom += Math.sign(e.deltaY) * this.step;
+        console.log(e.deltaY)
+        this.zoom += e.deltaY *.01 * this.step;
         this.getIndicatorZoom(this.zoom)
         return this.zoom  = this.#clampZoom(this.zoom)
     };
@@ -86,10 +87,10 @@ export class Vieport{
     getIndicatorZoom(value){
         
         const corectZoom = Math.round((1 / value) * 4) / 4;
-        
+        const zoom = utils.getValidValue(corectZoom, this.minZoom, this.maxZoom)
         indicatorZoom.style.display   = 'flex';
         indicatorZoom.style.animation = 'slideAppear 2s ease forwards';
-        zoomValue.innerHTML = `${corectZoom}x`;
+        zoomValue.innerHTML = `${zoom}x`;
         
         clearTimeout(this.hideTimeout);
 
@@ -184,8 +185,8 @@ export class Vieport{
            const y1 = -rotatedX * Math.sin(this.angle) + rotatedY * Math.cos(this.angle);
        
            // Повертаємо зміщення відносно кута повороту
-           const x = (rotatedX) * this.zoom - this.offset.x;
-           const y = (rotatedY)  * this.zoom - this.offset.y;
+           const x = (x1) * this.zoom - this.offset.x;
+           const y = (y1)  * this.zoom - this.offset.y;
            const coordinates = { x, y };
           
            const point     = new Point(coordinates, {...this.tools});

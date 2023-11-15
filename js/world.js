@@ -208,7 +208,7 @@ export class World{
             if(point.tools[key]){
                 this.graph.sortedPoints[key]   = this.graph.sortedPoints[key].filter(p => !p.equals(point));
                 if (this.graph.sortedPoints[key].length === 1) this.graph.sortedPoints[key].pop();
-                this.graph.sortedSegments[key] = this.graph.sortedSegments[key].filter(segment => !segment.p1.equals(point) && !segment.p2.equals(point));
+                if(this.graph.sortedSegments[key])this.graph.sortedSegments[key] = this.graph.sortedSegments[key].filter(segment => !segment.p1.equals(point) && !segment.p2.equals(point));
             };
         }
     }

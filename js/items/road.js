@@ -16,7 +16,7 @@ export class Road {
     generate(tool){
         this.lines   = this.segments[tool] || []
         this.markers = this.points[tool]   || []
-        console.log(this.lines)
+      
         this.layers  = this.lines.map(segment => new Envelope(segment, this.config)) || [];
         this.borders = Polygon.union(this.layers.map(road => road.polygon))          || [];
     }

@@ -68,7 +68,7 @@ export class ToolsMeneger{
     #rangeSlider(e) {
         const pageX = e.type === "mousemove" ? e.pageX : e.touches[0].clientX; 
         
-        if(e.buttons === 1 || e.touches.length === 1){
+        if(e.buttons === 1 ||(e.touches && e.touches.length === 1)){
             // Отримання min та max значень
             const minValue     = this.inputValue.min;
             const maxValue     = this.inputValue.max;
