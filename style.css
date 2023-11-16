@@ -140,6 +140,7 @@ body {
                 rotatex(0deg);
     transform-style: preserve-3d;
     transition: 1.5s;
+    
     z-index: 10;
 }
 .tools .button.tools {

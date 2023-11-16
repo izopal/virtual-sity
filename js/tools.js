@@ -41,8 +41,8 @@ export class ToolsMeneger{
         inputValue.addEventListener('mousemove',    this.#rangeSlider.bind(this));
         inputValue.addEventListener('touchmove',    this.#rangeSlider.bind(this));
         // перехід між згенерованими картинками вперед('next')/назад('prev')
-        prev.addEventListener('click', () =>   this.updateRotation(this.degrees += 45));
-        next.addEventListener('click', () =>   this.updateRotation(this.degrees -= 45));
+        prev.addEventListener('click', () =>   this.updateRotation(this.degrees += 40));
+        next.addEventListener('click', () =>   this.updateRotation(this.degrees -= 40));
         // перехід між згенерованими картинками задопомогою swipe вліво/вправо
         tools.addEventListener('touchmove',    this.updateRotationSwipe.bind(this));
 
@@ -86,8 +86,8 @@ export class ToolsMeneger{
         console.log(e)
         const swipeDistance = e.changedTouches[0].pageY - this.touchY;
 
-        if (swipeDistance > this.touchTreshold) this.updateRotation(this.degrees += 45)
-        if (swipeDistance < -this.touchTreshold)  this.updateRotation(this.degrees -= 45)
+        if (swipeDistance > this.touchTreshold) this.updateRotation(this.degrees += 40)
+        if (swipeDistance < -this.touchTreshold)  this.updateRotation(this.degrees -= 40)
         
         this.touchY = e.changedTouches[0].pageY;
     };
