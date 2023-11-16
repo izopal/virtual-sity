@@ -76,7 +76,7 @@ export class ToolsMeneger{
     updateRotation(degrees) {
         tools.style.transform = `translateX(-50%)
                                  perspective(1000px) 
-                                 rotateY(${degrees}deg)`;
+                                 rotatex(${degrees}deg)`;
     };
     updateRotationSwipe(e){
         const swipeDistance = e.changedTouches[0].pageX - this.touchX;

@@ -80,12 +80,14 @@ body {
 /* ========================================================================> */
 .navig-bar-tools{
     position: absolute;
-    left: 0%;
-    bottom: 4%;
-    width: 100%;
-    height: calc(var(--index) * 3.25);
+    left:var(--index) ;
+    top: 50%;
+    /* width: 100%; */
+    transform: translateY(-50%);
+    /* height: calc(var(--index) * 3.25); */
     display: flex;
     margin-bottom:  calc(var(--index) * 1.5);
+    /* overflow: hidden; */
 }
 .button.graphEditor{
     position: absolute;
@@ -111,40 +113,38 @@ body {
 }
 #prev{
     position: absolute;
-    left: calc(var(--index) * 4.75);
+    rotate: -90deg;
+    top: calc(var(--index) * 10.75);
 }
 #next{
     position: absolute;
-    right: calc(var(--index) * 4.75);
+    bottom: calc(var(--index) * 10.75);
+    rotate: -90deg;
 }
 .tools {
     display: flex;
     position: absolute;
-    left: 50%;
+    left: 0%;
     top: 0%;
-    width: 5%;
-    transform:  translateX(-50%)
+    /* width: 5%; */
+    transform:  translateY(-50%)
                 perspective(1000px)    
-                rotateY(0deg);
+                rotatex(90deg);
     transform-style: preserve-3d;
     transition: 1.5s;
     z-index: 10;
 }
 .tools .button.tools {
-    position: absolute;
-    top: 0%;
-    left: 0%;
+   
 
     width: calc(var(--index) * 2.75);
     height: calc(var(--index) * 2.75);
 
     font-size: calc(var(--index)* 1.725);
     
-    transform-origin: center; 
-    transform-style: preserve-3d;
+    transform-origin: center center; 
     backdrop-filter: blur(10px);
-    transform: rotateY(calc(var(--i) * 40deg)) translateZ(calc(var(--index) * 6.25));
-    -webkit-box-reflect: below 0px linear-gradient(transparent, transparent, #0004)  відзеркалення обєкта
+    transform: rotatex(calc(var(--i) * 40deg)) translateZ(calc(var(--index) * 6.25));
 }
 
 /* ========================================================================> */
