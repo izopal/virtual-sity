@@ -81,19 +81,8 @@ export class App{
     };
     // функція появи панелі інструментів
     #getToolsBar(){
-        // console.log(e)
-        this.appState.toolsBar = !this.appState.toolsBar;
-        if(this.appState.toolsBar){
-            arrowBar.style.animation = 'slideHeightOff 2s ease forwards';
-            this.buttonTools.forEach(button => {
-                button.style.animation = 'slideAppear1 2s ease forwards';
-            })
-        } else {
-            arrowBar.style.animation = 'slideHeightOn 2s ease forwards';
-            this.buttonTools.forEach(button => {
-                button.style.animation = 'slideDisappear2 2s ease forwards';
-            });
-        }
+        arrowBar.classList.toggle('inactive');
+        this.buttonTools.forEach(button => button.classList.toggle('inactive'));
     }
     // функція збереження поточного graph
     #save() {
