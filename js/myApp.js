@@ -86,13 +86,11 @@ export class App{
         if(this.appState.toolsBar){
             arrowBar.style.animation = 'slideHeightOff 2s ease forwards';
             this.buttonTools.forEach(button => {
-                setTimeout(() =>   button.style.display = 'none', 2000);
                 button.style.animation = 'slideAppear1 2s ease forwards';
             })
         } else {
             arrowBar.style.animation = 'slideHeightOn 2s ease forwards';
             this.buttonTools.forEach(button => {
-                button.style.display = 'flex';
                 button.style.animation = 'slideDisappear2 2s ease forwards';
             });
         }
