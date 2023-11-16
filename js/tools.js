@@ -79,17 +79,14 @@ export class ToolsMeneger{
         tools.style.transform = `translateY(-50%)
                                  perspective(1000px) 
                                  rotatex(${degrees}deg)`;
-                                
-       
     };
     updateRotationSwipe(e){
-        console.log(e)
-        const swipeDistance = e.changedTouches[0].pageY - this.touchY;
+        const swipeDistance = e.targetTouches[0].pageY - this.touchY;
 
-        if (swipeDistance > this.touchTreshold) this.updateRotation(this.degrees += 40)
-        if (swipeDistance < -this.touchTreshold)  this.updateRotation(this.degrees -= 40)
+        if (swipeDistance < this.touchTreshold) this.updateRotation(this.degrees += 40)
+        if (swipeDistance > -this.touchTreshold)  this.updateRotation(this.degrees -= 40)
         
-        this.touchY = e.changedTouches[0].pageY;
+        this.touchY = e.targetTouches[0].pageY;
     };
 
     resetTools() {

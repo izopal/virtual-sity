@@ -1,6 +1,8 @@
 import { GraphEditor } from "./graphEditor.js";
 
-
+const graphEditor        = document.getElementById('graphEditor');
+           
+const arrowBar           = document.querySelector('.arrow-bar')
 const buttonSave         = document.getElementById('buttonSave');
 const buttonload         = document.getElementById('buttonload');
 const buttonInputSave    = document.getElementById('buttonInputSave');
@@ -18,6 +20,8 @@ export class App{
         this.toolsMeneger = toolsMeneger
         this.buttonTools  = toolsMeneger.buttonTools;
         this.data    = data;
+
+        this.graphEditor     = graphEditor;
 
         this.buttonSave      = buttonSave;
         this.buttonload      = buttonload;
@@ -38,7 +42,8 @@ export class App{
             saveButton: false,
             loadButton: false,
             dispose:    false,
-            save:       false
+            save:       false,
+            toolsBar:   false,
         };
 
         this.initialize();
@@ -60,6 +65,8 @@ export class App{
     initializeCanvas(){};
     initializeDOMElements(){};
     setupEventListeners() {
+        this.graphEditor.addEventListener    ('click',   ()  => this.#getToolsBar())
+
         this.buttonSave.addEventListener     ('click',   ()  => this.#save())
         this.buttonload.addEventListener     ('click',   ()  => this.#load());
         this.buttonInputSave.addEventListener('click',   ()  => this.#newSave());
@@ -72,7 +79,24 @@ export class App{
         this.selectElement.addEventListener  ('change',  (e) =>this.#selectingSaveFile(e))
         // Додайте інші обробники подій за потреби
     };
-
+    // функція появи панелі інструментів
+    #getToolsBar(){
+        // console.log(e)
+        this.appState.toolsBar = !this.appState.toolsBar;
+        if(this.appState.toolsBar){
+            arrowBar.style.animation = 'slideHeightOff 2s ease forwards';
+            this.buttonTools.forEach(button => {
+                button.style.animation = 'slideAppear1 2s ease forwards';
+                setTimeout(() =>   button.style.display = 'none', 2000);
+            })
+        } else {
+            arrowBar.style.animation = 'slideHeightOn 2s ease forwards';
+            this.buttonTools.forEach(button => {
+                button.style.display = 'flex';
+                button.style.animation = 'slideDisappear2 2s ease forwards';
+            });
+        }
+    }
     // функція збереження поточного graph
     #save() {
         if(this.appState.dispose){
