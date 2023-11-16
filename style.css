@@ -81,7 +81,7 @@ body {
 .navig-bar-tools{
     position: absolute;
     left: 0%;
-    bottom: 5%;
+    bottom: 4%;
     width: 100%;
     height: calc(var(--index) * 3.25);
     display: flex;
@@ -111,11 +111,11 @@ body {
 }
 #prev{
     position: absolute;
-    left: calc(var(--index) * 5.25);
+    left: calc(var(--index) * 4.75);
 }
 #next{
     position: absolute;
-    right: calc(var(--index) * 5.25);
+    right: calc(var(--index) * 4.75);
 }
 .tools {
     display: flex;
@@ -150,10 +150,9 @@ body {
 /* ========================================================================> */
 .fail{
     position: absolute;
-    height: 100%;
     right: 0;
-    top: 0;
-    
+    top: 50%;
+    transform: translateY(-50%);
     display: flex;
     flex-direction: column;
     gap: var(--index);
