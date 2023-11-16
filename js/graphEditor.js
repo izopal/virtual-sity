@@ -180,13 +180,13 @@ export class GraphEditor {
             this.activePoint.x = this.point.x;
             this.activePoint.y = this.point.y;
         }else{
-            this.dragingPoints = this.graph.filterPointsByTools('curve')
+            this.dragingPoints = this.graph.filterPointsByTools('curve');
             this.activePoint = utils.getNearestPoint(this.point, this.dragingPoints, this.minDicnance);
         };
         // умова використання інструменту remove
         if(isRemoveBtnLeft){
             this.removePoint = utils.getNearestPoint(this.point, this.graph.points, this.minDicnance = this.sizeRemove)
-            if(this.activePoint) this.#remove(this.removePoint); 
+            this.#remove(this.removePoint); 
         };
     };
     #inputMouseUp(e){

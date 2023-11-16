@@ -204,12 +204,14 @@ export class World{
     };
 
     remove(point){
-        for(const key in point.tools){
-            if(point.tools[key]){
-                this.graph.sortedPoints[key]   = this.graph.sortedPoints[key].filter(p => !p.equals(point));
-                if (this.graph.sortedPoints[key].length === 1) this.graph.sortedPoints[key].pop();
-                if(this.graph.sortedSegments[key])this.graph.sortedSegments[key] = this.graph.sortedSegments[key].filter(segment => !segment.p1.equals(point) && !segment.p2.equals(point));
-            };
+        if (point && point.tools && typeof point.tools === 'object') {
+            for(const key in point.tools){
+                if(point.tools[key]){
+                    this.graph.sortedPoints[key]   = this.graph.sortedPoints[key].filter(p => !p.equals(point));
+                    if (this.graph.sortedPoints[key].length === 1) this.graph.sortedPoints[key].pop();
+                    if(this.graph.sortedSegments[key])this.graph.sortedSegments[key] = this.graph.sortedSegments[key].filter(segment => !segment.p1.equals(point) && !segment.p2.equals(point));
+                };
+            }
         }
     }
     removeAll(){

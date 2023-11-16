@@ -116,7 +116,6 @@ export class Vieport{
         }
     };
     inputTouchMove(e){
-        console.log(e)
         if(this.drag.active){
             this.buttonTools.forEach(button => button.classList.remove('active'));        //деактивуємо всі кнопки інструментів
 

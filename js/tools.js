@@ -1,8 +1,12 @@
 import { getValidValue }       from './math/utils.js';
 
 const buttonTools  = document.querySelectorAll(`.button[data-tool]`);
+const tools        = document.querySelector('.tools');
 const rangeValue   = document.getElementById('rangeValue');
 const inputValue   = document.getElementById('inputValue');
+
+const prev         = document.getElementById('prev');
+const next         = document.getElementById('next');
 
 export class ToolsMeneger{
     constructor(data){
@@ -24,17 +28,28 @@ export class ToolsMeneger{
         };
 
         this.validValue = null;
+
+        this.degrees       = 0;
+        this.touchX        = 0; 
+        this.touchTreshold = 50;
+
         this.initialize();
        
     };
     initialize(){
         inputValue.addEventListener('mousemove',    this.#rangeSlider.bind(this));
         inputValue.addEventListener('touchmove',    this.#rangeSlider.bind(this));
+        // перехід між згенерованими картинками вперед('next')/назад('prev')
+        prev.addEventListener('click', () =>   this.updateRotation(this.degrees += 45));
+        next.addEventListener('click', () =>   this.updateRotation(this.degrees -= 45));
+        // перехід між згенерованими картинками задопомогою swipe вліво/вправо
+        tools.addEventListener('touchmove',    this.updateRotationSwipe.bind(this));
 
         this.buttonTools.forEach((button) => {
             button.addEventListener('click', () => this.setTool(button));
         });
     }
+    
     // Блок керування кнопками 
     setTool(button) {
         const buttonActive = button.getAttribute('data-tool');
@@ -51,18 +66,31 @@ export class ToolsMeneger{
         };
     };
     // зміна стилю кнопок приактивації деактивації    
-    #updateButtonStyles () {
+    #updateButtonStyles() {
         this.buttonTools.forEach((button) => {
             const tool = button.getAttribute('data-tool');
             const toolIsTrue = this.tools[tool];
             toolIsTrue ? button.classList.add('active') : button.classList.remove('active');
         });
     };
+    updateRotation(degrees) {
+        tools.style.transform = `translateX(-50%)
+                                 perspective(1000px) 
+                                 rotateY(${degrees}deg)`;
+    };
+    updateRotationSwipe(e){
+        const swipeDistance = e.changedTouches[0].pageX - this.touchX;
+
+        if (swipeDistance < -this.touchTreshold) this.updateRotation(this.degrees += 45)
+        if (swipeDistance > this.touchTreshold)  this.updateRotation(this.degrees -= 45)
+        
+        this.touchX = e.changedTouches[0].pageX;
+    };
+
     resetTools() {
         for (const tool in this.tools) this.tools[tool] = false;
         return this.tools
     };
-
 
     // функція отримання значення повзунка
     #rangeSlider(e) {
@@ -95,5 +123,8 @@ export class ToolsMeneger{
     #updateRangeValue(buttonActive) {
         if (buttonActive === 'curve') rangeValue.innerHTML = inputValue.value = Math.floor(this.data.primitives.segment.curve.size);
         if (buttonActive === 'point') rangeValue.innerHTML = inputValue.value = Math.floor(this.data.primitives.point.point.radius);
-    }
+    };
+
+
+   
 }
