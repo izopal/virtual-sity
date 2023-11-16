@@ -71,7 +71,6 @@ export class Vieport{
 
     // функція zoom роликом
     inputMouseWheel(e){
-        console.log(e.deltaY)
         this.zoom += e.deltaY *.01 * this.step;
         this.getIndicatorZoom(this.zoom)
         return this.zoom  = this.#clampZoom(this.zoom)

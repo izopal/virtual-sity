@@ -1,8 +1,9 @@
 import { GraphEditor } from "./graphEditor.js";
 
 const graphEditor        = document.getElementById('graphEditor');
-           
-const arrowBar           = document.querySelector('.arrow-bar')
+const nameGraph          = document.querySelector('.editor-bar span')
+const arrowBar           = document.querySelector('.arrow-bar');
+
 const buttonSave         = document.getElementById('buttonSave');
 const buttonload         = document.getElementById('buttonload');
 const buttonInputSave    = document.getElementById('buttonInputSave');
@@ -39,11 +40,12 @@ export class App{
         this.saveNames =  Object.keys(localStorage);         // отримуємо всі ключі з localStorage і поміщаємо їх в окремий масив;
 
         this.appState = {
-            saveButton: false,
-            loadButton: false,
-            dispose:    false,
-            save:       false,
-            toolsBar:   false,
+            saveButton:  false,
+            loadButton:  false,
+            dispose:     false,
+            save:        false,
+            toolsBar:    false,
+            graphEditor: false,
         };
 
         this.initialize();
@@ -81,6 +83,16 @@ export class App{
     };
     // функція появи панелі інструментів
     #getToolsBar(){
+        this.appState.graphEditor = !this.appState.graphEditor
+        if (this.appState.graphEditor) {
+            nameGraph.style.animation = 'slideRight 2s ease forwards';
+            nameGraph.innerHTML = 'Graph Editor';
+        }else{
+            nameGraph.style.animation = 'slideLeft 2s ease forwards';
+            // nameGraph.innerHTML = 'nameEditor';
+           
+        }    
+        graphEditor.classList.toggle('active');
         arrowBar.classList.toggle('inactive');
         this.buttonTools.forEach(button => button.classList.toggle('inactive'));
     }

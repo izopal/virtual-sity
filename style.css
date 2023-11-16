@@ -79,11 +79,26 @@ body {
 
 /* ========================================================================> */
 
-.button.graphEditor{
-    position: absolute;
 
-    left: 50%;
-    transform: translateX(-50%);
+.editor-bar{
+    display: flex;
+    flex-direction: column;
+    width: auto;
+    gap: var(--index);
+    margin-top: var(--index);
+    margin-left: var(--index);
+    justify-content: center;
+
+}
+.editor-bar span{
+    display: flex;
+    justify-content: center;
+    font-size:  var(--index);
+    color: var(--menuColor);
+}
+.editor-bar .btnEditor{
+    display: flex;
+    gap: calc(var(--index) * 2.75);
 }
 
 /* ========================================================================> */
@@ -98,11 +113,11 @@ body {
     top: 50%;
     transform: translateY(-50%);
 
-    height: calc(var(--index) * 20.5);
+    height: calc(var(--index) * 5.25);
     transition: height 2s ease;
 }
 .arrow-bar.inactive{
-    height: calc(var(--index) * 5.25);
+    height: calc(var(--index) * 20.5);
 }
 
 .arrow{
@@ -152,14 +167,15 @@ body {
     display: flex;
     transform-origin: center; 
     transform-style: preserve-3d;
-    opacity: 1;
+    opacity: 0;
     backdrop-filter: blur(10px);
-    transform: rotatex(calc(var(--i) * 40deg)) translateZ(calc(var(--index) * 6.25));
+    transform: rotatex(calc(var(--i) * 40deg)) translateZ(calc(var(--index) * 1));
     transition: opacity 2s ease, transform 2s ease;
 }
 .button.tools.inactive{
-    opacity: 0;
-    transform: rotatex(calc(var(--i) * 40deg)) translateZ(calc(var(--index) * 1));
+    opacity: 1;
+    transform: rotatex(calc(var(--i) * 40deg)) translateZ(calc(var(--index) * 6.25));
+  
 }
 
 
@@ -181,10 +197,10 @@ body {
 .scale-bar {
     position: absolute;
     right: 0;
-    top: 0;
+    bottom: 0;
     display: flex;
     gap: var(--index);
-    margin-top: var(--index);
+    margin-bottom: var(--index);
     margin-right: var(--index);
     justify-content: center;
     z-index: 10;

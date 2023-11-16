@@ -16,14 +16,21 @@
 <body>
     <canvas id="canvasMS"></canvas>
     <div class="editor-bar">
-        <button class = 'button graphEditor' id="graphEditor"> <i class='bx bxl-graphql'></i>         </button>
+        <span>nameEditor</span>
+        <div class="btnEditor">
+            <button class = 'button graph' id="graphEditor"> <i class='bx bxl-graphql'></i>         </button>
+            <button class = 'button stop' id="stopEditor"> <i class='bx bxs-hand' ></i>         </button>
+        </div>
     </div>
     <div class="arrow-bar">
         <button class = 'arrow'  id="prev">   <i class='bx bxs-chevrons-left' ></i>  </button>
         <button class = 'arrow' id="next"> <i class='bx bxs-chevrons-right' ></i> </button>
     </div>
     <div class="navig-bar-tools">
-
+        <!-- <div class="stop">
+            <button class = 'button tools' data-tool = 'curve'    style="--i:1;" > <i class='bx bx-pencil'></i>              </button>
+            <button class = 'button tools' data-tool = 'polygon'  style="--i:5;"> <i class='bx bx-shape-polygon' ></i>      </button>
+        </div> -->
         <div class="tools">
             <button class = 'button tools' data-tool = 'curve'    style="--i:1;" > <i class='bx bx-pencil'></i>              </button>
             <button class = 'button tools' data-tool = 'point'    style="--i:2;"> <i class='bx bx-pin'></i>                 </button>

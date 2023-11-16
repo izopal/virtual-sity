@@ -13,6 +13,7 @@ export class ToolsMeneger{
     constructor(data){
         this.data = data
         this.buttonTools = buttonTools;
+       
 
         this.inputValue = inputValue
 
@@ -31,6 +32,7 @@ export class ToolsMeneger{
         this.validValue = null;
 
         this.degrees       = 0;
+        this.angle         = 360 / this.buttonTools.length;
         this.touchY        = 0; 
         this.touchTreshold = 50;
 
@@ -38,11 +40,12 @@ export class ToolsMeneger{
        
     };
     initialize(){
+        
         inputValue.addEventListener('mousemove',    this.#rangeSlider.bind(this));
         inputValue.addEventListener('touchmove',    this.#rangeSlider.bind(this));
         // перехід між згенерованими картинками вперед('next')/назад('prev')
-        prev.addEventListener('click', () =>   this.updateRotation(this.degrees += 40));
-        next.addEventListener('click', () =>   this.updateRotation(this.degrees -= 40));
+        prev.addEventListener('click', () =>   this.updateRotation(this.degrees += this.angle));
+        next.addEventListener('click', () =>   this.updateRotation(this.degrees -= this.angle));
         // перехід між згенерованими картинками задопомогою swipe вліво/вправо
         tools.addEventListener('touchmove',    this.updateRotationSwipe.bind(this));
 
@@ -54,7 +57,6 @@ export class ToolsMeneger{
     // Блок керування кнопками 
     setTool(button) {
         const buttonActive = button.getAttribute('data-tool');
-     
         this.#setTool(buttonActive);
         this.#updateButtonStyles();
         this.#updateRangeValue(buttonActive);
@@ -83,8 +85,8 @@ export class ToolsMeneger{
     updateRotationSwipe(e){
         const swipeDistance = e.targetTouches[0].pageY - this.touchY;
 
-        if (swipeDistance < this.touchTreshold) this.updateRotation(this.degrees += 40)
-        if (swipeDistance > -this.touchTreshold)  this.updateRotation(this.degrees -= 40)
+        if (swipeDistance < this.touchTreshold) this.updateRotation(this.degrees += this.angle)
+        if (swipeDistance > -this.touchTreshold)  this.updateRotation(this.degrees -= this.angle)
         
         this.touchY = e.targetTouches[0].pageY;
     };
