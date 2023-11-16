@@ -78,74 +78,77 @@ body {
 }
 
 /* ========================================================================> */
-.navig-bar-tools{
-    position: absolute;
-    left:var(--index) ;
-    top: 50%;
-    /* width: 100%; */
-    transform: translateY(-50%);
-    /* height: calc(var(--index) * 3.25); */
-    display: flex;
-    margin-bottom:  calc(var(--index) * 1.5);
-    /* overflow: hidden; */
-}
+
 .button.graphEditor{
     position: absolute;
 
     left: 50%;
     transform: translateX(-50%);
 }
-.arrow{
+
+/* ========================================================================> */
+.arrow-bar{
     display: flex;
-    justify-content: center;
-    align-items: center;
-    height: calc(var(--index) * 3.25);
-    width: calc(var(--index) * 3.25);
-    
-    /* розмір SVG */
-    font-size: calc(var(--index)* 1.325);
+    flex-direction: column;
+    justify-content: space-between;
+    margin-left: var(--index);
+
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+
+    height: calc(var(--index) * 20.5);
+}
+.arrow{
+    height: calc(var(--index) * 2.5);
+    width: calc(var(--index) * 2.5);
     background-color: transparent;
+    /* розмір SVG */
+    font-size: calc(var(--index)* 1.125);
+    rotate: 90deg;
     border: none;
     cursor: pointer;
 }
 .arrow:active{
     color: wheat;
 }
-#prev{
+
+.navig-bar-tools{
+    display: flex;
+
     position: absolute;
-    rotate: -90deg;
-    top: calc(var(--index) * 10.75);
-}
-#next{
-    position: absolute;
-    bottom: calc(var(--index) * 10.75);
-    rotate: -90deg;
+    left: 0%;
+    top: 50%;
+    transform: translateY(-50%);
+    
+    margin-left: var(--index);
 }
 .tools {
     display: flex;
+    
     position: absolute;
-    left: 0%;
+    left:0%;
     top: 0%;
-    /* width: 5%; */
+    
+    height: calc(var(--index) * 2.5);
+    width: calc(var(--index) * 2.5);
+    font-size: calc(var(--index)* 1.125);
+
     transform:  translateY(-50%)
                 perspective(1000px)    
-                rotatex(90deg);
+                rotatex(0deg);
     transform-style: preserve-3d;
     transition: 1.5s;
     z-index: 10;
 }
 .tools .button.tools {
-   
-
-    width: calc(var(--index) * 2.75);
-    height: calc(var(--index) * 2.75);
-
-    font-size: calc(var(--index)* 1.725);
-    
-    transform-origin: center center; 
+    transform-origin: center; 
+    transform-style: preserve-3d;
     backdrop-filter: blur(10px);
     transform: rotatex(calc(var(--i) * 40deg)) translateZ(calc(var(--index) * 6.25));
 }
+
 
 /* ========================================================================> */
 .fail{

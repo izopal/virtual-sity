@@ -2,6 +2,7 @@ import { getValidValue }       from './math/utils.js';
 
 const buttonTools  = document.querySelectorAll(`.button[data-tool]`);
 const tools        = document.querySelector('.tools');
+
 const rangeValue   = document.getElementById('rangeValue');
 const inputValue   = document.getElementById('inputValue');
 
@@ -30,7 +31,7 @@ export class ToolsMeneger{
         this.validValue = null;
 
         this.degrees       = 0;
-        this.touchX        = 0; 
+        this.touchY        = 0; 
         this.touchTreshold = 50;
 
         this.initialize();
@@ -65,6 +66,7 @@ export class ToolsMeneger{
             this.tools[tool] = tool === toolActive ? !this.tools[tool] : false
         };
     };
+    
     // зміна стилю кнопок приактивації деактивації    
     #updateButtonStyles() {
         this.buttonTools.forEach((button) => {
@@ -74,17 +76,20 @@ export class ToolsMeneger{
         });
     };
     updateRotation(degrees) {
-        tools.style.transform = `translateX(-50%)
+        tools.style.transform = `translateY(-50%)
                                  perspective(1000px) 
                                  rotatex(${degrees}deg)`;
+                                
+       
     };
     updateRotationSwipe(e){
-        const swipeDistance = e.changedTouches[0].pageX - this.touchX;
+        console.log(e)
+        const swipeDistance = e.changedTouches[0].pageY - this.touchY;
 
-        if (swipeDistance < -this.touchTreshold) this.updateRotation(this.degrees += 45)
-        if (swipeDistance > this.touchTreshold)  this.updateRotation(this.degrees -= 45)
+        if (swipeDistance > this.touchTreshold) this.updateRotation(this.degrees += 45)
+        if (swipeDistance < -this.touchTreshold)  this.updateRotation(this.degrees -= 45)
         
-        this.touchX = e.changedTouches[0].pageX;
+        this.touchY = e.changedTouches[0].pageY;
     };
 
     resetTools() {
