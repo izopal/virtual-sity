@@ -87,6 +87,12 @@ body {
     display: flex;
     margin-bottom:  calc(var(--index) * 1.5);
 }
+.button.graphEditor{
+    position: absolute;
+
+    left: 50%;
+    transform: translateX(-50%);
+}
 .arrow{
     display: flex;
     justify-content: center;
@@ -105,13 +111,14 @@ body {
 }
 #prev{
     position: absolute;
-    left: 27%;
+    left: calc(var(--index) * 5.25);
 }
 #next{
     position: absolute;
-    right: 27%;
+    right: calc(var(--index) * 5.25);
 }
 .tools {
+    display: flex;
     position: absolute;
     left: 50%;
     top: 0%;
@@ -136,7 +143,7 @@ body {
     transform-origin: center; 
     transform-style: preserve-3d;
     backdrop-filter: blur(10px);
-    transform: rotateY(calc(var(--i) * 40deg)) translateZ(calc(var(--index) * 7.25));
+    transform: rotateY(calc(var(--i) * 40deg)) translateZ(calc(var(--index) * 6.25));
     -webkit-box-reflect: below 0px linear-gradient(transparent, transparent, #0004)  відзеркалення обєкта
 }
 
