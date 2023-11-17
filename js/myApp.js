@@ -1,8 +1,11 @@
 import { GraphEditor } from "./graphEditor.js";
+import { timeAnimate } from './animateList.js'
 
 const graphEditor        = document.getElementById('graphEditor');
-const nameGraph          = document.querySelector('.editor-bar span')
+
+const nameGraph          = document.getElementById('nameEditor');
 const arrowBar           = document.querySelector('.arrow-bar');
+const toolsBar           = document.querySelector('.tools')
 
 const buttonSave         = document.getElementById('buttonSave');
 const buttonload         = document.getElementById('buttonload');
@@ -23,6 +26,9 @@ export class App{
         this.data    = data;
 
         this.graphEditor     = graphEditor;
+        // Парамтри часу для анімації
+        this.timeAnimate = timeAnimate
+            
 
         this.buttonSave      = buttonSave;
         this.buttonload      = buttonload;
@@ -83,19 +89,42 @@ export class App{
     };
     // функція появи панелі інструментів
     #getToolsBar(){
-        this.appState.graphEditor = !this.appState.graphEditor
-        if (this.appState.graphEditor) {
-            nameGraph.style.animation = 'slideRight 2s ease forwards';
+        this.appState.graphEditor = !this.appState.graphEditor;
+        
+        for(const tool in this.toolsMeneger.tools) this.toolsMeneger.tools[tool] = false;
+        // анімація стилю nameEditor
+        this.getNameEditor(this.appState.graphEditor);
+
+        // анімація стилю кнопки graphEditor
+        graphEditor.classList.toggle('active');
+
+        // анімація стилю стрілок 
+        arrowBar.style.animation = this.appState.graphEditor ?
+            `slideArrowUp ${this.timeAnimate.arrowBar}s ease forwards`    :
+            `slideArrowDouwn ${this.timeAnimate.arrowBar}s ease forwards`;
+     
+        // анімацію стилю панелі інструментів graphEditor
+        this.getToolsBar(this.appState.graphEditor)
+
+    }
+    getNameEditor(state) {
+        if (state) {
+            nameGraph.style.animation = `slideRight ${this.timeAnimate.editorBar}s ease forwards`;
             nameGraph.innerHTML = 'Graph Editor';
         }else{
-            nameGraph.style.animation = 'slideLeft 2s ease forwards';
-            // nameGraph.innerHTML = 'nameEditor';
-           
-        }    
-        graphEditor.classList.toggle('active');
-        arrowBar.classList.toggle('inactive');
-        this.buttonTools.forEach(button => button.classList.toggle('inactive'));
+            nameGraph.style.animation = `slideLeft ${this.timeAnimate.editorBar}s ease forwards`;
+        }   
     }
+    getToolsBar(state){
+        toolsBar.style.animation = state ? 
+            `toolsBarOn ${this.timeAnimate.toolsBar}s ease forwards` :
+            `toolsBarOff ${this.timeAnimate.toolsBar}s ease forwards`;
+        this.buttonTools.forEach((button) => {
+            button.style.animation = state ? 
+                `slideAppear ${this.timeAnimate.toolsBar}s ease forwards` :
+                `slideDisappear ${this.timeAnimate.toolsBar}s ease forwards`;
+        });
+    };
     // функція збереження поточного graph
     #save() {
         if(this.appState.dispose){
@@ -115,11 +144,9 @@ export class App{
         if (this.appState.loadButton && this.saveNames.length !== 0) {
             this.getListDownloads();
             this.selectElement.style.display   = 'block';
-            this.selectElement.style.animation = 'slideRight 2s ease forwards';
+            this.selectElement.style.animation = `slideRight ${this.timeAnimate.failBar}s ease forwards`;
             this.buttonload.innerHTML          = "<i class='bx bx-folder-open'></i>";
-        } else {
-            setTimeout(() =>   this.selectElement.style.display = 'none', 1000);
-            this.selectElement.style.animation = 'slideLeft 2s ease forwards';
+        } else {            this.selectElement.style.animation = `slideLeft ${this.timeAnimate.failBar}s ease forwards`;
             this.buttonload.innerHTML          = "<i class='bx bx-folder'></i>";
     }
     };
@@ -128,15 +155,15 @@ export class App{
         this.appState.saveButton = !this.appState.saveButton;
         if (this.appState.saveButton) {
             this.input.style.display       = 'block';
-            this.input.style.animation     = 'slideRight 1s ease forwards';
+            this.input.style.animation     = `slideRight ${this.timeAnimate.failBar}s ease forwards`;
             this.buttonInputSave.innerHTML = '<i class="bx bx-bookmark-alt-plus"></i>';
         } 
         if (!this.appState.saveButton){
             if (this.input.value.trim() !== '') this.newSave();
        
             this.clear();
-            this.input.style.animation = 'slideLeft 1s ease forwards';
-            setTimeout(() => this.input.style.display = 'none', 1000);
+            setTimeout(() => this.input.style.display = 'none', `${this.timeAnimate.failBar * 1000}`);
+            this.input.style.animation = `slideLeft ${this.timeAnimate.failBar}s ease forwards`;
         }
     };
     // функція очищення graph
@@ -162,12 +189,12 @@ export class App{
     #saveInputKeydown(e) {
         if (e.key === 'Enter') {
             if (this.input.value.trim() !== '') this.newSave();
-          
+            
             this.clear();
-            this.input.style.animation     = 'slideLeft 1s ease forwards';
+            setTimeout(() => this.input.style.display = 'none', `${this.timeAnimate.failBar * 1000}`);
+            this.input.style.animation     = `slideLeft ${this.timeAnimate.failBar}s ease forwards`;
             this.buttonInputSave.innerHTML = '<i class="bx bx-bookmark-alt-plus"></i>';
             this.appState.saveButton       = false;
-            setTimeout(() => this.input.style.display = 'none', 1000);
         }
     };
     // умова появи/зникнення лінії під полем для збереження
@@ -194,12 +221,10 @@ export class App{
         // Оновлення GraphEditor з новим saveName
         this.graphEditor = this.initializeGraphEditor(this.saveName);
         // блок закриття меню загрузки
-        this.selectElement.style.animation = 'slideLeft 2s ease forwards';
+        setTimeout(() => this.selectElement.style.display = 'none', `${this.timeAnimate.failBar * 1000}`);
+        this.selectElement.style.animation = `slideLeft ${this.timeAnimate.failBar}s ease forwards`;
         this.buttonload.innerHTML          = "<i class='bx bx-folder'></i>";
         this.appState.loadButton           = false;
-    
-        setTimeout(() => this.selectElement.style.display = 'none', 1000);
-     
     }
 
     newSave(){

@@ -1,7 +1,8 @@
 import { getValidValue }       from './math/utils.js';
 
-const buttonTools  = document.querySelectorAll(`.button[data-tool]`);
-const tools        = document.querySelector('.tools');
+const buttonTools   = document.querySelectorAll(`.button[data-tool]`);
+const tools         = document.querySelector('.tools');
+const navigBarTools = document.querySelector('.navig-bar-tools');
 
 const rangeValue   = document.getElementById('rangeValue');
 const inputValue   = document.getElementById('inputValue');
@@ -13,7 +14,6 @@ export class ToolsMeneger{
     constructor(data){
         this.data = data
         this.buttonTools = buttonTools;
-       
 
         this.inputValue = inputValue
 
@@ -34,7 +34,7 @@ export class ToolsMeneger{
         this.degrees       = 0;
         this.angle         = 360 / this.buttonTools.length;
         this.touchY        = 0; 
-        this.touchTreshold = 50;
+        this.touchTreshold = 20;
 
         this.initialize();
        
@@ -47,8 +47,8 @@ export class ToolsMeneger{
         prev.addEventListener('click', () =>   this.updateRotation(this.degrees += this.angle));
         next.addEventListener('click', () =>   this.updateRotation(this.degrees -= this.angle));
         // перехід між згенерованими картинками задопомогою swipe вліво/вправо
-        tools.addEventListener('touchmove',    this.updateRotationSwipe.bind(this));
-
+        navigBarTools.addEventListener('touchmove',    this.updateRotationSwipe.bind(this));
+        
         this.buttonTools.forEach((button) => {
             button.addEventListener('click', () => this.setTool(button));
         });
@@ -56,6 +56,7 @@ export class ToolsMeneger{
     
     // Блок керування кнопками 
     setTool(button) {
+        
         const buttonActive = button.getAttribute('data-tool');
         this.#setTool(buttonActive);
         this.#updateButtonStyles();
@@ -85,8 +86,8 @@ export class ToolsMeneger{
     updateRotationSwipe(e){
         const swipeDistance = e.targetTouches[0].pageY - this.touchY;
 
-        if (swipeDistance < this.touchTreshold) this.updateRotation(this.degrees += this.angle)
-        if (swipeDistance > -this.touchTreshold)  this.updateRotation(this.degrees -= this.angle)
+        if (swipeDistance < -this.touchTreshold)     this.updateRotation(this.degrees += this.angle)
+        else if (swipeDistance > this.touchTreshold) this.updateRotation(this.degrees -= this.angle)
         
         this.touchY = e.targetTouches[0].pageY;
     };

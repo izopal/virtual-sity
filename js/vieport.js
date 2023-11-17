@@ -1,5 +1,6 @@
 import * as utils  from './math/utils.js';
 import {Point}     from './primitives/point.js';
+import { timeAnimate } from './animateList.js'
 
 const buttonZoom        = document.querySelectorAll(`.button[data-zoom]`);
 const indicatorZoom     = document.querySelector('.indicator-zoom');
@@ -17,6 +18,8 @@ export class Vieport{
         this.tools         = this.toolsMeneger.tools
         this.buttonTools   = this.toolsMeneger.buttonTools;
         // this.allToolFalse = Object.values(this.tools).every(value => value === false);
+
+        this.timeAnimate  = timeAnimate;
         
         this.zoom         = utils.getValidValue(this.configScale.zoom, 0);
         this.step         = utils.getValidValue(this.configScale.step, 0);
@@ -88,12 +91,12 @@ export class Vieport{
         const corectZoom = Math.round((1 / value) * 4) / 4;
         const zoom = utils.getValidValue(corectZoom, this.minZoom, this.maxZoom)
         indicatorZoom.style.display   = 'flex';
-        indicatorZoom.style.animation = 'slideAppear 2s ease forwards';
+        indicatorZoom.style.animation = `slideDouwn ${this.timeAnimate.zoomBar}s ease forwards`;
         zoomValue.innerHTML = `${zoom}x`;
         
         clearTimeout(this.hideTimeout);
 
-        this.hideTimeout = setTimeout(() => indicatorZoom.style.animation = 'slideDisappear 2s ease forwards', 3000); 
+        this.hideTimeout = setTimeout(() => indicatorZoom.style.animation = `slideUp ${this.timeAnimate.zoomBar}s ease forwards`, `${this.timeAnimate.setTimeoutFromZoomBar * 1000}`); 
     }
     // ======================== Блок керування мишкою ===============================>
     inputMouseDown(e){

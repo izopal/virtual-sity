@@ -8,6 +8,8 @@
     font-family: merriweather-italic-3d;
     src: url(./fonts/merriweather-regular-italic.woff2);
 }
+
+
 /* ===================== Задаємо змінні ========================> */
     :root{
         --index: calc(1vw + 1vh);
@@ -15,7 +17,10 @@
         --menuColor: #6a7b70;
         --backgroundColor: #2a5;
         --inputColor:  #1270357d;
+
+      
     }
+
 
 *{
     margin: 0;
@@ -78,8 +83,6 @@ body {
 }
 
 /* ========================================================================> */
-
-
 .editor-bar{
     display: flex;
     flex-direction: column;
@@ -88,14 +91,15 @@ body {
     margin-top: var(--index);
     margin-left: var(--index);
     justify-content: center;
-
 }
+
 .editor-bar span{
     display: flex;
     justify-content: center;
     font-size:  var(--index);
     color: var(--menuColor);
 }
+
 .editor-bar .btnEditor{
     display: flex;
     gap: calc(var(--index) * 2.75);
@@ -112,12 +116,23 @@ body {
     left: 0;
     top: 50%;
     transform: translateY(-50%);
-
-    height: calc(var(--index) * 5.25);
-    transition: height 2s ease;
 }
-.arrow-bar.inactive{
-    height: calc(var(--index) * 20.5);
+
+@keyframes slideArrowUp {
+    0%{
+        height: calc(var(--index) * 5);
+    }
+    100%{
+        height: calc(var(--index) * 20.5);
+    }
+} 
+@keyframes slideArrowDouwn {
+    0%{
+        height: calc(var(--index) * 20.5);
+    }
+    100%{
+        height: calc(var(--index) * 5);
+    }
 }
 
 .arrow{
@@ -150,34 +165,54 @@ body {
     position: absolute;
     left:0%;
     top: 0%;
-    
     height: calc(var(--index) * 2.5);
     width: calc(var(--index) * 2.5);
     font-size: calc(var(--index)* 1.125);
-
+    scale: 0;
     transform:  translateY(-50%)
                 perspective(1000px)    
                 rotatex(0deg);
     transform-style: preserve-3d;
-    transition: 1.5s;
-    
-    z-index: 10;
+    transition: .5s;
 }
-.button.tools {
-    display: flex;
-    transform-origin: center; 
-    transform-style: preserve-3d;
-    opacity: 0;
-    backdrop-filter: blur(10px);
-    transform: rotatex(calc(var(--i) * 40deg)) translateZ(calc(var(--index) * 1));
-    transition: opacity 2s ease, transform 2s ease;
-}
-.button.tools.inactive{
-    opacity: 1;
-    transform: rotatex(calc(var(--i) * 40deg)) translateZ(calc(var(--index) * 6.25));
-  
+@keyframes toolsBarOn {
+    0%   { scale: 0 }
+    100% { scale: 1 }
+} 
+@keyframes toolsBarOff {
+    0%   { scale: 1 }
+    100% { scale: 0 }
 }
 
+
+.button.tools {
+    display: flex;
+    scale: 0;
+    transform-origin: center; 
+    transform-style: preserve-3d;
+    backdrop-filter: blur(10px);
+}
+
+@keyframes slideAppear {
+    0%{
+        scale: 0;
+        transform: rotatex(calc(var(--i) * 0deg)) translateZ(calc(var(--index) * 0));
+    }
+    100%{
+        scale: 1;
+        transform: rotatex(calc(var(--i) * -40deg)) translateZ(calc(var(--index) * 6.25));
+    }
+} 
+@keyframes slideDisappear {
+    0%{
+        scale: 1;
+        transform: rotatex(calc(var(--i) * 40deg)) translateZ(calc(var(--index) * 6.25));
+    }
+    100%{
+        scale: 0;
+        transform: rotatex(calc(var(--i) * 0deg)) translateZ(calc(var(--index) * 0));
+    }
+}
 
 /* ========================================================================> */
 .fail{
@@ -228,7 +263,7 @@ body {
     /* color: blue; */
     margin: auto;
 }
-@keyframes slideAppear {
+@keyframes slideDouwn {
     0%{
         transform: translatey(-10vh);
         opacity: 0;
@@ -238,7 +273,7 @@ body {
         opacity: 1;
     }
 } 
-@keyframes slideDisappear {
+@keyframes slideUp {
     0%{
         transform: translatey(0);
         opacity: 1;
