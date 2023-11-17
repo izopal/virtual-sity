@@ -196,11 +196,12 @@ body {
 @keyframes slideAppear {
     0%{
         scale: 0;
-        transform: rotatex(calc(var(--i) * 40deg)) translateZ(calc(var(--index) * 0));
+        transform: rotatex(calc(var(--i) * 0deg)) translateZ(calc(var(--index) * 0));
     }
+    10%{scale: 1;}
     100%{
         scale: 1;
-        transform: rotatex(calc(var(--i) * 40deg)) translateZ(calc(var(--index) * 6.25));
+        transform: rotatex(calc(var(--i) * -40deg)) translateZ(calc(var(--index) * 6.25));
     }
 } 
 @keyframes slideDisappear {
@@ -208,9 +209,10 @@ body {
         scale: 1;
         transform: rotatex(calc(var(--i) * 40deg)) translateZ(calc(var(--index) * 6.25));
     }
+    90% {scale: 1;}
     100%{
         scale: 0;
-        transform: rotatex(calc(var(--i) * 40deg)) translateZ(calc(var(--index) * 0));
+        transform: rotatex(calc(var(--i) * 0deg)) translateZ(calc(var(--index) * 0));
     }
 }
 
