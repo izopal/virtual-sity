@@ -139,6 +139,7 @@ const parameters =   {  graphEditor:   {name:                   'remove',
 };
  
 
+
 // Параметр масштабування розмірів взалежності від розмірів екрану
 const screenWidth = window.screen.width; // ширина екрану
 const screenHeight = window.screen.height; // висота екрану

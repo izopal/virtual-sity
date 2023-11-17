@@ -19,7 +19,7 @@ export class GraphEditor {
         // параметри інструментів графічного редагування  
         this.toolsMeneger  = toolsMeneger;
         this.tools         = this.toolsMeneger.tools
-        this.buttonTools         = this.toolsMeneger.buttonTools
+        this.buttonTools   = this.toolsMeneger.buttonTools
 
         this.data           = data;
         this.config         = this.data.graphEditor;
@@ -42,10 +42,7 @@ export class GraphEditor {
         this.world         = new World(this.data, this.graph);
         
         this.#addEventListener(canvas);
-
-       
-      
-         this.counter       = 0
+        this.counter       = 0
     };
 
     #load(saveInfo){
@@ -76,8 +73,6 @@ export class GraphEditor {
         };
         return new Graph (this.tools, this.data, points, sortedPoints, segments, sortedSegments);
     }
-   
-  
 
     #addEventListener(canvas){
         body.addEventListener  ('keydown',    this.#inputKeydown.bind(this));
@@ -156,8 +151,6 @@ export class GraphEditor {
         if(isBtnRight && e.buttons === 2)  this.lastPoint = null;
     };
     #inputMouseMove(e){
-     
-
         const isCurveBtnLeft   = this.tools.curve    && e.buttons === 1;
         const isTreeBtnLeft    = this.tools.tree     && e.buttons === 1;
         const isDragingBtnLeft = this.tools.dragging && e.buttons === 1;
