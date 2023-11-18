@@ -56,6 +56,7 @@ body {
     margin-left: auto;
     /* розмір SVG */
     font-size: calc(var(--index)* 2.325);
+    backdrop-filter: blur(30px);
 
     background-color: transparent;
     border: calc(var(--index) * .35) solid transparent;
@@ -159,7 +160,7 @@ body {
     
     margin-left: var(--index);
 }
-.tools {
+.tools, .toolsForStop {
     display: flex;
     
     position: absolute;
@@ -185,12 +186,12 @@ body {
 }
 
 
-.button.tools {
+.button.tools, .button.toolsForStop {
     display: flex;
     scale: 0;
     transform-origin: center; 
     transform-style: preserve-3d;
-    backdrop-filter: blur(10px);
+   
 }
 
 @keyframes slideAppear {
@@ -198,7 +199,6 @@ body {
         scale: 0;
         transform: rotatex(calc(var(--i) * 0deg)) translateZ(calc(var(--index) * 0));
     }
-    10%{scale: 1;}
     100%{
         scale: 1;
         transform: rotatex(calc(var(--i) * -40deg)) translateZ(calc(var(--index) * 6.25));
@@ -209,7 +209,6 @@ body {
         scale: 1;
         transform: rotatex(calc(var(--i) * 40deg)) translateZ(calc(var(--index) * 6.25));
     }
-    90% {scale: 1;}
     100%{
         scale: 0;
         transform: rotatex(calc(var(--i) * 0deg)) translateZ(calc(var(--index) * 0));

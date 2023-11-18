@@ -17,9 +17,9 @@ export class GraphEditor {
         this.canvas       = canvas;
 
         // параметри інструментів графічного редагування  
-        this.toolsMeneger  = toolsMeneger;
-        this.tools         = this.toolsMeneger.tools
-        this.buttonTools   = this.toolsMeneger.buttonTools
+        this.toolsMeneger          = toolsMeneger;
+        this.tools                 = this.toolsMeneger.tools.graph
+        this.buttonToolsFromGraph  = this.toolsMeneger.buttonToolsFromGraph
 
         this.data           = data;
         this.config         = this.data.graphEditor;
@@ -77,7 +77,7 @@ export class GraphEditor {
     #addEventListener(canvas){
         body.addEventListener  ('keydown',    this.#inputKeydown.bind(this));
 
-        this.buttonTools.forEach((button) => {
+        this.buttonToolsFromGraph.forEach((button) => {
             button.addEventListener('click', () => this.lastPoint = null);
         });
 
@@ -108,10 +108,6 @@ export class GraphEditor {
       }
 
     #inputKeydown(e){
-        if(['P', 'p', 'З', 'з'].includes(e.key)) this.setTool('point');
-        if(['R', 'r', 'К', 'к'].includes(e.key)) this.setTool('remove');
-        if(['D', 'd', 'В', 'в'].includes(e.key)) this.setTool('dragging');
-        if(['C', 'c', 'С', 'с'].includes(e.key)) this.setTool('curve');
         if(['D', 'd', 'В', 'в'].includes(e.key)) this.data.debug.state = !this.data.debug.state;
         if(['=', '+'].includes(e.key)) zoom('plus');
         if(['-', '_'].includes(e.key)) zoom('minus');

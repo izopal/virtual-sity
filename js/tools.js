@@ -1,6 +1,8 @@
-import { getValidValue }       from './math/utils.js';
+import { getValidValue } from './math/utils.js';
+import { setTool }       from './math/utils.js';
 
-const buttonTools   = document.querySelectorAll(`.button[data-tool]`);
+const buttonToolsFromGraph  = document.querySelectorAll(`.button[data-tool]`);
+const buttonToolsFromStop   = document.querySelectorAll(`.button[data-toolStop]`);
 const tools         = document.querySelector('.tools');
 const navigBarTools = document.querySelector('.navig-bar-tools');
 
@@ -13,26 +15,34 @@ const next         = document.getElementById('next');
 export class ToolsMeneger{
     constructor(data){
         this.data = data
-        this.buttonTools = buttonTools;
+        this.buttonToolsFromGraph = buttonToolsFromGraph;
 
         this.inputValue = inputValue
 
-        this.tools = {
-            dragging: false,        // параметри вкл.-викл. редактора (пересування точок)
-            remove:   false,        // параметр вкл.-викл резинки
-            curve:    false,        // парамет малювання кривої лінії
-            point:    false,        // параметр малювання точки;
-            polygon:  false,        // параметр малювання полігону;
-            road:     false,        // параметр малювання дороги;
-            tree:     false,        // параметр малювання дерев;
-            building: false,        // параметр малювання будинків;
-            city:     false,        // параметр малювання міста;
+        this.tools= {
+            graph: {
+                dragging: false,        // параметри вкл.-викл. редактора (пересування точок)
+                remove:   false,        // параметр вкл.-викл резинки
+                curve:    false,        // парамет малювання кривої лінії
+                point:    false,        // параметр малювання точки;
+                polygon:  false,        // параметр малювання полігону;
+                road:     false,        // параметр малювання дороги;
+                tree:     false,        // параметр малювання дерев;
+                building: false,        // параметр малювання будинків;
+                city:     false,        // параметр малювання міста;
+            },
+            stop:{
+                pedestrian:    false,   // параметри розміщення дорожніх зебр;
+                trafficLights: false,   // параметри розміщення світлофорів;
+                taxsi:         false,   // параметри розміщення атомобільних зупинок;
+                avtobus:       false,   // параметри розміщення автобусних зупинок;
+            },
         };
 
         this.validValue = null;
 
         this.degrees       = 0;
-        this.angle         = 360 / this.buttonTools.length;
+        this.angle         = 360 / this.buttonToolsFromGraph.length;
         this.touchY        = 0; 
         this.touchTreshold = 20;
 
@@ -49,35 +59,28 @@ export class ToolsMeneger{
         // перехід між згенерованими картинками задопомогою swipe вліво/вправо
         navigBarTools.addEventListener('touchmove',    this.updateRotationSwipe.bind(this));
         
-        this.buttonTools.forEach((button) => {
-            button.addEventListener('click', () => this.setTool(button));
+        this.buttonToolsFromGraph.forEach((button) => {
+            button.addEventListener('click', () => this.getActiveTool(button));
         });
     }
     
     // Блок керування кнопками 
-    setTool(button) {
-        
-        const buttonActive = button.getAttribute('data-tool');
-        this.#setTool(buttonActive);
-        this.#updateButtonStyles();
+    getActiveTool(button) {
+      const buttonActive = button.getAttribute('data-tool');
+        setTool(buttonActive, this.tools.graph)
+        this.#updateButtonStyles(buttonActive);
         this.#updateRangeValue(buttonActive);
-    };
-
-    // зміна значення кнопок на true/false приактивації деактивації  
-    #setTool(toolActive) {
-        for (const tool in this.tools) {
-            this.tools[tool] = tool === toolActive ? !this.tools[tool] : false
-        };
     };
     
     // зміна стилю кнопок приактивації деактивації    
     #updateButtonStyles() {
-        this.buttonTools.forEach((button) => {
-            const tool = button.getAttribute('data-tool');
-            const toolIsTrue = this.tools[tool];
-            toolIsTrue ? button.classList.add('active') : button.classList.remove('active');
+        this.buttonToolsFromGraph.forEach((button) => {
+            const buttonName = button.getAttribute('data-tool');
+            const isActive = this.tools.graph[buttonName];
+            button.classList.toggle('active', isActive);
         });
     };
+
     updateRotation(degrees) {
         tools.style.transform = `translateY(-50%)
                                  perspective(1000px) 
@@ -92,10 +95,7 @@ export class ToolsMeneger{
         this.touchY = e.targetTouches[0].pageY;
     };
 
-    resetTools() {
-        for (const tool in this.tools) this.tools[tool] = false;
-        return this.tools
-    };
+   
 
     // функція отримання значення повзунка
     #rangeSlider(e) {
@@ -118,18 +118,26 @@ export class ToolsMeneger{
 
         }
     };
-
     #updateValue(value){
         rangeValue.innerHTML = value;
-        if(this.tools.curve) this.data.primitives.segment.curve.size = value;
-        if(this.tools.point) this.data.primitives.point.point.radius = value;
+        if(this.tools.graph.curve) this.data.primitives.segment.curve.size = value;
+        if(this.tools.graph.point) this.data.primitives.point.point.radius = value;
     };
-
     #updateRangeValue(buttonActive) {
         if (buttonActive === 'curve') rangeValue.innerHTML = inputValue.value = Math.floor(this.data.primitives.segment.curve.size);
         if (buttonActive === 'point') rangeValue.innerHTML = inputValue.value = Math.floor(this.data.primitives.point.point.radius);
     };
 
-
-   
+    resetTools() {
+        // Встановлення всіх значень в this.tools на false
+        Object.keys(this.tools).forEach(category => {
+            Object.keys(this.tools[category]).forEach(tool => {
+                this.tools[category][tool] = false;
+            });
+        });
+    };
+    resetButtonStyles(){
+        const allToolsButton = [...buttonToolsFromGraph, ...buttonToolsFromStop];
+        allToolsButton.forEach(button =>  button.classList.remove('active'));
+    }
 }

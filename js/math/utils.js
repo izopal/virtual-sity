@@ -170,4 +170,14 @@ export function multiplyKeys(obj, scale, options) {
     }
   };
   return obj
-}
+};
+
+
+// зміна значення кнопок на true/false приактивації деактивації  
+export function setTool(toolActive, tools) {
+  for (const tool in tools) {
+      tools[tool] = tool === toolActive ? !tools[tool] : false
+  };
+  return tools
+};
+
