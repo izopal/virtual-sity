@@ -46,7 +46,7 @@ body {
     background-color: var(--backgroundColor);
     z-index: -1;
 }
-.button{
+button{
     display: flex;
     justify-content: center;
     align-items: center;
@@ -65,7 +65,7 @@ body {
                  .125rem  .125rem .25rem rgba(0, 0, 0, .35);
     cursor: pointer;
 }
-.button.active { 
+button.active { 
     color:  rgba(0, 0, 0, .35);
   
     border: 0rem solid var(--textColor);
@@ -75,7 +75,7 @@ body {
 }
 
 
-.button:active { 
+button:active { 
     color:  rgba(0, 0, 0, .35);
     border: 0rem solid var(--textColor);
     box-shadow:        
@@ -112,12 +112,23 @@ body {
     flex-direction: column;
     justify-content: space-between;
     margin-left: var(--index);
-
+    height: calc(var(--index) * 5);
     position: absolute;
     left: 0;
     top: 50%;
     transform: translateY(-50%);
 }
+@keyframes slideArrow {
+    0%{
+        height: calc(var(--index) * 20.5);
+    }
+    50%{
+        height: calc(var(--index) * 5);
+    }
+    100%{
+        height: calc(var(--index) * 20.5);
+    }
+} 
 
 @keyframes slideArrowUp {
     0%{
@@ -160,7 +171,7 @@ body {
     
     margin-left: var(--index);
 }
-.tools, .toolsForStop {
+.bar {
     display: flex;
     
     position: absolute;
@@ -168,7 +179,7 @@ body {
     top: 0%;
     height: calc(var(--index) * 2.5);
     width: calc(var(--index) * 2.5);
-    font-size: calc(var(--index)* 1.125);
+  
     scale: 0;
     transform:  translateY(-50%)
                 perspective(1000px)    
@@ -186,7 +197,11 @@ body {
 }
 
 
-.button.tools, .button.toolsForStop {
+.graph, .stop {
+    position: absolute;
+    height: calc(var(--index) * 2.5);
+    width: calc(var(--index) * 2.5);
+    font-size: calc(var(--index)* 1.125);
     display: flex;
     scale: 0;
     transform-origin: center; 

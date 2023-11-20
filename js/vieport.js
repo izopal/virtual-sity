@@ -14,9 +14,9 @@ export class Vieport{
         this.config       = data.vieport;
         this.configScale  = this.config.scale;
 
-        this.toolsMeneger           = toolsMeneger;
-        this.tools                  = this.toolsMeneger.tools.graph
-        this.buttonToolsFromGraph   = this.toolsMeneger.buttonToolsFromGraph;
+        this.toolsMeneger    = toolsMeneger;
+        this.tools           = this.toolsMeneger.tools.graph
+      
         // this.allToolFalse = Object.values(this.tools).every(value => value === false);
 
         this.timeAnimate  = timeAnimate;
@@ -119,7 +119,7 @@ export class Vieport{
     };
     inputTouchMove(e){
         if(this.drag.active){
-            this.buttonToolsFromGraph.forEach(button => button.classList.remove('active'));        //деактивуємо всі кнопки інструментів
+            this.toolsMeneger.resetButtonStyles()        //деактивуємо всі кнопки інструментів
 
             this.inputMove(e.touches[0])
         };

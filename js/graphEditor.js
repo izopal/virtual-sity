@@ -19,7 +19,6 @@ export class GraphEditor {
         // параметри інструментів графічного редагування  
         this.toolsMeneger          = toolsMeneger;
         this.tools                 = this.toolsMeneger.tools.graph
-        this.buttonToolsFromGraph  = this.toolsMeneger.buttonToolsFromGraph
 
         this.data           = data;
         this.config         = this.data.graphEditor;
@@ -41,6 +40,7 @@ export class GraphEditor {
         this.OldGraphHash  = this.graph.hash();    //параметри запуска малювання 
         this.world         = new World(this.data, this.graph);
         
+        this.#removeEventListeren(canvas)
         this.#addEventListener(canvas);
         this.counter       = 0
     };
@@ -73,23 +73,50 @@ export class GraphEditor {
         };
         return new Graph (this.tools, this.data, points, sortedPoints, segments, sortedSegments);
     }
+    #removeEventListeren(canvas){
+        this.toolsMeneger.allTools.forEach((button) => {
+            button.removeEventListener('click', this.handleButtonClick);
+        });
+        
+        body.removeEventListener  ('keydown',    this.boudKeydown);
+        canvas.removeEventListener('mousedown',  this.boundMouseDown);
+        canvas.removeEventListener('mousemove',  this.boundMouseMove);
+        canvas.removeEventListener('mouseup',    this.boudMouseUp);
+        canvas.removeEventListener('touchstart', this.boundTouchStart);
+        canvas.removeEventListener('touchmove',  this.boundTouchMove);
+        canvas.removeEventListener('touchend',   this.boundTouchEnd);
+
+        canvas.removeEventListener('contextmenu',  this.boundContextMenu)
+    };
 
     #addEventListener(canvas){
-        body.addEventListener  ('keydown',    this.#inputKeydown.bind(this));
+        this.handleButtonClick = () => this.lastPoint = null;
+        this.boudKeydown    = this.#inputKeydown.bind(this);
+        this.boundMouseDown = this.#inputMouseDown.bind(this);
+        this.boundMouseMove = this.#inputMouseMove.bind(this);
+        this.boudMouseUp    = this.#inputMouseUp.bind(this);
+        this.boundTouchStart = (e) => this.#inputMouseDown(this.getMouseEventFromTouchEvent(e));
+        this.boundTouchMove  = (e) => this.#inputMouseMove(this.getMouseEventFromTouchEvent(e));
+        this.boundTouchEnd   = (e) => this.#inputMouseUp(this.getMouseEventFromTouchEvent(e));
 
-        this.buttonToolsFromGraph.forEach((button) => {
-            button.addEventListener('click', () => this.lastPoint = null);
+        this.boundContextMenu = (e) => e.preventDefault()
+
+        
+        this.toolsMeneger.allTools.forEach((button) => {
+            button.addEventListener('click', this.handleButtonClick);
         });
+        
+        body.addEventListener  ('keydown',    this.boudKeydown);
+        canvas.addEventListener('mousedown',  this.boundMouseDown);
+        canvas.addEventListener('mousemove',  this.boundMouseMove);
+        canvas.addEventListener('mouseup',    this.boudMouseUp);
+        canvas.addEventListener('touchstart', this.boundTouchStart);
+        canvas.addEventListener('touchmove',  this.boundTouchMove);
+        canvas.addEventListener('touchend',   this.boundTouchEnd);
 
-        canvas.addEventListener('mousedown',  this.#inputMouseDown.bind(this));
-        canvas.addEventListener('mousemove',  this.#inputMouseMove.bind(this));
-        canvas.addEventListener('mouseup',    this.#inputMouseUp.bind(this));
-        canvas.addEventListener('touchstart', (e) => this.#inputMouseDown(this.getMouseEventFromTouchEvent(e)));
-        canvas.addEventListener('touchmove',  (e) => this.#inputMouseMove(this.getMouseEventFromTouchEvent(e)));
-        canvas.addEventListener('touchend',   (e) => this.#inputMouseUp(this.getMouseEventFromTouchEvent(e)));
-
-        canvas.addEventListener('contextmenu', (e) => e.preventDefault())
+        canvas.addEventListener('contextmenu', this.boundContextMenu)
     };
+   
 
     getMouseEventFromTouchEvent(e) {
         e.preventDefault()

@@ -1,13 +1,5 @@
 import { GraphEditor } from "./graphEditor.js";
 import { timeAnimate } from './animateList.js';
-import { setTool }     from './math/utils.js';
-
-
-const editors          = document.querySelectorAll(`.button[data-editor]`);
-
-const nameGraph          = document.getElementById('nameEditor');
-const arrowBar           = document.querySelector('.arrow-bar');
-const toolsBar           = document.querySelector('.tools')
 
 const buttonSave         = document.getElementById('buttonSave');
 const buttonload         = document.getElementById('buttonload');
@@ -23,11 +15,9 @@ const selectElement = document.getElementById('load');
 export class App{
     constructor(canvas, toolsMeneger, data) {
         this.canvas = canvas;
-        this.toolsMeneger      = toolsMeneger;
-        this.toolsMenegerGraph = toolsMeneger.tools.graph;
-        this.toolsMenegerStop  = toolsMeneger.tools.stop;
-        this.buttonToolsFromGraph  = toolsMeneger.buttonToolsFromGraph;
-        this.buttonToolsFromStop   = toolsMeneger.buttonToolsFromStop;
+        this.toolsMeneger       = toolsMeneger;
+       
+
         this.data    = data;
 
        
@@ -57,10 +47,7 @@ export class App{
             save:        false,
         };
 
-        this.editorState = {
-            graph: false,
-            stop:  false,
-        }
+        
 
         this.graphEditor =  this.initializeGraphEditor();
         this.initialize();
@@ -68,95 +55,49 @@ export class App{
     
     
     initialize() {
-        this.initializeCanvas();
-        this.initializeDOMElements();
-        this.setupEventListeners();
+        this.removeEventListeners() 
+        this.addEventListeners();
     };
     initializeGraphEditor(saveName) {
         const graphString = localStorage.getItem(saveName);
         const saveInfo = graphString ? JSON.parse(graphString) : null;
         return new GraphEditor(this.canvas, saveInfo,  this.toolsMeneger, this.data);
-    }
-
-    initializeCanvas(){};
-    initializeDOMElements(){};
-    setupEventListeners() {
-        editors.forEach((button) => {
-            button.addEventListener('click', () => this.getActiveTool(button));
-        });
-        // editorGraph.addEventListener    ('click',   ()  => this.#getToolsBar())
-
-        this.buttonSave.addEventListener     ('click',   ()  => this.#save())
-        this.buttonload.addEventListener     ('click',   ()  => this.#load());
-        this.buttonInputSave.addEventListener('click',   ()  => this.#newSave());
-        this.buttonDispose.addEventListener  ('click',   ()  => this.#disponce());
+    };
+    removeEventListeners() {
+        this.buttonSave.removeEventListener     ('click',   this.boundSave)
+        this.buttonload.removeEventListener     ('click',   this.boundLoad);
+        this.buttonInputSave.removeEventListener('click',   this.boundNewSave);
+        this.buttonDispose.removeEventListener  ('click',   this.boudDisponse);
         
-        this.input.addEventListener          ('keydown', (e) => this.#saveInputKeydown(e));
-        this.input.addEventListener          ('click',   ()  => this.#inputLine());
-        this.iconClose.addEventListener      ('click',   ()  => this.#clearInput());
+        this.input.removeEventListener          ('keydown', this.boudSaveInput);
+        this.input.removeEventListener          ('click',   this.boundInputLine);
+        this.iconClose.removeEventListener      ('click',   this.boundClear);
 
-        this.selectElement.addEventListener  ('change',  (e) =>this.#selectingSaveFile(e))
-        // Додайте інші обробники подій за потреби
+        this.selectElement.removeEventListener  ('change',  this.boundSelecting);
     };
-    getActiveTool(button){
-        const buttonActive = button.getAttribute('data-editor');
-        setTool(buttonActive, this.editorState);
-        this.#updateButtonStyles()
-        this.#getToolsBarFromGraph();
-        this.#getToolsBarFromStop();
-        this.#reset();
-    };
-    // зміна стилю кнопок приактивації деактивації    
-    #updateButtonStyles() {
-        editors.forEach((button) => {
-            const buttonName = button.getAttribute('data-editor');
-            const isActive = this.editorState[buttonName];
-            button.classList.toggle('active', isActive);
-        });
-    };
-    #reset(){
-        // прибираємо з панелі активну кнопку
-        this.toolsMeneger.resetTools();
-        this.toolsMeneger.resetButtonStyles();
-    }
-    // функція появи панелі інструментів для Stop
-    #getToolsBarFromStop(){
-     
-    }
-    // функція появи панелі інструментів для Graph
-    #getToolsBarFromGraph(){
+    addEventListeners() {
+        this.boundSave      = ()  => this.#save();
+        this.boundLoad      = ()  => this.#load();
+        this.boundNewSave   = ()  => this.#newSave();
+        this.boudDisponse   = ()  => this.#disponce();
+        this.boudSaveInput  = (e) => this.#saveInputKeydown(e);
+        this.boundInputLine = ()  => this.#inputLine();
+        this.boundClear     = ()  => this.#clearInput();
+        this.boundSelecting = (e) => this.#selectingSaveFile(e);
 
-        // анімація стилю nameEditor
-        this.getNameEditor(this.editorState.graph);
+        this.buttonSave.addEventListener     ('click',   this.boundSave)
+        this.buttonload.addEventListener     ('click',   this.boundLoad);
+        this.buttonInputSave.addEventListener('click',   this.boundNewSave);
+        this.buttonDispose.addEventListener  ('click',   this.boudDisponse);
+        
+        this.input.addEventListener          ('keydown', this.boudSaveInput);
+        this.input.addEventListener          ('click',   this.boundInputLine);
+        this.iconClose.addEventListener      ('click',   this.boundClear);
 
-        // анімація стилю стрілок 
-        arrowBar.style.animation = this.editorState.graph ?
-            `slideArrowUp ${this.timeAnimate.arrowBar}s ease forwards`    :
-            `slideArrowDouwn ${this.timeAnimate.arrowBar}s ease forwards`;
-     
-        // анімацію стилю панелі інструментів graphEditor
-        this.getToolsBar(this.editorState.graph)
-
-    }
-    getNameEditor(state) {
-        if (state) {
-            nameGraph.style.animation = `slideRight ${this.timeAnimate.editorBar}s ease forwards`;
-            nameGraph.innerHTML = 'Graph Editor';
-        }else{
-            nameGraph.style.animation = `slideLeft ${this.timeAnimate.editorBar}s ease forwards`;
-            nameGraph.innerHTML = 'Stop Editor';
-        }   
-    }
-    getToolsBar(state){
-        toolsBar.style.animation = state ? 
-            `toolsBarOn ${this.timeAnimate.toolsBar}s ease forwards` :
-            `toolsBarOff ${this.timeAnimate.toolsBar}s ease forwards`;
-        this.buttonToolsFromGraph.forEach((button) => {
-            button.style.animation = state ? 
-                `slideAppear ${this.timeAnimate.toolsBar}s ease forwards` :
-                `slideDisappear ${this.timeAnimate.toolsBar}s ease forwards`;
-        });
+        this.selectElement.addEventListener  ('change',  this.boundSelecting);
     };
+   
+ 
     // функція збереження поточного graph
     #save() {
         if(this.appState.dispose){
@@ -210,7 +151,7 @@ export class App{
         if(this.appState.save){
             this.saveName = ''
             this.graphEditor.dispose();
-            this.buttonToolsFromGraph.forEach(button => button.classList.remove('active'));        //деактивуємо всі кнопки інструментів
+            this.toolsMeneger.resetButtonStyles();        //деактивуємо всі кнопки інструментів
             localStorage.setItem(this.saveName, JSON.stringify(this.graphEditor.graph));
             this.saveNames  = Object.keys(localStorage)
             this.appState.save = false;
@@ -247,7 +188,7 @@ export class App{
     // вибір збереженого файлу
     #selectingSaveFile(e){
         // деактивація всіх кнопок при загрузці
-        this.buttonToolsFromGraph.forEach(button =>  button.classList.remove('active'));
+        this.toolsMeneger.resetButtonStyles();
         // загрузка вибраного saveName
         this.saveName    = e.target.value;
         // Оновлення GraphEditor з новим saveName

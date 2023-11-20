@@ -18,31 +18,33 @@
         <div class="editor-bar">
             <span id="nameEditor">nameEditor</span>
             <div class="btnEditor">
-                <button class = 'button editors' data-editor = 'graph'  id="editorGraph"> <i class='bx bxl-graphql'></i>         </button>
-                <button class = 'button editors' data-editor = 'stop'   id="stopEditor"> <i class='bx bxs-hand' ></i>         </button>
+                <button class = 'editor' data-tool = 'graph'  id="editorGraph"> <i class='bx bxl-graphql'></i>         </button>
+                <button class = 'editor' data-tool = 'stop'   id="stopEditor"> <i class='bx bxs-hand' ></i>         </button>
             </div>
         </div>
         <div class="arrow-bar">
-            <button class = 'arrow'  id="prev">   <i class='bx bxs-chevrons-left' ></i>  </button>
-            <button class = 'arrow' id="next"> <i class='bx bxs-chevrons-right' ></i> </button>
+            <button class = 'arrow'  id="prev"> <i class='bx bxs-chevrons-left' ></i>  </button>
+            <button class = 'arrow'  id="next"> <i class='bx bxs-chevrons-right' ></i> </button>
         </div>
         <div class="navig-bar-tools">
-            <div class="toolsForStop">
-                <button class = 'button toolsForStop' data-toolStop = 'pedestrian'    style="--i:1;"> <i class='bx bx-walk'     style='color:rgba(220,16,121,0.51)'></i> </button>
-                <button class = 'button toolsForStop' data-toolStop = 'trafficLights' style="--i:2;"> <i class='bx bxs-traffic' style='color:rgba(220,16,121,0.51)'></i> </button>
-                <button class = 'button toolsForStop' data-toolStop = 'taxsi'         style="--i:3;"> <i class='bx bx-car'      style='color:rgba(220,16,121,0.51)'></i> </button>
-                <button class = 'button toolsForStop' data-toolStop = 'avtobus'       style="--i:4;"> <i class='bx bx-bus'      style='color:rgba(220,16,121,0.51)'></i> </button>
+            <div class="bar stop">
+                <button class = 'stop' data-tool = 'pedestrian'    style="--i:1;"> <i class='bx bx-walk'     style='color:rgba(220,16,121,0.51)'></i> </button>
+                <button class = 'stop' data-tool = 'trafficLights' style="--i:2;"> <i class='bx bxs-traffic' style='color:rgba(220,16,121,0.51)'></i> </button>
+                <button class = 'stop' data-tool = 'taxsi'         style="--i:3;"> <i class='bx bx-car'      style='color:rgba(220,16,121,0.51)'></i> </button>
+                <button class = 'stop' data-tool = 'avtobus'       style="--i:4;"> <i class='bx bx-bus'      style='color:rgba(220,16,121,0.51)'></i> </button>
+                <button class = 'stop' data-tool = 'avtobus1'      style="--i:5;"> <i class='bx bx-bus'      style='color:rgba(220,16,121,0.51)'></i> </button>
+                <button class = 'stop' data-tool = 'avtobus2'      style="--i:6;"> <i class='bx bx-bus'      style='color:rgba(220,16,121,0.51)'></i> </button>
             </div>
-            <div class="tools">
-                <button class = 'button tools' data-tool = 'curve'    style="--i:1;" > <i class='bx bx-pencil'></i>              </button>
-                <button class = 'button tools' data-tool = 'point'    style="--i:2;"> <i class='bx bx-pin'></i>                 </button>
-                <button class = 'button tools' data-tool = 'dragging' style="--i:3;" > <i class='bx bx-move'></i>                </button>
-                <button class = 'button tools' data-tool = 'remove'   style="--i:4;"> <i class='bx bxs-eraser' ></i>            </button>
-                <button class = 'button tools' data-tool = 'polygon'  style="--i:5;"> <i class='bx bx-shape-polygon' ></i>      </button>
-                <button class = 'button tools' data-tool = 'road'     style="--i:6;"> <i class='bx bx-trip'></i>                </button>
-                <button class = 'button tools' data-tool = 'building' style="--i:7;"> <i class='bx bx-home'></i>                </button>
-                <button class = 'button tools' data-tool = 'tree'     style="--i:8;"> <i class='bx bxs-tree'></i>               </button>
-                <button class = 'button tools' data-tool = 'city'     style="--i:9;"> <i class='bx bxs-city'></i>               </button>
+            <div class="bar graph">
+                <button class = 'graph' data-tool = 'curve'    style="--i:1;" > <i class='bx bx-pencil'></i>              </button>
+                <button class = 'graph' data-tool = 'point'    style="--i:2;"> <i class='bx bx-pin'></i>                 </button>
+                <button class = 'graph' data-tool = 'dragging' style="--i:3;" > <i class='bx bx-move'></i>                </button>
+                <button class = 'graph' data-tool = 'remove'   style="--i:4;"> <i class='bx bxs-eraser' ></i>            </button>
+                <button class = 'graph' data-tool = 'polygon'  style="--i:5;"> <i class='bx bx-shape-polygon' ></i>      </button>
+                <button class = 'graph' data-tool = 'road'     style="--i:6;"> <i class='bx bx-trip'></i>                </button>
+                <button class = 'graph' data-tool = 'building' style="--i:7;"> <i class='bx bx-home'></i>                </button>
+                <button class = 'graph' data-tool = 'tree'     style="--i:8;"> <i class='bx bxs-tree'></i>               </button>
+                <button class = 'graph' data-tool = 'city'     style="--i:9;"> <i class='bx bxs-city'></i>               </button>
             </div>
         </div>
         

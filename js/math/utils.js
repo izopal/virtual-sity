@@ -172,12 +172,10 @@ export function multiplyKeys(obj, scale, options) {
   return obj
 };
 
-
 // зміна значення кнопок на true/false приактивації деактивації  
-export function setTool(toolActive, tools) {
+export function setTool(name, tools) {
   for (const tool in tools) {
-      tools[tool] = tool === toolActive ? !tools[tool] : false
+      tools[tool] = tool === name ? !tools[tool] : false
   };
   return tools
 };
-
