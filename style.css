@@ -97,8 +97,8 @@ button:active {
 .editor-bar span{
     display: flex;
     justify-content: center;
-    font-size:  var(--index);
-    color: var(--menuColor);
+    font-size:  calc(var(--index) * 1);
+    color: red;
 }
 
 .editor-bar .btnEditor{
@@ -129,7 +129,6 @@ button:active {
         height: calc(var(--index) * 20.5);
     }
 } 
-
 @keyframes slideArrowUp {
     0%{
         height: calc(var(--index) * 5);
@@ -146,7 +145,6 @@ button:active {
         height: calc(var(--index) * 5);
     }
 }
-
 .arrow{
     height: calc(var(--index) * 2.5);
     width: calc(var(--index) * 2.5);
@@ -154,13 +152,15 @@ button:active {
     /* розмір SVG */
     font-size: calc(var(--index)* 1.125);
     rotate: 90deg;
-    border: none;
+    
     cursor: pointer;
 }
+
 .arrow:active{
     color: wheat;
 }
 
+/* ========================================================================> */
 .navig-bar-tools{
     display: flex;
 
@@ -195,8 +195,6 @@ button:active {
     0%   { scale: 1 }
     100% { scale: 0 }
 }
-
-
 .graph, .stop {
     position: absolute;
     height: calc(var(--index) * 2.5);
@@ -206,27 +204,35 @@ button:active {
     scale: 0;
     transform-origin: center; 
     transform-style: preserve-3d;
-   
 }
-
+.graph{
+    --degrees: calc(var(--i) * 40deg);
+    --distance: calc(var(--index) * 5.25);
+    color: red
+}
+.stop{
+    --degrees: calc(var(--i) * 60deg);
+    --distance: calc(var(--index) * 4.25);
+    color: blue
+}
 @keyframes slideAppear {
     0%{
         scale: 0;
-        transform: rotatex(calc(var(--i) * 0deg)) translateZ(calc(var(--index) * 0));
+        transform: rotatex(0deg) translateZ(0);
     }
     100%{
         scale: 1;
-        transform: rotatex(calc(var(--i) * -40deg)) translateZ(calc(var(--index) * 6.25));
+        transform: rotatex(var(--degrees)) translateZ(var(--distance));
     }
 } 
 @keyframes slideDisappear {
     0%{
         scale: 1;
-        transform: rotatex(calc(var(--i) * 40deg)) translateZ(calc(var(--index) * 6.25));
+        transform: rotatex(calc(var(--degrees) * -1)) translateZ(var(--distance));
     }
     100%{
         scale: 0;
-        transform: rotatex(calc(var(--i) * 0deg)) translateZ(calc(var(--index) * 0));
+        transform: rotatex(0deg) translateZ(0);
     }
 }
 

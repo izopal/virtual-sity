@@ -177,5 +177,4 @@ export function setTool(name, tools) {
   for (const tool in tools) {
       tools[tool] = tool === name ? !tools[tool] : false
   };
-  return tools
 };

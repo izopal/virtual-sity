@@ -1,11 +1,11 @@
-import * as utils       from './math/utils.js';
+import * as utils       from '../math/utils.js';
 
-import {Graph}     from './math/graph.js';
-import {Vieport}   from './vieport.js';
-import {Point}     from './primitives/point.js';
-import {Segment}   from './primitives/segment.js';
+import {Graph}     from '../math/graph.js';
+import {Vieport}   from '../vieport.js';
+import {Point}     from '../primitives/point.js';
+import {Segment}   from '../primitives/segment.js';
 
-import {World}  from './world.js';
+import {World}  from '../world.js';
 
 const body               = document.body;
 
@@ -40,8 +40,8 @@ export class GraphEditor {
         this.OldGraphHash  = this.graph.hash();    //параметри запуска малювання 
         this.world         = new World(this.data, this.graph);
         
-        this.#removeEventListeren(canvas)
-        this.#addEventListener(canvas);
+        this.removeEventListeren(canvas)
+        this.addEventListener(canvas);
         this.counter       = 0
     };
 
@@ -73,46 +73,43 @@ export class GraphEditor {
         };
         return new Graph (this.tools, this.data, points, sortedPoints, segments, sortedSegments);
     }
-    #removeEventListeren(canvas){
-        this.toolsMeneger.allTools.forEach((button) => {
-            button.removeEventListener('click', this.handleButtonClick);
-        });
-        
+    removeEventListeren(canvas){
         body.removeEventListener  ('keydown',    this.boudKeydown);
+
         canvas.removeEventListener('mousedown',  this.boundMouseDown);
         canvas.removeEventListener('mousemove',  this.boundMouseMove);
         canvas.removeEventListener('mouseup',    this.boudMouseUp);
-        canvas.removeEventListener('touchstart', this.boundTouchStart);
-        canvas.removeEventListener('touchmove',  this.boundTouchMove);
-        canvas.removeEventListener('touchend',   this.boundTouchEnd);
+        canvas.removeEventListener('touchstart', this.boundTouchStart, {passive: false});
+        canvas.removeEventListener('touchmove',  this.boundTouchMove, {passive: false});
+        canvas.removeEventListener('touchend',   this.boundTouchEnd, {passive: false});
 
-        canvas.removeEventListener('contextmenu',  this.boundContextMenu)
+        canvas.removeEventListener('contextmenu', this.boundContextMenu)
     };
-
-    #addEventListener(canvas){
+    addEventListener(canvas){
         this.handleButtonClick = () => this.lastPoint = null;
-        this.boudKeydown    = this.#inputKeydown.bind(this);
-        this.boundMouseDown = this.#inputMouseDown.bind(this);
-        this.boundMouseMove = this.#inputMouseMove.bind(this);
-        this.boudMouseUp    = this.#inputMouseUp.bind(this);
-        this.boundTouchStart = (e) => this.#inputMouseDown(this.getMouseEventFromTouchEvent(e));
-        this.boundTouchMove  = (e) => this.#inputMouseMove(this.getMouseEventFromTouchEvent(e));
-        this.boundTouchEnd   = (e) => this.#inputMouseUp(this.getMouseEventFromTouchEvent(e));
-
+        this.boudKeydown      = this.#inputKeydown.bind(this);
+        this.boundMouseDown   = this.#inputMouseDown.bind(this);
+        this.boundMouseMove   = this.#inputMouseMove.bind(this);
+        this.boudMouseUp      = this.#inputMouseUp.bind(this);
+        this.boundTouchStart  = (e) => this.#inputMouseDown(this.getMouseEventFromTouchEvent(e));
+        this.boundTouchMove   = (e) => this.#inputMouseMove(this.getMouseEventFromTouchEvent(e));
+        this.boundTouchEnd    = (e) => this.#inputMouseUp(this.getMouseEventFromTouchEvent(e));
         this.boundContextMenu = (e) => e.preventDefault()
 
         
         this.toolsMeneger.allTools.forEach((button) => {
+            button.removeEventListener('click', this.handleButtonClick);
             button.addEventListener('click', this.handleButtonClick);
         });
         
         body.addEventListener  ('keydown',    this.boudKeydown);
+
         canvas.addEventListener('mousedown',  this.boundMouseDown);
         canvas.addEventListener('mousemove',  this.boundMouseMove);
         canvas.addEventListener('mouseup',    this.boudMouseUp);
-        canvas.addEventListener('touchstart', this.boundTouchStart);
-        canvas.addEventListener('touchmove',  this.boundTouchMove);
-        canvas.addEventListener('touchend',   this.boundTouchEnd);
+        canvas.addEventListener('touchstart', this.boundTouchStart, {passive: true});
+        canvas.addEventListener('touchmove',  this.boundTouchMove, {passive: true});
+        canvas.addEventListener('touchend',   this.boundTouchEnd, {passive: true});
 
         canvas.addEventListener('contextmenu', this.boundContextMenu)
     };

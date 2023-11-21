@@ -16,7 +16,8 @@ window.addEventListener('load',  () => {
 });
 
 function animate(){
-      // console.log(Object.values(toolsMeneger.tools).every(value => value === false));
+      
+      
       myApp.draw(ctx);
       requestAnimationFrame(animate);
 };

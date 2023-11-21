@@ -1,4 +1,5 @@
-import { GraphEditor } from "./graphEditor.js";
+import { GraphEditor } from "./editors/graphEditor.js";
+import { StopEditor } from "./editors/stopEditor.js";
 import { timeAnimate } from './animateList.js';
 
 const buttonSave         = document.getElementById('buttonSave');
@@ -48,20 +49,24 @@ export class App{
         };
 
         
-
-        this.graphEditor =  this.initializeGraphEditor();
+        this.stopEditor  = this.initializeStopEditor();
+        this.graphEditor = this.initializeGraphEditor();
         this.initialize();
     };
     
-    
-    initialize() {
-        this.removeEventListeners() 
-        this.addEventListeners();
+    initializeStopEditor(saveName) {
+        const graphString = localStorage.getItem(saveName);
+        const saveInfo = graphString ? JSON.parse(graphString) : null;
+        return new StopEditor(this.canvas, saveInfo,  this.toolsMeneger, this.data);
     };
     initializeGraphEditor(saveName) {
         const graphString = localStorage.getItem(saveName);
         const saveInfo = graphString ? JSON.parse(graphString) : null;
         return new GraphEditor(this.canvas, saveInfo,  this.toolsMeneger, this.data);
+    };
+    initialize() {
+        this.removeEventListeners() 
+        this.addEventListeners();
     };
     removeEventListeners() {
         this.buttonSave.removeEventListener     ('click',   this.boundSave)

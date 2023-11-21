@@ -50,27 +50,49 @@ export class Vieport{
 
         this.hideTimeout = null
 
+        this.removeEventListener();
         this.addEventListener();
     };
 
     addEventListener(){
-        this.canvas.addEventListener('wheel',      this.inputMouseWheel.bind(this), {passive: true});
-       
-        buttonZoom.forEach(button => button.addEventListener('click', () => {
-            const buttonActive = button.getAttribute('data-zoom');
-            this.zoom = this.zoomButton(buttonActive);
-            this.getIndicatorZoom(this.zoom)
-            })
-        );
-        
-        this.canvas.addEventListener('mousedown',  this.inputMouseDown.bind(this));
-        this.canvas.addEventListener('mousemove',  this.inputMouseMove.bind(this));
-        this.canvas.addEventListener('mouseup',    this.inputMouseUp.bind(this));
+        this.boundZoomClick = this.getActiveZoom.bind(this)
 
-        this.canvas.addEventListener('touchstart', this.inputTouchStart.bind(this), {passive: true});
-        this.canvas.addEventListener('touchmove',  this.inputTouchMove.bind(this), {passive: true});
-        this.canvas.addEventListener('touchend',   this.inputTouchEnd.bind(this), {passive: true});
+        this.boundWeel       = this.inputMouseWheel.bind(this);
+        this.boundMouseDown  = this.inputMouseDown.bind(this);
+        this.boundMouseMove  = this.inputMouseMove.bind(this);
+        this.boudMouseUp     = this.inputMouseUp.bind(this);
+        this.boundTouchStart = this.inputTouchStart.bind(this);
+        this.boundTouchMove  = this.inputTouchMove.bind(this);
+        this.boundTouchEnd   = this.inputTouchEnd.bind(this);
+
+        buttonZoom.forEach((button) => {
+            button.removeEventListener('click', this.boundZoomClick);
+            button.addEventListener('click',    this.boundZoomClick);
+        });
+
+        this.canvas.addEventListener('wheel',     this.boundWeel, {passive: true});
+       
+        this.canvas.addEventListener('mousedown',  this.boundMouseDown);
+        this.canvas.addEventListener('mousemove',  this.boundMouseMove);
+        this.canvas.addEventListener('mouseup',    this.boudMouseUp);
+
+        this.canvas.addEventListener('touchstart', this.boundTouchStart, {passive: true});
+        this.canvas.addEventListener('touchmove',  this.boundTouchMove, {passive: true});
+        this.canvas.addEventListener('touchend',   this.boundTouchEnd, {passive: true});
     };
+    removeEventListener(){
+        this.canvas.addEventListener('wheel',      this.boundWeel, {passive: false});
+        
+        this.canvas.addEventListener('mousedown',  this.boundMouseDown);
+        this.canvas.addEventListener('mousemove',  this.boundMouseMove);
+        this.canvas.addEventListener('mouseup',    this.boudMouseUp);
+
+        this.canvas.addEventListener('touchstart', this.boundTouchStart, {passive: false});
+        this.canvas.addEventListener('touchmove',  this.boundTouchMove, {passive: false});
+        this.canvas.addEventListener('touchend',   this.boundTouchEnd, {passive: false});
+    };
+
+    
 
     // функція zoom роликом
     inputMouseWheel(e){
@@ -79,6 +101,12 @@ export class Vieport{
         return this.zoom  = this.#clampZoom(this.zoom)
     };
     // функція zoom кнопками
+    getActiveZoom(event){
+        const button = event.target.closest('button[data-zoom]');
+        const buttonActive = button.getAttribute('data-zoom');
+        this.zoom = this.zoomButton(buttonActive);
+        this.getIndicatorZoom(this.zoom)
+    };
     zoomButton(buttonActive){
         if(buttonActive === 'plus')  this.zoom += this.step;
         if(buttonActive === 'minus') this.zoom -= this.step;
