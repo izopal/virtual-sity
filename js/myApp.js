@@ -1,5 +1,5 @@
 import { GraphEditor } from "./editors/graphEditor.js";
-import { StopEditor } from "./editors/stopEditor.js";
+// import { StopEditor }  from "./editors/stopEditors.js";
 import { timeAnimate } from './animateList.js';
 
 const buttonSave         = document.getElementById('buttonSave');
@@ -49,7 +49,7 @@ export class App{
         };
 
         
-        this.stopEditor  = this.initializeStopEditor();
+        // this.stopEditor  = this.initializeStopEditor();
         this.graphEditor = this.initializeGraphEditor();
         this.initialize();
     };

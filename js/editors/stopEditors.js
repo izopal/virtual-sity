@@ -2,7 +2,8 @@
 
 
 import * as utils       from '../math/utils.js';
-export class Stop{
+
+export class StopEditor {
     constructor(canvas, saveInfo,  toolsMeneger, data){
         this.canvas       = canvas;
 
