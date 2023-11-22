@@ -87,9 +87,9 @@ export class Vieport{
         this.canvas.addEventListener('mousemove',  this.boundMouseMove);
         this.canvas.addEventListener('mouseup',    this.boudMouseUp);
 
-        this.canvas.addEventListener('touchstart', this.boundTouchStart, {passive: false});
-        this.canvas.addEventListener('touchmove',  this.boundTouchMove, {passive: false});
-        this.canvas.addEventListener('touchend',   this.boundTouchEnd, {passive: false});
+        this.canvas.addEventListener('touchstart', this.boundTouchStart);
+        this.canvas.addEventListener('touchmove',  this.boundTouchMove);
+        this.canvas.addEventListener('touchend',   this.boundTouchEnd);
     };
 
     

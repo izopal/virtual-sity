@@ -68,8 +68,8 @@ export class ToolsMeneger{
         prev.removeEventListener('click', this.boudPrevClick);
         next.removeEventListener('click', this.boudNextClick);
         inputValue.removeEventListener('mousemove', this.boudRangeSlider);
-        navigBarTools.removeEventListener('touchmove', this.boudTouchMove, {passive: false});
-        inputValue.removeEventListener('touchmove', this.boudRangeSlider, {passive: false});
+        navigBarTools.removeEventListener('touchmove', this.boudTouchMove);
+        inputValue.removeEventListener('touchmove', this.boudRangeSlider);
     }
     addEventListeners(){
         this.boundEditorClick = this.getActiveEditor.bind(this);
@@ -93,8 +93,8 @@ export class ToolsMeneger{
         prev.addEventListener('click', this.boudPrevClick);
         next.addEventListener('click', this.boudNextClick);
         inputValue.addEventListener('mousemove',    this.boudRangeSlider);
-        navigBarTools.addEventListener('touchmove', this.boudTouchMove, {passive: true});
-        inputValue.addEventListener('touchmove',    this.boudRangeSlider, {passive: true});
+        navigBarTools.addEventListener('touchmove', this.boudTouchMove);
+        inputValue.addEventListener('touchmove',    this.boudRangeSlider);
     }
     setupDomElements(button){
         const classListName = button.classList[0]
