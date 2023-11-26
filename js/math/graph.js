@@ -1,9 +1,10 @@
 import * as utils       from './utils.js';
 
 export class Graph{
-    constructor(tools, data, points = [], sortedPoints = {}, segments = [], sortedSegments = {},){
-        this.tools          = tools;
-        this.data          = data;
+    constructor(toolsMeneger, data, points = [], sortedPoints = {}, segments = [], sortedSegments = {},){
+        this.toolsMeneger   = toolsMeneger;
+        this.tools          = this.toolsMeneger.tools.graph;
+        this.data           = data;
 
         this.configPoint    = this.data.primitives.point;
         this.points         = points;

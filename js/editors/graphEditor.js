@@ -1,133 +1,78 @@
 import * as utils       from '../math/utils.js';
+import Editor from './editor.js';
 
-import {Graph}     from '../math/graph.js';
-import {Vieport}   from '../vieport.js';
-import {Point}     from '../primitives/point.js';
 import {Segment}   from '../primitives/segment.js';
-
 import {World}  from '../world.js';
 
-const body               = document.body;
 
-export class GraphEditor {
-    constructor(canvas, saveInfo,  toolsMeneger, data){
+export class GraphEditor extends Editor{
+    constructor(myApp){
+        super(myApp, 'graph')
         this.keys         = utils.keys;
         console.table(this.keys);
 
-        this.canvas       = canvas;
-
-        // параметри інструментів графічного редагування  
-        this.toolsMeneger          = toolsMeneger;
-        this.tools                 = this.toolsMeneger.tools.graph
-
-        this.data           = data;
-        this.config         = this.data.graphEditor;
         this.configPoint    = this.data.primitives.point;
         this.configSegment  = this.data.primitives.segment;
         
-        this.minDicnance   = this.config.minDistance;                   
-        this.sizeRemove    = this.config.sizeRemove;
-        
         // парметр обєкта який обираємо
-        this.point         = null;
         this.lastPoint     = null;
         this.activePoint   = null;
         
         // підключаємо необхідні нам класи
-        this.vieport       = new Vieport(canvas, toolsMeneger, this.data);
         
-        this.graph         = !saveInfo ? new Graph(this.tools, this.data) : this.#load(saveInfo);
-        this.OldGraphHash  = this.graph.hash();    //параметри запуска малювання 
+     
         this.world         = new World(this.data, this.graph);
-        
-        this.removeEventListeren(canvas)
-        this.addEventListener(canvas);
-        this.counter       = 0
+        // this.removeEventListeners();
+        // this.addEventListeners();
+        this.counter       = 0;
+        this.disable();
     };
-
-    #load(saveInfo){
-        const points        = saveInfo.points.map((point) => new Point(point, point.tools, point.radius));
-       
-        const segments    = saveInfo.segments.map((line) => new Segment(
-            points.find(point => point.equals(line.p1)),
-            points.find(point => point.equals(line.p2)),
-            line.tools,
-            line.size));
-            
-        const sortedPoints = {};
-        points.forEach((point) => {
-            for (const tool in point.tools) {
-                if (point.tools[tool]) {
-                    sortedPoints[tool] = sortedPoints[tool] || []
-                    sortedPoints[tool].push(point);
-                };
-            };
-        });
-
-        const sortedSegments = {};
-        for(const key in saveInfo.sortedSegments){
-            sortedSegments[key]    = saveInfo.sortedSegments[key].map((line) => new Segment(
-                points.find(point => point.equals(line.p1)),
-                points.find(point => point.equals(line.p2)),
-                line.tools));
-        };
-        return new Graph (this.tools, this.data, points, sortedPoints, segments, sortedSegments);
-    }
-    removeEventListeren(canvas){
-        body.removeEventListener  ('keydown',    this.boudKeydown);
-
-        canvas.removeEventListener('mousedown',  this.boundMouseDown);
-        canvas.removeEventListener('mousemove',  this.boundMouseMove);
-        canvas.removeEventListener('mouseup',    this.boudMouseUp);
-        canvas.removeEventListener('touchstart', this.boundTouchStart);
-        canvas.removeEventListener('touchmove',  this.boundTouchMove);
-        canvas.removeEventListener('touchend',   this.boundTouchEnd);
-
-        canvas.removeEventListener('contextmenu', this.boundContextMenu)
+  
+    disable(){
+        this.removeEventListeners()
     };
-    addEventListener(canvas){
+    enable(){
+        this.addEventListeners()
+    };
+   
+    removeEventListeners(){
+        this.body.removeEventListener  ('keydown',    this.boudKeydown);
+        this.canvas.removeEventListener('mousedown',  this.boundMouseDown);
+        this.canvas.removeEventListener('mousemove',  this.boundMouseMove);
+        this.canvas.removeEventListener('mouseup',    this.boudMouseUp);
+        this.canvas.removeEventListener('touchstart', this.boundTouchStart);
+        this.canvas.removeEventListener('touchmove',  this.boundTouchMove);
+        this.canvas.removeEventListener('touchend',   this.boundTouchEnd);
+
+        this.canvas.removeEventListener('contextmenu', this.boundContextMenu)
+    };
+    addEventListeners(){
         this.boudKeydown      = this.#inputKeydown.bind(this);
         this.boundMouseDown   = this.#inputMouseDown.bind(this);
         this.boundMouseMove   = this.#inputMouseMove.bind(this);
         this.boudMouseUp      = this.#inputMouseUp.bind(this);
-        this.boundTouchStart  = (e) => this.#inputMouseDown(this.getMouseEventFromTouchEvent(e));
-        this.boundTouchMove   = (e) => this.#inputMouseMove(this.getMouseEventFromTouchEvent(e));
-        this.boundTouchEnd    = (e) => this.#inputMouseUp(this.getMouseEventFromTouchEvent(e));
+        this.boundTouchStart  = (e) => this.#inputMouseDown(utils.getMouseEventFromTouchEvent(e));
+        this.boundTouchMove   = (e) => this.#inputMouseMove(utils.getMouseEventFromTouchEvent(e));
+        this.boundTouchEnd    = (e) => this.#inputMouseUp(utils.getMouseEventFromTouchEvent(e));
         this.boundContextMenu = (e) => e.preventDefault()
-
         
+        this.body.addEventListener  ('keydown',    this.boudKeydown);
+        this.canvas.addEventListener('mousedown',  this.boundMouseDown);
+        this.canvas.addEventListener('mousemove',  this.boundMouseMove);
+        this.canvas.addEventListener('mouseup',    this.boudMouseUp);
+        this.canvas.addEventListener('touchstart', this.boundTouchStart);
+        this.canvas.addEventListener('touchmove',  this.boundTouchMove);
+        this.canvas.addEventListener('touchend',   this.boundTouchEnd);
+        
+        this.canvas.addEventListener('contextmenu', this.boundContextMenu);
+
         this.toolsMeneger.allTools.forEach((button) => {
             button.addEventListener('click', () => this.lastPoint = null);
         });
-        
-        body.addEventListener  ('keydown',    this.boudKeydown);
-
-        canvas.addEventListener('mousedown',  this.boundMouseDown);
-        canvas.addEventListener('mousemove',  this.boundMouseMove);
-        canvas.addEventListener('mouseup',    this.boudMouseUp);
-        canvas.addEventListener('touchstart', this.boundTouchStart);
-        canvas.addEventListener('touchmove',  this.boundTouchMove);
-        canvas.addEventListener('touchend',   this.boundTouchEnd);
-
-        canvas.addEventListener('contextmenu', this.boundContextMenu)
     };
    
 
-    getMouseEventFromTouchEvent(e) {
-        e.preventDefault()
-        if (e.touches && e.touches.length > 0){
-          return {
-            pageX: e.touches[0].pageX,
-            pageY: e.touches[0].pageY,
-            buttons: 1,
-            touches: true,
-          };
-        };
-        
-        if (e.touches && e.touches.length >= 2) return e;
   
-        return null;
-      }
 
     #inputKeydown(e){
         if(['D', 'd', 'В', 'в'].includes(e.key)) this.data.debug.state = !this.data.debug.state;
@@ -169,12 +114,13 @@ export class GraphEditor {
         if(isBtnRight && e.buttons === 2)  this.lastPoint = null;
     };
     #inputMouseMove(e){
+        super.inputMouseMove(e);
+       
         const isCurveBtnLeft   = this.tools.curve    && e.buttons === 1;
         const isTreeBtnLeft    = this.tools.tree     && e.buttons === 1;
         const isDragingBtnLeft = this.tools.dragging && e.buttons === 1;
         const isRemoveBtnLeft  = this.tools.remove   && e.buttons === 1;
       
-        this.point       = this.vieport.getPoint(e, {subtractDragOffset: true});
         // умова використання інструменту curve
         if(isCurveBtnLeft ){
             this.#addSegment(this.point);
@@ -221,11 +167,11 @@ export class GraphEditor {
         this.activePoint   = null;
     }
     draw(ctx){
-        this.vieport.draw(ctx);
-        
+        super.draw(ctx)
+      
         const viewPoint = utils.operate(this.vieport.getPointOffset(), '*', -1)
         this.world.draw(ctx, viewPoint, this.vieport.zoom);
-        this.graph.draw(ctx);
+       
         
         if(this.activePoint ) this.activePoint.draw(ctx, this.configPoint.activePoint)
         
@@ -242,10 +188,9 @@ export class GraphEditor {
 
 
     dispose(){
+        super.dispose();    
         this.world.removeAll();
-        this.graph.removeAll();
         this.lastPoint     = null;
         this.activePoint   = null;
-        for (const key in this.tools) this.tools[key] = false;
     }
 }

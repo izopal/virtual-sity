@@ -8,7 +8,8 @@ export class Point {
         this.config = data.primitives.point;
         this.radius = radius || this.config.point.radius;
         
-        this.tools = tools
+        this.tools = tools;
+        
     }
 
   equals(point) {

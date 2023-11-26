@@ -52,7 +52,22 @@ export  function findObjData(targetKey) {
   }
   return null;
 };
+// функція корегування значень при використовуванні тачпад
+export  function getMouseEventFromTouchEvent(e) {
+  e.preventDefault()
+  if (e.touches && e.touches.length > 0){
+    return {
+      pageX: e.touches[0].pageX,
+      pageY: e.touches[0].pageY,
+      buttons: 1,
+      touches: true,
+    };
+  };
+  
+  if (e.touches && e.touches.length >= 2) return e;
 
+  return null;
+};
 // функція пошуку найближчої точки
 export function getNearestPoint(A, B, d = Number.MAX_SAFE_INTEGER){
   let minDicnance = Number.MAX_SAFE_INTEGER;                   // мінімальна відстань між точками
@@ -67,9 +82,24 @@ export function getNearestPoint(A, B, d = Number.MAX_SAFE_INTEGER){
   }
   return activePoint;
 };
+// функція пошуку найближчої сегменту
+export function getNearestSegment(A, B, d = Number.MAX_SAFE_INTEGER){
+  let minDicnance = Number.MAX_SAFE_INTEGER;                   // мінімальна відстань між точками
+  let activeSegment = null;                                      // параметр найближчої точки;
+
+  for(const b of B){
+    const dist =  b.distanceToPoint(A)           // розраховуємо відстань між поставленою точкою і точкою на сегменті
+    if(dist < d){
+      minDicnance = dist;
+      activeSegment = b;
+    }
+  }
+  return activeSegment;
+}
 
 // 
 export function operate(p1, operator, p2) {
+  
   return operator === '+' ? { x: p1.x + p2.x, y: p1.y + p2.y } :
          operator === '-' ? { x: p1.x - p2.x, y: p1.y - p2.y } :
          operator === '*' ? { x: p1.x * p2, y: p1.y * p2 } :
@@ -77,6 +107,9 @@ export function operate(p1, operator, p2) {
          operator === '+dot' ? p1.x * p2.x + p1.y * p2.y :
          operator === '-dot' ? p1.x * p2.x - p1.y * p2.y :
          null; // Додайте власні обробники для інших випадків або повертайте null як значення за замовчуванням
+};
+export function getPoint(coordinatesPoint){
+  return new Point(coordinatesPoint)
 }
 
 export function pointFrom3D(p1, p2, height){
@@ -178,3 +211,5 @@ export function setTool(name, tools) {
       tools[tool] = tool === name ? !tools[tool] : false
   };
 };
+
+

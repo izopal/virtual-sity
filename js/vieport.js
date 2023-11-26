@@ -1,13 +1,13 @@
 import * as utils  from './math/utils.js';
 import {Point}     from './primitives/point.js';
-import { timeAnimate } from './animateList.js'
+
 
 const buttonZoom        = document.querySelectorAll(`.button[data-zoom]`);
 const indicatorZoom     = document.querySelector('.indicator-zoom');
 const zoomValue         = document.getElementById('zoomValue')
 
 export class Vieport{
-    constructor(canvas, toolsMeneger, data){
+    constructor(canvas, toolsMeneger, data, timeAnimate){
         this.canvas       = canvas;
         this.ctx          = this.canvas.getContext('2d');
 

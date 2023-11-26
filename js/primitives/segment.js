@@ -29,6 +29,7 @@ export class Segment{
         const distanceToP2 = utils.distance(point, this.p2);
         return Math.min(distanceToP1, distanceToP2);
     }
+    // функція проектування точки на лінію
     projectPoint(point){
         const a      = utils.operate  (point,   '-',    this.p1);
         const b      = utils.operate  (this.p2, '-',    this.p1);

@@ -16,7 +16,7 @@
         --textColor: #8baaba;
         --menuColor: #6a7b70;
         --backgroundColor: #2a5;
-        --inputColor:  #1270357d;
+        --inputColor:  #0303037d;
 
       
     }
@@ -171,22 +171,42 @@ button:active {
     
     margin-left: var(--index);
 }
-.bar {
+.navig-bar-tools .bar.graph,
+.navig-bar-tools .bar.stop{
     display: flex;
-    
     position: absolute;
     left:0%;
     top: 0%;
-    height: calc(var(--index) * 2.5);
-    width: calc(var(--index) * 2.5);
-  
     scale: 0;
     transform:  translateY(-50%)
                 perspective(1000px)    
                 rotatex(0deg);
     transform-style: preserve-3d;
     transition: .5s;
+ 
+   
 }
+.navig-bar-tools .background{
+    display: flex;
+    position: fixed;
+    left:0%;
+    top: -150%;
+    height: calc(var(--index) * 10);
+    width: calc(var(--index) * 2.75);
+    background-color: var(--backgroundColor);
+    /* background: transparent; */
+    
+    scale: 1;
+  
+    transform-origin: center; 
+    
+    transform-style: preserve-3d;
+    transform:rotatex(0deg);
+
+                
+}
+
+
 @keyframes toolsBarOn {
     0%   { scale: 0 }
     100% { scale: 1 }
@@ -196,15 +216,20 @@ button:active {
     100% { scale: 0 }
 }
 .graph, .stop {
+
     position: absolute;
     height: calc(var(--index) * 2.5);
     width: calc(var(--index) * 2.5);
     font-size: calc(var(--index)* 1.125);
     display: flex;
     scale: 0;
+
     transform-origin: center; 
     transform-style: preserve-3d;
+    
+  
 }
+
 .graph{
     --degrees: calc(var(--i) * 40deg);
     --distance: calc(var(--index) * 5.25);
@@ -218,7 +243,7 @@ button:active {
 @keyframes slideAppear {
     0%{
         scale: 0;
-        transform: rotatex(0deg) translateZ(0);
+        transform: rotatex(0) translateZ(0);
     }
     100%{
         scale: 1;
@@ -232,7 +257,7 @@ button:active {
     }
     100%{
         scale: 0;
-        transform: rotatex(0deg) translateZ(0);
+        transform: rotatex(0) translateZ(0);
     }
 }
 

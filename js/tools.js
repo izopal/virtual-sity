@@ -1,13 +1,14 @@
 import { getValidValue } from './math/utils.js';
 import { setTool }       from './math/utils.js';
-import { timeAnimate } from './animateList.js';
 
-const editorBar        = document.querySelector('.editor-bar');
-const nameGraph        = document.getElementById('nameEditor');
-const barFromEditors   = document.querySelector('.btnEditor');
+const nameGraph         = document.getElementById('nameEditor');
+const barFromEditors    = document.querySelector('.btnEditor');
+const buttonFromEditors = barFromEditors.querySelectorAll('button');
 
 const arrowBar         = document.querySelector('.arrow-bar');
+
 const navigBarTools    = document.querySelector('.navig-bar-tools');
+const bars             = navigBarTools.querySelectorAll('.bar');
 const allTools         = navigBarTools.querySelectorAll('[data-tool]');
 
 const rangeValue   = document.getElementById('rangeValue');
@@ -17,12 +18,10 @@ const prev         = document.getElementById('prev');
 const next         = document.getElementById('next');   
 
 export class ToolsMeneger{
-    constructor(data){
+    constructor(data, timeAnimate){
         this.data        = data;
         this.timeAnimate = timeAnimate;
-        
-        this.buttonFromEditors  = barFromEditors.querySelectorAll('button');
-        this.allTools           = allTools;
+        this.allTools    = allTools;
         
         this.tools= {
             graph: {
@@ -49,16 +48,19 @@ export class ToolsMeneger{
             graph: false,
             stop:  false,
         };
-
+ 
         this.buttonsObject = {};
+        this.buttonName    = ''
 
         this.degrees       = 0;
         this.touchY        = 0; 
         this.touchTreshold = 20;
+
+       
       
         this.initialize();
     };
-
+   
     initialize() {
         this.removeEventListeners() 
         this.addEventListeners();
@@ -79,7 +81,7 @@ export class ToolsMeneger{
         this.boudTouchMove    = this.updateRotationSwipe.bind(this);
         this.boudRangeSlider  = this.#rangeSlider.bind(this);
 
-        this.buttonFromEditors.forEach((button) => {
+        buttonFromEditors.forEach((button) => {
             button.removeEventListener('click', this.boundEditorClick);
             button.addEventListener('click', this.boundEditorClick);
         });
@@ -106,9 +108,9 @@ export class ToolsMeneger{
         const button = event.target.closest('button[data-tool]');
         this.buttonName = button.getAttribute('data-tool');
 
-        this.#reset();
+        this.resetTools();
         setTool(this.buttonName, this.editorState);
-        this.#updateButtonStyles(this.buttonFromEditors, this.editorState)
+        this.#updateButtonStyles(buttonFromEditors, this.editorState)
         this.#getToolsBar(this.buttonName);
     };
     getActiveTools(event){
@@ -131,7 +133,7 @@ export class ToolsMeneger{
     // функція появи панелі інструментів
     #getToolsBar(buttonName){
         this.getNameEditor(this.editorState[buttonName], buttonName);
-        this.getArrowBar()
+        this.getArrowBar();
         this.getToolsBar(this.editorState[buttonName], buttonName)
     }
  
@@ -159,7 +161,7 @@ export class ToolsMeneger{
             `slideArrowDouwn ${this.timeAnimate.arrowBar}s ease forwards`;
     };
     getToolsBar(state, name){
-        const bars = document.querySelectorAll('.bar');
+        
         this.angle = 360 / this.buttonsObject[this.buttonName].length;
  
         bars.forEach(bar => {
@@ -228,19 +230,40 @@ export class ToolsMeneger{
         if (buttonActive === 'point') rangeValue.innerHTML = inputValue.value = Math.floor(this.data.primitives.point.point.radius);
     };
 
-    #reset(){
-        // прибираємо з панелі активну кнопку
+    reset(){
         this.resetTools();
-        this.resetButtonStyles();
+        this.resetEditors();
+        this.resetToolsBar();
+        this.resetArrowBar();
     };
+
     resetTools() {
+       this.resetToolsFromEditor();
+       this.resetButtonStylesTools();
+    };
+    resetToolsFromEditor(){
         Object.keys(this.tools).forEach(toolCategory => {
             Object.keys(this.tools[toolCategory]).forEach(tool => {
                 this.tools[toolCategory][tool] = false;
             });
         });
-    }
-    resetButtonStyles(){
+    };
+    resetButtonStylesTools(){
         this.allTools.forEach(button =>  button.classList.remove('active'));
+    };
+
+    resetEditors(){
+        Object.keys(this.editorState).forEach(editor => {
+            this.editorState[editor] = false;
+        });
+        buttonFromEditors.forEach(button =>  button.classList.remove('active'));
+    };
+    resetToolsBar(){
+        bars.forEach(bar => {
+            bar.style.animation = `toolsBarOff ${this.timeAnimate.toolsBar}s ease forwards`;
+        });
     }
+    resetArrowBar(){
+        this.getArrowBar()
+    };
 }

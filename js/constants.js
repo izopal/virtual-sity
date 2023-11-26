@@ -1,5 +1,5 @@
 import * as utils  from './math/utils.js';
-const parameters =   {  graphEditor:   {name:                   'remove',
+const parameters =   {  editor:   {name:                   'remove',
                                         class:                  'GraphEditor',
                                         minDistance:            10,
                                         sizeRemove:             30,

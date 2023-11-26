@@ -1,6 +1,9 @@
+import {Graph}     from './math/graph.js';
+import {Point}     from './primitives/point.js';
+import {Segment}   from './primitives/segment.js';
 import { GraphEditor } from "./editors/graphEditor.js";
-// import { StopEditor }  from "./editors/stopEditors.js";
-import { timeAnimate } from './animateList.js';
+import { StopEditor }  from "./editors/stopEditors.js";
+
 
 const buttonSave         = document.getElementById('buttonSave');
 const buttonload         = document.getElementById('buttonload');
@@ -8,77 +11,60 @@ const buttonInputSave    = document.getElementById('buttonInputSave');
 const buttonDispose      = document.getElementById('buttonDispose');
 
 const input         = document.querySelector('.fail .input-wrapper input');
+const maxLength     = input.getAttribute('maxlength');                             // параметр максимальної довжини вводу тексту
 const inputLine     = document.querySelector('.fail .input-wrapper .line');
 const iconClose     = document.querySelector('.fail .input-wrapper .icon.close');
 
 const selectElement = document.getElementById('load');
 
+let appState = {
+        saveButton:  false,
+        loadButton:  false,
+        dispose:     false,
+        save:        false,
+};
+
 export class App{
-    constructor(canvas, toolsMeneger, data) {
+    constructor(canvas, toolsMeneger, data, timeAnimate, vieport) {
         this.canvas = canvas;
         this.toolsMeneger       = toolsMeneger;
-       
 
         this.data    = data;
 
-       
         // Парамтри часу для анімації
         this.timeAnimate = timeAnimate
             
-
-        this.buttonSave      = buttonSave;
-        this.buttonload      = buttonload;
-        this.buttonInputSave = buttonInputSave;
-        this.buttonDispose   = buttonDispose;
-        
-        this.input     = input;
-        this.inputLine = inputLine;
-        this.iconClose = iconClose;
-        this.maxLength = input.getAttribute('maxlength');   // параметр максимальної довжини вводу тексту
-        
-        this.selectElement = selectElement;
-        
         this.saveName  = '';
         this.saveNames =  Object.keys(localStorage);         // отримуємо всі ключі з localStorage і поміщаємо їх в окремий масив;
-
-        this.appState = {
-            saveButton:  false,
-            loadButton:  false,
-            dispose:     false,
-            save:        false,
-        };
-
+        this.saveInfo  = '';
         
-        // this.stopEditor  = this.initializeStopEditor();
-        this.graphEditor = this.initializeGraphEditor();
+        this.vieport     = vieport;
+
+        this.graph       = new Graph(this.toolsMeneger, this.data);
+        this.stopEditor  = new StopEditor(this);
+        this.graphEditor = new GraphEditor(this);
+
         this.initialize();
     };
     
-    initializeStopEditor(saveName) {
-        const graphString = localStorage.getItem(saveName);
-        const saveInfo = graphString ? JSON.parse(graphString) : null;
-        return new StopEditor(this.canvas, saveInfo,  this.toolsMeneger, this.data);
-    };
-    initializeGraphEditor(saveName) {
-        const graphString = localStorage.getItem(saveName);
-        const saveInfo = graphString ? JSON.parse(graphString) : null;
-        return new GraphEditor(this.canvas, saveInfo,  this.toolsMeneger, this.data);
-    };
+    
     initialize() {
+ 
+      
         this.removeEventListeners() 
         this.addEventListeners();
     };
     removeEventListeners() {
-        this.buttonSave.removeEventListener     ('click',   this.boundSave)
-        this.buttonload.removeEventListener     ('click',   this.boundLoad);
-        this.buttonInputSave.removeEventListener('click',   this.boundNewSave);
-        this.buttonDispose.removeEventListener  ('click',   this.boudDisponse);
+        buttonSave.removeEventListener     ('click',   this.boundSave)
+        buttonload.removeEventListener     ('click',   this.boundLoad);
+        buttonInputSave.removeEventListener('click',   this.boundNewSave);
+        buttonDispose.removeEventListener  ('click',   this.boudDisponse);
         
-        this.input.removeEventListener          ('keydown', this.boudSaveInput);
-        this.input.removeEventListener          ('click',   this.boundInputLine);
-        this.iconClose.removeEventListener      ('click',   this.boundClear);
+        input.removeEventListener          ('keydown', this.boudSaveInput);
+        input.removeEventListener          ('click',   this.boundInputLine);
+        iconClose.removeEventListener      ('click',   this.boundClear);
 
-        this.selectElement.removeEventListener  ('change',  this.boundSelecting);
+        selectElement.removeEventListener  ('change',  this.boundSelecting);
     };
     addEventListeners() {
         this.boundSave      = ()  => this.#save();
@@ -90,97 +76,100 @@ export class App{
         this.boundClear     = ()  => this.#clearInput();
         this.boundSelecting = (e) => this.#selectingSaveFile(e);
 
-        this.buttonSave.addEventListener     ('click',   this.boundSave)
-        this.buttonload.addEventListener     ('click',   this.boundLoad);
-        this.buttonInputSave.addEventListener('click',   this.boundNewSave);
-        this.buttonDispose.addEventListener  ('click',   this.boudDisponse);
+        buttonSave.addEventListener     ('click',   this.boundSave)
+        buttonload.addEventListener     ('click',   this.boundLoad);
+        buttonInputSave.addEventListener('click',   this.boundNewSave);
+        buttonDispose.addEventListener  ('click',   this.boudDisponse);
         
-        this.input.addEventListener          ('keydown', this.boudSaveInput);
-        this.input.addEventListener          ('click',   this.boundInputLine);
-        this.iconClose.addEventListener      ('click',   this.boundClear);
+        input.addEventListener          ('keydown', this.boudSaveInput);
+        input.addEventListener          ('click',   this.boundInputLine);
+        iconClose.addEventListener      ('click',   this.boundClear);
+        
 
-        this.selectElement.addEventListener  ('change',  this.boundSelecting);
+        selectElement.addEventListener  ('change',  this.boundSelecting);
     };
    
  
     // функція збереження поточного graph
     #save() {
-        if(this.appState.dispose){
-                this.appState.save = true;
-                this.buttonSave.innerHTML = "<i class='bx bx-save'></i>" ;
+        if(appState.dispose){
+                appState.save = true;
+                buttonSave.innerHTML = "<i class='bx bx-save'></i>" ;
         }
         if (this.saveNames.includes(this.saveName) && this.saveName !== '') {
-                localStorage.setItem(this.saveName, JSON.stringify(this.graphEditor.graph));
-                this.appState.dispose = false;
+                localStorage.setItem(this.saveName, JSON.stringify(this.graph));
+                appState.dispose = false;
         }else if(this.saveName === ''){
-                this.buttonInputSave.innerHTML = "<i class='bx bx-bookmark-alt bx-tada'></i>";
+                buttonInputSave.innerHTML = "<i class='bx bx-bookmark-alt bx-tada'></i>";
         }
     };
     // фукція загрузки graph
     #load() {
-        this.appState.loadButton = !this.appState.loadButton;
-        if (this.appState.loadButton && this.saveNames.length !== 0) {
+        appState.loadButton = !appState.loadButton;
+        if (appState.loadButton && this.saveNames.length !== 0) {
             this.getListDownloads();
-            this.selectElement.style.display   = 'block';
-            this.selectElement.style.animation = `slideRight ${this.timeAnimate.failBar}s ease forwards`;
-            this.buttonload.innerHTML          = "<i class='bx bx-folder-open'></i>";
-        } else {            this.selectElement.style.animation = `slideLeft ${this.timeAnimate.failBar}s ease forwards`;
-            this.buttonload.innerHTML          = "<i class='bx bx-folder'></i>";
-    }
+            selectElement.style.display   = 'block';
+            selectElement.style.animation = `slideRight ${this.timeAnimate.failBar}s ease forwards`;
+            buttonload.innerHTML          = "<i class='bx bx-folder-open'></i>";
+        } else {            selectElement.style.animation = `slideLeft ${this.timeAnimate.failBar}s ease forwards`;
+            buttonload.innerHTML          = "<i class='bx bx-folder'></i>";
+        }
     };
+   
     // фукція збереження нового graph при натисканні на кнопку
     #newSave() {
-        this.appState.saveButton = !this.appState.saveButton;
-        if (this.appState.saveButton) {
-            this.input.style.display       = 'block';
-            this.input.style.animation     = `slideRight ${this.timeAnimate.failBar}s ease forwards`;
-            this.buttonInputSave.innerHTML = '<i class="bx bx-bookmark-alt-plus"></i>';
+        appState.saveButton = !appState.saveButton;
+        if (appState.saveButton) {
+            input.style.display       = 'block';
+            input.style.animation     = `slideRight ${this.timeAnimate.failBar}s ease forwards`;
+            buttonInputSave.innerHTML = '<i class="bx bx-bookmark-alt-plus"></i>';
         } 
-        if (!this.appState.saveButton){
-            if (this.input.value.trim() !== '') this.newSave();
+        if (!appState.saveButton){
+            if (input.value.trim() !== '') this.newSave();
        
             this.clear();
-            setTimeout(() => this.input.style.display = 'none', `${this.timeAnimate.failBar * 1000}`);
-            this.input.style.animation = `slideLeft ${this.timeAnimate.failBar}s ease forwards`;
+            setTimeout(() => input.style.display = 'none', `${this.timeAnimate.failBar * 1000}`);
+            input.style.animation = `slideLeft ${this.timeAnimate.failBar}s ease forwards`;
         }
     };
     // функція очищення graph
     #disponce(){
         if(this.saveName === ''){
-            this.buttonInputSave.innerHTML = "<i class='bx bx-bookmark-alt bx-tada'></i>";
+            buttonInputSave.innerHTML = "<i class='bx bx-bookmark-alt bx-tada'></i>";
         }
-        if(this.saveName !== '' && !this.appState.save){
-            this.appState.dispose = true
-            this.buttonSave.innerHTML = "<i class='bx bx-save bx-burst'></i>";
+        if(this.saveName !== '' && !appState.save){
+            appState.dispose = true
+            buttonSave.innerHTML = "<i class='bx bx-save bx-burst'></i>";
         }
-        if(this.appState.save){
+        if(appState.save){
             this.saveName = ''
             this.graphEditor.dispose();
-            this.toolsMeneger.resetButtonStyles();        //деактивуємо всі кнопки інструментів
-            localStorage.setItem(this.saveName, JSON.stringify(this.graphEditor.graph));
+            this.stopEditor.dispose();
+            this.toolsMeneger.reset();               //деактивуємо всі кнопки інструментів
+            localStorage.setItem(this.saveName, JSON.stringify(this.graph));
             this.saveNames  = Object.keys(localStorage)
-            this.appState.save = false;
+            appState.save = false;
         };
     }
 
     // фукція збереження нового graph при натисканні на Enter
     #saveInputKeydown(e) {
         if (e.key === 'Enter') {
-            if (this.input.value.trim() !== '') this.newSave();
+            if (input.value.trim() !== '') this.newSave();
             
             this.clear();
-            setTimeout(() => this.input.style.display = 'none', `${this.timeAnimate.failBar * 1000}`);
-            this.input.style.animation     = `slideLeft ${this.timeAnimate.failBar}s ease forwards`;
-            this.buttonInputSave.innerHTML = '<i class="bx bx-bookmark-alt-plus"></i>';
-            this.appState.saveButton       = false;
+            setTimeout(() => input.style.display = 'none', `${this.timeAnimate.failBar * 1000}`);
+            input.style.animation     = `slideLeft ${this.timeAnimate.failBar}s ease forwards`;
+            buttonInputSave.innerHTML = '<i class="bx bx-bookmark-alt-plus"></i>';
+            appState.saveButton       = false;
         }
     };
     // умова появи/зникнення лінії під полем для збереження
     #inputLine() {
-        if(this.input.value.trim() !== '') {
-            this.inputLine.style.transform       = 'scaleX(1)';
-            this.inputLine.style.transformOrigin = 'left';
-            this.iconClose.style.transform       = 'scale(1)';
+        if(input.value.trim() !== '') {
+            inputLine.style.transform       = 'scaleX(1)';
+            inputLine.style.transformOrigin = 'left';
+            iconClose.style.transform       = 'scale(1)';
             this.limitInputLength()
         } else {
             this.clear()
@@ -192,18 +181,52 @@ export class App{
     };
     // вибір збереженого файлу
     #selectingSaveFile(e){
-        // деактивація всіх кнопок при загрузці
-        this.toolsMeneger.resetButtonStyles();
         // загрузка вибраного saveName
         this.saveName    = e.target.value;
+        // деактивація всіх кнопок при загрузці
+        this.graphEditor.dispose();
+        this.stopEditor.dispose();
+        this.toolsMeneger.reset();               //деактивуємо всі кнопки інструментів
         // Оновлення GraphEditor з новим saveName
-        this.graphEditor = this.initializeGraphEditor(this.saveName);
+        const graphString = localStorage.getItem(this.saveName);
+        this.saveInfo = graphString ? JSON.parse(graphString) : null;
+        this.graph = this.#loadGraph(this.saveInfo)
+        this.stopEditor  = new StopEditor(this);
+        this.graphEditor = new GraphEditor(this);
         // блок закриття меню загрузки
-        setTimeout(() => this.selectElement.style.display = 'none', `${this.timeAnimate.failBar * 1000}`);
-        this.selectElement.style.animation = `slideLeft ${this.timeAnimate.failBar}s ease forwards`;
-        this.buttonload.innerHTML          = "<i class='bx bx-folder'></i>";
-        this.appState.loadButton           = false;
-    }
+        setTimeout(() => selectElement.style.display = 'none', `${this.timeAnimate.failBar * 1000}`);
+        selectElement.style.animation = `slideLeft ${this.timeAnimate.failBar}s ease forwards`;
+        buttonload.innerHTML          = "<i class='bx bx-folder'></i>";
+        appState.loadButton           = false;
+    };
+    #loadGraph(saveInfo){
+        const points        = saveInfo.points.map((point) => new Point(point, point.tools, point.radius));
+       
+        const segments    = saveInfo.segments.map((line) => new Segment(
+            points.find(point => point.equals(line.p1)),
+            points.find(point => point.equals(line.p2)),
+            line.tools,
+            line.size));
+            
+        const sortedPoints = {};
+        points.forEach((point) => {
+            for (const tool in point.tools) {
+                if (point.tools[tool]) {
+                    sortedPoints[tool] = sortedPoints[tool] || []
+                    sortedPoints[tool].push(point);
+                };
+            };
+        });
+
+        const sortedSegments = {};
+        for(const key in saveInfo.sortedSegments){
+            sortedSegments[key]    = saveInfo.sortedSegments[key].map((line) => new Segment(
+                points.find(point => point.equals(line.p1)),
+                points.find(point => point.equals(line.p2)),
+                line.tools));
+        };
+        return new Graph (this.toolsMeneger, this.data, points, sortedPoints, segments, sortedSegments);
+    };
 
     newSave(){
         this.saveName = input.value;
@@ -220,25 +243,25 @@ export class App{
     };
     // функція для обмеження кількості символів у полі "input"
     limitInputLength() {
-        const text = this.input.value;
-        if (text.length > this.maxLength) {
-            this.input.value = text.slice(0, this.maxLength);                          // Обрізаємо текст, якщо він занадто довгий
+        const text = input.value;
+        if (text.length > maxLength) {
+            input.value = text.slice(0, maxLength);                          // Обрізаємо текст, якщо він занадто довгий
         }
     };
     // функція створення списку з усіх отриманих ключів saveNames
     getListDownloads() {
-        this.selectElement.innerHTML = "";
+        selectElement.innerHTML = "";
 
         let option = document.createElement("option");
         option.text = 'Список загрузки';
-        this.selectElement.appendChild(option);
+        selectElement.appendChild(option);
 
         for (let name in this.saveNames) {
             if (this.saveNames[name] !== '') {
                 option = document.createElement("option");
                 option.value = this.saveNames[name];
                 option.text = this.saveNames[name];
-                this.selectElement.appendChild(option);
+                selectElement.appendChild(option);
             }
         }
     };
@@ -246,6 +269,6 @@ export class App{
 
     draw(ctx){
         this.graphEditor.draw(ctx)
+        this.stopEditor.draw(ctx)
     }
 }
-
