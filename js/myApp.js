@@ -49,8 +49,6 @@ export class App{
     
     
     initialize() {
- 
-      
         this.removeEventListeners() 
         this.addEventListeners();
     };
@@ -268,7 +266,11 @@ export class App{
 
 
     draw(ctx){
-        this.graphEditor.draw(ctx)
-        this.stopEditor.draw(ctx)
-    }
+        this.graphEditor.draw(ctx);
+        this.stopEditor.draw(ctx);
+    };
+    drawDebug(ctx){
+        this.graphEditor.drawDebug(ctx)
+        this.stopEditor.drawDebug(ctx)
+    };
 }

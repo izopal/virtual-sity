@@ -2,7 +2,7 @@ import * as utils       from '../math/utils.js';
 import Editor from './editor.js';
 
 import {Segment}   from '../primitives/segment.js';
-import {World}  from '../world.js';
+
 
 
 export class GraphEditor extends Editor{
@@ -18,14 +18,7 @@ export class GraphEditor extends Editor{
         this.lastPoint     = null;
         this.activePoint   = null;
         
-        // підключаємо необхідні нам класи
-        
-     
-        this.world         = new World(this.data, this.graph);
-        // this.removeEventListeners();
-        // this.addEventListeners();
         this.counter       = 0;
-        this.disable();
     };
   
     disable(){
@@ -36,27 +29,23 @@ export class GraphEditor extends Editor{
     };
    
     removeEventListeners(){
-        this.body.removeEventListener  ('keydown',    this.boudKeydown);
+        super.removeEventListeners();
         this.canvas.removeEventListener('mousedown',  this.boundMouseDown);
         this.canvas.removeEventListener('mousemove',  this.boundMouseMove);
         this.canvas.removeEventListener('mouseup',    this.boudMouseUp);
         this.canvas.removeEventListener('touchstart', this.boundTouchStart);
         this.canvas.removeEventListener('touchmove',  this.boundTouchMove);
         this.canvas.removeEventListener('touchend',   this.boundTouchEnd);
-
-        this.canvas.removeEventListener('contextmenu', this.boundContextMenu)
     };
     addEventListeners(){
-        this.boudKeydown      = this.#inputKeydown.bind(this);
+        super.addEventListeners();
         this.boundMouseDown   = this.#inputMouseDown.bind(this);
         this.boundMouseMove   = this.#inputMouseMove.bind(this);
         this.boudMouseUp      = this.#inputMouseUp.bind(this);
         this.boundTouchStart  = (e) => this.#inputMouseDown(utils.getMouseEventFromTouchEvent(e));
         this.boundTouchMove   = (e) => this.#inputMouseMove(utils.getMouseEventFromTouchEvent(e));
         this.boundTouchEnd    = (e) => this.#inputMouseUp(utils.getMouseEventFromTouchEvent(e));
-        this.boundContextMenu = (e) => e.preventDefault()
-        
-        this.body.addEventListener  ('keydown',    this.boudKeydown);
+      
         this.canvas.addEventListener('mousedown',  this.boundMouseDown);
         this.canvas.addEventListener('mousemove',  this.boundMouseMove);
         this.canvas.addEventListener('mouseup',    this.boudMouseUp);
@@ -64,8 +53,6 @@ export class GraphEditor extends Editor{
         this.canvas.addEventListener('touchmove',  this.boundTouchMove);
         this.canvas.addEventListener('touchend',   this.boundTouchEnd);
         
-        this.canvas.addEventListener('contextmenu', this.boundContextMenu);
-
         this.toolsMeneger.allTools.forEach((button) => {
             button.addEventListener('click', () => this.lastPoint = null);
         });
@@ -74,12 +61,7 @@ export class GraphEditor extends Editor{
 
   
 
-    #inputKeydown(e){
-        if(['D', 'd', 'В', 'в'].includes(e.key)) this.data.debug.state = !this.data.debug.state;
-        if(['=', '+'].includes(e.key)) zoom('plus');
-        if(['-', '_'].includes(e.key)) zoom('minus');
-        if(e.key === 'Escape') this.lastPoint = null;
-    };
+   
     #inputMouseDown(e){
         // умови при настику лівої кнопки
         const isBtnLeft   = this.tools.point        || 
@@ -169,27 +151,19 @@ export class GraphEditor extends Editor{
     draw(ctx){
         super.draw(ctx)
       
-        const viewPoint = utils.operate(this.vieport.getPointOffset(), '*', -1)
-        this.world.draw(ctx, viewPoint, this.vieport.zoom);
-       
-        
-        if(this.activePoint ) this.activePoint.draw(ctx, this.configPoint.activePoint)
+        if(this.activePoint ) this.activePoint.draw(ctx, this.configPoint.activePoint);
         
         if(this.lastPoint && this.tools.point){
             this.lastPoint.draw(ctx, this.configPoint.lastPoint);
             new Segment (this.lastPoint, this.point).draw(ctx, this.configSegment.dash);
         };
-        // перевіряємо чи змінилися параметри this в класі Graph
-        if(this.OldGraphHash !== this.graph.hash()){
-            this.world.generateCity();
-            this.OldGraphHash = this.graph.hash()
-        }
     };
-
+    drawDebug(ctx){
+        super.drawDebug(ctx)
+    };
 
     dispose(){
         super.dispose();    
-        this.world.removeAll();
         this.lastPoint     = null;
         this.activePoint   = null;
     }

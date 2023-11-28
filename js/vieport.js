@@ -76,9 +76,9 @@ export class Vieport{
         this.canvas.addEventListener('mousemove',  this.boundMouseMove);
         this.canvas.addEventListener('mouseup',    this.boudMouseUp);
 
-        this.canvas.addEventListener('touchstart', this.boundTouchStart, {passive: true});
-        this.canvas.addEventListener('touchmove',  this.boundTouchMove, {passive: true});
-        this.canvas.addEventListener('touchend',   this.boundTouchEnd, {passive: true});
+        this.canvas.addEventListener('touchstart', this.boundTouchStart);
+        this.canvas.addEventListener('touchmove',  this.boundTouchMove);
+        this.canvas.addEventListener('touchend',   this.boundTouchEnd);
     };
     removeEventListener(){
         this.canvas.addEventListener('wheel',      this.boundWeel, {passive: false});
@@ -138,7 +138,7 @@ export class Vieport{
     };
     // ======================== Блок керування тачпадом ==============================>
     inputTouchStart(e){
-        
+        e.preventDefault()
         if (e.targetTouches.length >= 2) {
             this.inputStart(e.touches[0]) 
             this.startDistance = this.#getTouchDistance(e);
@@ -146,8 +146,9 @@ export class Vieport{
         }
     };
     inputTouchMove(e){
+        e.preventDefault()
         if(this.drag.active){
-            this.toolsMeneger.resetButtonStyles()        //деактивуємо всі кнопки інструментів
+            this.toolsMeneger.resetTools()        //деактивуємо всі кнопки інструментів
 
             this.inputMove(e.touches[0])
         };
@@ -169,6 +170,7 @@ export class Vieport{
         } 
     };
     inputTouchEnd(e){
+        e.preventDefault()
         this.inputEnd();       
         this.currentDistance = null;
     };

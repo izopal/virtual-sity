@@ -40,8 +40,9 @@ export class ToolsMeneger{
                 trafficLights: false,   // параметри розміщення світлофорів;
                 taxsi:         false,   // параметри розміщення атомобільних зупинок;
                 avtobus:       false,   // параметри розміщення автобусних зупинок;
-                avtobus1:      false,   // параметри розміщення автобусних зупинок;
+                stop:          false,   // параметри розміщення розмітки STOP;
                 avtobus2:      false,   // параметри розміщення автобусних зупинок;
+                remove:        false,   // параметр вкл.-викл резинки;
             },
         };
         this.editorState = {

@@ -9,9 +9,9 @@ import {Building}  from './items/building.js';
 
 export class World{
     constructor(data, graph = {}){
-        this.graph          = graph;
-      
-        this.config     = data.world            || {};
+        this.graph      = graph;
+        this.data       = data;
+        this.config     = this.data.world            || {};
         this.segments   = this.graph.sortedSegments || {};
         this.points     = this.graph.sortedPoints   || {};
         
@@ -20,7 +20,8 @@ export class World{
         this.polygons       = [];
         // параметри класу Road
         this.road         = new Road ();
-        this.configRoad   = this.config.road ;
+        this.configRoad   = this.config.road;
+        this.laneGuides  = [];
         // параметри класу Tree
         this.tree           = new Tree();
         this.configTree     = this.tree.config;
@@ -33,6 +34,8 @@ export class World{
         this.buildingsCity      = [];
         this.treesCity          = [];
        
+        // праметри розмітки
+        this.markings = [];
         this.generateCity()
     };
 
@@ -40,7 +43,28 @@ export class World{
         this.road          = new Road(this.segments,  this.points, 'city');
         this.buildingsCity = this.#generateBuilding();
         this.treesCity     = this.#generateTrees(); 
+
+        this.laneGuides.length = 0;
+        this.laneGuides.push(...this.#genersteLaneGuides());
+       
     };
+    #genersteLaneGuides(){
+        const tmpEnvelopes = [];
+        const config = {
+            width:   this.configRoad.width *.5,
+            current: this.configRoad.current,
+        };
+       
+        for(const segment of this.graph.sortedSegments.city || []){
+            tmpEnvelopes.push(new Envelope(segment, config))
+        };
+        // for(const segment of this.road.lines || []){
+        //     tmpEnvelopes.push(new Envelope(segment, config))
+        // };
+
+        const segments = Polygon.union(tmpEnvelopes.map(e => e.polygon));
+        return segments;
+    }
     #generateBuilding(){
         const tmpEnvelopes = [];
         const config = {
@@ -160,7 +184,9 @@ export class World{
             ++attempts;
         }
         return trees;
-    }
+    };
+
+    
 
     draw(ctx, viewPoint, zoom){
         this.drawPolygon(ctx);
@@ -169,6 +195,8 @@ export class World{
         this.drawTree(ctx, viewPoint, zoom)
         this.drawBuilding(ctx, viewPoint)
         this.drawCity(ctx, viewPoint, zoom);
+
+        // console.log(this.laneGuides)
     };
 
     drawRoad(ctx){
@@ -196,11 +224,20 @@ export class World{
     };
     
     drawCity(ctx, viewPoint, zoom){
-        this.road = new Road(this.segments,  this.points, 'city')
-        this.road.draw(ctx)
+        this.road = new Road(this.segments,  this.points, 'city');
+        this.road.draw(ctx);
+        for(const marking of this.markings) marking.draw(ctx);
+
         this.items = [...this.buildingsCity, ...this.treesCity];
         this.items.sort((a, b) => b.base.distanceToPoint(viewPoint) - a.base.distanceToPoint(viewPoint))
         for(const item of this.items) {item.draw(ctx, viewPoint, zoom)}
+    };
+
+    drawDebug(ctx){
+        for(const segment of this.laneGuides) segment.draw(ctx, this.data.debug);
+        for(const marking of this.markings) marking.drawDebug(ctx, this.data.debug);
+        for(const tree of this.trees) tree.drawDebug(ctx, this.data.debug);
+        for(const tree of this.treesCity) tree.drawDebug(ctx, this.data.debug);
     };
 
     remove(point){

@@ -120,13 +120,13 @@ button:active {
 }
 @keyframes slideArrow {
     0%{
-        height: calc(var(--index) * 20.5);
+        height: calc(var(--index) * 17.5);
     }
     50%{
         height: calc(var(--index) * 5);
     }
     100%{
-        height: calc(var(--index) * 20.5);
+        height: calc(var(--index) * 17.5);
     }
 } 
 @keyframes slideArrowUp {
@@ -134,12 +134,12 @@ button:active {
         height: calc(var(--index) * 5);
     }
     100%{
-        height: calc(var(--index) * 20.5);
+        height: calc(var(--index) * 17.5);
     }
 } 
 @keyframes slideArrowDouwn {
     0%{
-        height: calc(var(--index) * 20.5);
+        height: calc(var(--index) * 17.5);
     }
     100%{
         height: calc(var(--index) * 5);
@@ -233,12 +233,12 @@ button:active {
 .graph{
     --degrees: calc(var(--i) * 40deg);
     --distance: calc(var(--index) * 5.25);
-    color: red
+    color: green;
 }
 .stop{
-    --degrees: calc(var(--i) * 60deg);
+    --degrees: calc(var(--i) * 51.48deg);
     --distance: calc(var(--index) * 4.25);
-    color: blue
+    color: red;
 }
 @keyframes slideAppear {
     0%{
@@ -334,17 +334,17 @@ button:active {
 /* ========================================================================> */
 .box{
     position: absolute;
-    left: 50%;
+    left: 0%;
     bottom: 0%;
     height: calc(var(--index) * 3.25);
-    transform: translateX(-50%);
+    /* transform: translateX(-50%); */
      
     width: calc(var(--index) * 22.5);
     display: flex;
     justify-content: center;
     align-items: center;
     /* margin-bottom: var(--index); */
-
+    margin-left: var(--index);
     background-color: transparent;
     border: none;
    

@@ -44,6 +44,9 @@ export class Tree {
             const polygon = this.#generateTree(point, radius);
             polygon.draw(ctx, {fill: color, colorStroke: 'rgba(0,0,0,0)'})
         }
-        if(data.debug.state) this.base.draw(ctx, data.debug);
+        
+    };
+    drawDebug(ctx, config){
+        this.base.draw(ctx, config);
     };
 }

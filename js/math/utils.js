@@ -31,7 +31,7 @@ function extractNames(obj, value) {
   }
   findNames(obj);
   return keys;
-}
+};
 
 // Функція пошуку  значення обєкта за вказаним ключем
 export  function findObjData(targetKey) {
@@ -126,6 +126,9 @@ export function normalize(p){
 export function distance (a, b){
   const c =  operate(a, '-', b)
   return Math.sqrt(c.x * c.x + c.y * c.y)
+}
+export function angel (a){
+  return Math.atan2(a.y, a.x)
 }
 
 // 

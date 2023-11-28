@@ -41,5 +41,8 @@ window.addEventListener('load',  () => {
 function animate(){
       vieport.draw(ctx);
       myApp.draw(ctx);
+
+      if(data.debug.state) myApp.drawDebug(ctx);
+
       requestAnimationFrame(animate);
 };
