@@ -5,7 +5,7 @@ import { Markings }   from './markings.js';
 export class TrafficLights extends Markings{
     constructor(parameters){
         super(parameters);
-        this.state = 'yellow'
+        this.state = 'off'
         this.width = this.width * .5;
         this.line = super.updateLine();
     };
@@ -27,10 +27,10 @@ export class TrafficLights extends Markings{
                 green.draw(ctx,  {radius, color: '#0F0'});
                 break;
             case 'yellow':
-                yellow.draw(ctx,  {radius, color: '#0F0'});
+                yellow.draw(ctx,  {radius, color: '#FF0'});
                 break;
             case 'red':
-                red.draw(ctx,  {radius, color: '#0F0'});
+                red.draw(ctx,  {radius, color: '#F00'});
                 break;
         }
       
