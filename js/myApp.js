@@ -2,7 +2,7 @@ import {Graph}     from './math/graph.js';
 import {Point}     from './primitives/point.js';
 import {Segment}   from './primitives/segment.js';
 import { GraphEditor } from "./editors/graphEditor.js";
-import { StopEditor }  from "./editors/stopEditors.js";
+import { MarkingEditor }  from "./editors/markingEditors.js";
 
 
 const buttonSave         = document.getElementById('buttonSave');
@@ -40,9 +40,9 @@ export class App{
         
         this.vieport     = vieport;
 
-        this.graph       = new Graph(this.toolsMeneger, this.data);
-        this.stopEditor  = new StopEditor(this);
-        this.graphEditor = new GraphEditor(this);
+        this.graph         = new Graph(this.toolsMeneger, this.data);
+        this.markingEditor = new MarkingEditor(this);
+        this.graphEditor   = new GraphEditor(this);
 
         this.initialize();
     };
@@ -142,7 +142,7 @@ export class App{
         if(appState.save){
             this.saveName = ''
             this.graphEditor.dispose();
-            this.stopEditor.dispose();
+            this.markingEditor.dispose();
             this.toolsMeneger.reset();               //деактивуємо всі кнопки інструментів
             localStorage.setItem(this.saveName, JSON.stringify(this.graph));
             this.saveNames  = Object.keys(localStorage)
@@ -183,13 +183,13 @@ export class App{
         this.saveName    = e.target.value;
         // деактивація всіх кнопок при загрузці
         this.graphEditor.dispose();
-        this.stopEditor.dispose();
+        this.markingEditor.dispose();
         this.toolsMeneger.reset();               //деактивуємо всі кнопки інструментів
         // Оновлення GraphEditor з новим saveName
         const graphString = localStorage.getItem(this.saveName);
         this.saveInfo = graphString ? JSON.parse(graphString) : null;
         this.graph = this.#loadGraph(this.saveInfo)
-        this.stopEditor  = new StopEditor(this);
+        this.markingEditor  = new StopEditor(this);
         this.graphEditor = new GraphEditor(this);
         // блок закриття меню загрузки
         setTimeout(() => selectElement.style.display = 'none', `${this.timeAnimate.failBar * 1000}`);
@@ -267,10 +267,10 @@ export class App{
 
     draw(ctx){
         this.graphEditor.draw(ctx);
-        this.stopEditor.draw(ctx);
+        this.markingEditor.draw(ctx);
     };
     drawDebug(ctx){
         this.graphEditor.drawDebug(ctx)
-        this.stopEditor.drawDebug(ctx)
+        this.markingEditor.drawDebug(ctx)
     };
 }

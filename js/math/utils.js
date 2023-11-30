@@ -55,7 +55,7 @@ export  function findObjData(targetKey) {
 // функція корегування значень при використовуванні тачпад
 export  function getMouseEventFromTouchEvent(e) {
   e.preventDefault()
-  if (e.touches && e.touches.length > 0){
+  if (e instanceof TouchEvent && e.touches.length === 1){
     return {
       pageX: e.touches[0].pageX,
       pageY: e.touches[0].pageY,
@@ -130,7 +130,11 @@ export function distance (a, b){
 export function angel (a){
   return Math.atan2(a.y, a.x)
 }
-
+export function perpedicular(p){
+  const coordinates = {x: -p.y,
+                       y:  p.x}
+  return new Point(coordinates)
+}
 // 
 export function translateMetod(loc, angle, offset){
   const coordinates = {x: loc.x + Math.cos(angle) * offset,

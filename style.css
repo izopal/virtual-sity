@@ -172,7 +172,7 @@ button:active {
     margin-left: var(--index);
 }
 .navig-bar-tools .bar.graph,
-.navig-bar-tools .bar.stop{
+.navig-bar-tools .bar.marking{
     display: flex;
     position: absolute;
     left:0%;
@@ -215,7 +215,7 @@ button:active {
     0%   { scale: 1 }
     100% { scale: 0 }
 }
-.graph, .stop {
+.graph, .marking {
 
     position: absolute;
     height: calc(var(--index) * 2.5);
@@ -235,7 +235,7 @@ button:active {
     --distance: calc(var(--index) * 5.25);
     color: green;
 }
-.stop{
+.marking{
     --degrees: calc(var(--i) * 51.48deg);
     --distance: calc(var(--index) * 4.25);
     color: red;

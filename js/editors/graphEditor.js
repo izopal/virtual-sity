@@ -97,12 +97,14 @@ export class GraphEditor extends Editor{
     };
     #inputMouseMove(e){
         super.inputMouseMove(e);
-       
         const isCurveBtnLeft   = this.tools.curve    && e.buttons === 1;
         const isTreeBtnLeft    = this.tools.tree     && e.buttons === 1;
         const isDragingBtnLeft = this.tools.dragging && e.buttons === 1;
         const isRemoveBtnLeft  = this.tools.remove   && e.buttons === 1;
-      
+        
+        this.targetPoints = this.graph.filterPointsByTools('curve');
+        this.activePoint = utils.getNearestPoint(this.point, this.targetPoints, this.minDicnance);
+        
         // умова використання інструменту curve
         if(isCurveBtnLeft ){
             this.#addSegment(this.point);
@@ -118,10 +120,8 @@ export class GraphEditor extends Editor{
         if(isDragingBtnLeft && this.activePoint){
             this.activePoint.x = this.point.x;
             this.activePoint.y = this.point.y;
-        }else{
-            this.dragingPoints = this.graph.filterPointsByTools('curve');
-            this.activePoint = utils.getNearestPoint(this.point, this.dragingPoints, this.minDicnance);
         };
+
         // умова використання інструменту remove
         if(isRemoveBtnLeft){
             this.removePoint = utils.getNearestPoint(this.point, this.graph.points, this.minDicnance = this.sizeRemove)
@@ -150,13 +150,12 @@ export class GraphEditor extends Editor{
     }
     draw(ctx){
         super.draw(ctx)
-      
-        if(this.activePoint ) this.activePoint.draw(ctx, this.configPoint.activePoint);
-        
+        this.graph.draw(ctx);
         if(this.lastPoint && this.tools.point){
             this.lastPoint.draw(ctx, this.configPoint.lastPoint);
             new Segment (this.lastPoint, this.point).draw(ctx, this.configSegment.dash);
         };
+        if(this.activePoint) this.activePoint.draw(ctx, this.configPoint.activePoint);
     };
     drawDebug(ctx){
         super.drawDebug(ctx)

@@ -30,7 +30,8 @@ export class Point {
             colorStroke = '',
         } = options
 
-        // this.radius = radius || this.radius;
+        this.radius = radius || this.radius;
+
         if(!this.tools.curve){
 
             ctx.save();

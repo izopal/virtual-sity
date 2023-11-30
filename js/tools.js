@@ -35,19 +35,19 @@ export class ToolsMeneger{
                 building: false,        // параметр малювання будинків;
                 city:     false,        // параметр малювання міста;
             },
-            stop:{
+            marking:{
+                stop:          false,   // параметри розміщення розмітки STOP;
+                start:         false,   // параметри розміщення машини;
                 pedestrian:    false,   // параметри розміщення дорожніх зебр;
                 trafficLights: false,   // параметри розміщення світлофорів;
-                taxsi:         false,   // параметри розміщення атомобільних зупинок;
                 avtobus:       false,   // параметри розміщення автобусних зупинок;
-                stop:          false,   // параметри розміщення розмітки STOP;
-                avtobus2:      false,   // параметри розміщення автобусних зупинок;
+                parking :      false,   // параметри розміщення парковки;
                 remove:        false,   // параметр вкл.-викл резинки;
             },
         };
         this.editorState = {
             graph: false,
-            stop:  false,
+            marking:  false,
         };
  
         this.buttonsObject = {};

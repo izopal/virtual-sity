@@ -33,9 +33,10 @@ export class World{
         // параметри класу City
         this.buildingsCity      = [];
         this.treesCity          = [];
-       
+        
         // праметри розмітки
-        this.markings = [];
+        this.laneGuides         = [];
+        
         this.generateCity()
     };
 
@@ -43,10 +44,8 @@ export class World{
         this.road          = new Road(this.segments,  this.points, 'city');
         this.buildingsCity = this.#generateBuilding();
         this.treesCity     = this.#generateTrees(); 
-
-        this.laneGuides.length = 0;
+        
         this.laneGuides.push(...this.#genersteLaneGuides());
-       
     };
     #genersteLaneGuides(){
         const tmpEnvelopes = [];
@@ -226,8 +225,7 @@ export class World{
     drawCity(ctx, viewPoint, zoom){
         this.road = new Road(this.segments,  this.points, 'city');
         this.road.draw(ctx);
-        for(const marking of this.markings) marking.draw(ctx);
-
+        
         this.items = [...this.buildingsCity, ...this.treesCity];
         this.items.sort((a, b) => b.base.distanceToPoint(viewPoint) - a.base.distanceToPoint(viewPoint))
         for(const item of this.items) {item.draw(ctx, viewPoint, zoom)}
@@ -235,7 +233,6 @@ export class World{
 
     drawDebug(ctx){
         for(const segment of this.laneGuides) segment.draw(ctx, this.data.debug);
-        for(const marking of this.markings) marking.drawDebug(ctx, this.data.debug);
         for(const tree of this.trees) tree.drawDebug(ctx, this.data.debug);
         for(const tree of this.treesCity) tree.drawDebug(ctx, this.data.debug);
     };

@@ -46,6 +46,8 @@ export class Segment{
     draw(ctx, options = {}){
         const {
             size        = NaN,
+            lineWidth   = NaN,
+            lineCap     = 'butt',
             color       = '',
             globalAlpha = NaN,
             dash  = {
@@ -62,22 +64,25 @@ export class Segment{
         ctx.save();
             ctx.globalAlpha = globalAlpha  ;
             ctx.beginPath();
-                    ctx.lineWidth   =  this.size;
+                    ctx.lineWidth   =  lineWidth || this.size;
+                    ctx.lineCap     =  lineCap; 
                     ctx.strokeStyle =  color || dash.color;
                     ctx.setLineDash([dash.length, dash.interval]);
                     ctx.moveTo(this.p1.x, this.p1.y);
                     ctx.lineTo(this.p2.x, this.p2.y);
             ctx.stroke();
             ctx.setLineDash([]);
-           
-            ctx.beginPath();
-                ctx.arc(this.p2.x,
-                        this.p2.y,
-                        this.size * .5,
-                        0,
-                        Math.PI * 2);
-                ctx.fillStyle = color;
-            ctx.fill();
+            
+            // if(this.tools.curve){
+            //     ctx.beginPath();
+            //         ctx.arc(this.p2.x,
+            //                 this.p2.y,
+            //                 this.size * .5,
+            //                 0,
+            //                 Math.PI * 2);
+            //         ctx.fillStyle = color;
+            //     ctx.fill();
+            // };
         ctx.restore();
     }
 }

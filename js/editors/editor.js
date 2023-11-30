@@ -42,8 +42,6 @@ export default class Editor{
         this.point       = this.vieport.getPoint(e, {subtractDragOffset: true});
     };
     draw(ctx){
-        this.graph.draw(ctx);
-
         const viewPoint = utils.operate(this.vieport.getPointOffset(), '*', -1)
         this.world.draw(ctx, viewPoint, this.vieport.zoom);
 
