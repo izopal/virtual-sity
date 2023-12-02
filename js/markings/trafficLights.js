@@ -1,14 +1,28 @@
 import * as utils     from '../math/utils.js';
 import { Segment } from '../primitives/segment.js';
+import { Envelope } from '../primitives/envelope.js';
 import { Markings }   from './markings.js';
 
 export class TrafficLights extends Markings{
     constructor(parameters){
         super(parameters);
-        this.state = 'off'
-        this.width = this.width * .5;
-        this.line = super.updateLine();
+        this.states = 'off';
+        
+    // Запускаємо інтервал для автоматичної зміни стану кожні 3 секунди
+    setInterval(() => {
+      this.changeStateAutomatically();
+    }, 3000);
     };
+
+
+    changeStateAutomatically() {
+        // Змінюємо стан світлофора автоматично, наприклад, змінюємо між 'green', 'yellow', 'red'
+        const states = ['green', 'yellow', 'red'];
+        const currentIndex = states.indexOf(this.state);
+        const nextIndex = (currentIndex + 1) % states.length;
+        this.state = states[nextIndex];
+      }
+
     draw(ctx){
       
         const green  = utils.lerp2D(this.line.p1, this.line.p2, .2);
@@ -34,6 +48,8 @@ export class TrafficLights extends Markings{
                 break;
         }
       
+
+        
     };
    drawDebug(ctx){
         super.drawDebug(ctx)

@@ -9,6 +9,8 @@ export class Start extends Markings{
         // параметри початкового розміру кадру (frame) зображення 
         this.autoWidth     = this.dataConfig.img.autoWidth;
         this.autoHeight    = this.dataConfig.img.autoHeight;
+        
+        this.polygon = super.updatePolygon();
     };
     draw(ctx){
         // промальовуємо машину на дорозі

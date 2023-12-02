@@ -14,7 +14,7 @@ export class MarkingEditor extends Editor {
         super(myApp, 'marking');
         
         this.intent = null;
-        this.markings = [];
+    
     };
   
     enable(){
@@ -46,16 +46,16 @@ export class MarkingEditor extends Editor {
 
     #inputMouseDown(e){
         
-        this.markings.push(this.intent);
+        this.graph.markings.push(this.intent);
         this.intent = null;
 
         // параметри видалення 
         if(this.tools.remove ){
-            for(let i = 0; i < this.markings.length; ++i){
-                const polygon = this.markings[i].polygon;
+            for(let i = 0; i < this.graph.markings.length; ++i){
+                const polygon = this.graph.markings[i].polygon;
                 //визначаємо чи точка знаходиться всередині полігона
                 if(polygon.containsPoint(this.point)){
-                    this.markings.splice(i, 1);
+                    this.graph.markings.splice(i, 1);
                     return;
                 }
             }
@@ -101,19 +101,19 @@ export class MarkingEditor extends Editor {
     
     
     draw(ctx){
+        
         super.draw(ctx);
-
         if(this.intent) this.intent.draw(ctx);
-        for(const marking of this.markings) if(marking) marking.draw(ctx);
+        for(const marking of this.graph.markings) if(marking) marking.draw(ctx);
     };
     drawDebug(ctx){
         super.drawDebug(ctx);
         if(this.intent) this.intent.drawDebug(ctx);
-        for(const marking of this.markings) if(marking) marking.drawDebug(ctx, this.data.debug);
+        for(const marking of this.graph.markings) if(marking) marking.drawDebug(ctx);
     };
     
     dispose(){
         super.dispose();
-        this.markings = [];
+        this.graph.markings = [];
     }
 }

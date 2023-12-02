@@ -3,6 +3,7 @@ import {Markings}     from './markings.js';
 export class Stop extends Markings{
     constructor(parameters){
         super(parameters);
+        this.polygon = super.updatePolygon();
         this.border = this.polygon.segments[2];
     };
     draw(ctx){
@@ -11,8 +12,8 @@ export class Stop extends Markings{
         const options = {
             text:            'all',
             angel:           this.angel - Math.PI * .5,
-            fontSize:        this.height * .7,
-            verticalOffsetY: this.height * .1,
+            fontSize:        this.width * .4,
+            verticalOffsetY: this.width * .2,
         }
         super.drawText(ctx, options); 
         

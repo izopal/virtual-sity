@@ -14,6 +14,9 @@ export class Graph{
         this.configSegment  = this.data.primitives.segment;
         this.segments       = segments;
         this.sortedSegments = sortedSegments;
+
+        this.markings = []
+
         this.filterPointsByTools = this.filterPointsByTools.bind(this);
     };
     

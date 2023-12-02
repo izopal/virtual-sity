@@ -10,6 +10,7 @@ const arrowBar         = document.querySelector('.arrow-bar');
 const navigBarTools    = document.querySelector('.navig-bar-tools');
 const bars             = navigBarTools.querySelectorAll('.bar');
 const allTools         = navigBarTools.querySelectorAll('[data-tool]');
+const backgrounds      = navigBarTools.querySelectorAll('.background');
 
 const rangeValue   = document.getElementById('rangeValue');
 const inputValue   = document.getElementById('inputValue');
@@ -181,12 +182,17 @@ export class ToolsMeneger{
 
     // ======================================================================>
     updateRotation(degrees) {
+       
+
         if (this.buttonName) {
+            backgrounds.forEach(b => b.style.transform =  `rotatex(${degrees * -1}deg)`)
             const bar = document.querySelector(`.bar.${this.buttonName}`);
             if (bar) {
                 bar.style.transform = `translateY(-50%)
-                                       perspective(1000px) 
-                                       rotatex(${degrees}deg)`;
+                perspective(1000px) 
+                rotatex(${degrees}deg)`;
+                
+                
             }
        };
     }

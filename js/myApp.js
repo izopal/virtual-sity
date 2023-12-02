@@ -189,7 +189,7 @@ export class App{
         const graphString = localStorage.getItem(this.saveName);
         this.saveInfo = graphString ? JSON.parse(graphString) : null;
         this.graph = this.#loadGraph(this.saveInfo)
-        this.markingEditor  = new StopEditor(this);
+        this.markingEditor  = new MarkingEditor(this);
         this.graphEditor = new GraphEditor(this);
         // блок закриття меню загрузки
         setTimeout(() => selectElement.style.display = 'none', `${this.timeAnimate.failBar * 1000}`);
@@ -198,6 +198,9 @@ export class App{
         appState.loadButton           = false;
     };
     #loadGraph(saveInfo){
+        const markings = saveInfo.markings
+
+
         const points        = saveInfo.points.map((point) => new Point(point, point.tools, point.radius));
        
         const segments    = saveInfo.segments.map((line) => new Segment(
