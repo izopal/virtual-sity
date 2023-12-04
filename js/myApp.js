@@ -1,9 +1,9 @@
-import {Graph}     from './math/graph.js';
-import {Point}     from './primitives/point.js';
-import {Segment}   from './primitives/segment.js';
-import { GraphEditor } from "./editors/graphEditor.js";
-import { MarkingEditor }  from "./editors/markingEditors.js";
-
+import {Graph}           from './math/graph.js';
+import {Point}           from './primitives/point.js';
+import {Segment}         from './primitives/segment.js';
+import { GraphEditor }   from "./editors/graphEditor.js";
+import { MarkingEditor } from "./editors/markingEditors.js";
+import { Osm }           from './math/osm.js'
 
 const buttonSave         = document.getElementById('buttonSave');
 const buttonload         = document.getElementById('buttonload');
@@ -14,6 +14,13 @@ const input         = document.querySelector('.fail .input-wrapper input');
 const maxLength     = input.getAttribute('maxlength');                             // параметр максимальної довжини вводу тексту
 const inputLine     = document.querySelector('.fail .input-wrapper .line');
 const iconClose     = document.querySelector('.fail .input-wrapper .icon.close');
+
+
+const buttonMap        = document.getElementById('openOsmPanel');
+const sendData         = document.getElementById('sendDataOsm');
+const osmPanel         = document.querySelector('.osmPanel');
+const osmDatacontainer = document.getElementById('osmDatacontainer');
+const closeOsmPanel    = osmPanel.querySelector('.icon.close');
 
 const selectElement = document.getElementById('load');
 
@@ -40,7 +47,7 @@ export class App{
         
         this.vieport     = vieport;
 
-        this.graph         = new Graph(this.toolsMeneger, this.data);
+        this.graph         = new Graph(this);
         this.markingEditor = new MarkingEditor(this);
         this.graphEditor   = new GraphEditor(this);
 
@@ -57,12 +64,16 @@ export class App{
         buttonload.removeEventListener     ('click',   this.boundLoad);
         buttonInputSave.removeEventListener('click',   this.boundNewSave);
         buttonDispose.removeEventListener  ('click',   this.boudDisponse);
+        buttonMap.removeEventListener      ('click',   this.boundOpenMap);
         
         input.removeEventListener          ('keydown', this.boudSaveInput);
         input.removeEventListener          ('click',   this.boundInputLine);
         iconClose.removeEventListener      ('click',   this.boundClear);
 
         selectElement.removeEventListener  ('change',  this.boundSelecting);
+
+        closeOsmPanel.removeEventListener  ('click',   this.boundCloseMap);
+        sendData.removeEventListener       ('click',   this.boundSend);
     };
     addEventListeners() {
         this.boundSave      = ()  => this.#save();
@@ -74,17 +85,24 @@ export class App{
         this.boundClear     = ()  => this.#clearInput();
         this.boundSelecting = (e) => this.#selectingSaveFile(e);
 
+        this.boundSend      = ()  => this.#parseOsmData();
+        this.boundOpenMap   = ()  => this.#openOsmPanel();
+        this.boundCloseMap  = ()  => this.#closeOsmPanel();
+
         buttonSave.addEventListener     ('click',   this.boundSave)
         buttonload.addEventListener     ('click',   this.boundLoad);
         buttonInputSave.addEventListener('click',   this.boundNewSave);
         buttonDispose.addEventListener  ('click',   this.boudDisponse);
+        buttonMap.addEventListener      ('click',   this.boundOpenMap);
         
         input.addEventListener          ('keydown', this.boudSaveInput);
         input.addEventListener          ('click',   this.boundInputLine);
         iconClose.addEventListener      ('click',   this.boundClear);
-        
 
         selectElement.addEventListener  ('change',  this.boundSelecting);
+
+        closeOsmPanel.addEventListener  ('click',   this.boundCloseMap);
+        sendData.addEventListener       ('click',   this.boundSend);
     };
    
  
@@ -149,6 +167,82 @@ export class App{
             appState.save = false;
         };
     }
+    // блок функції для роботи з картою openStreetMap
+    #openOsmPanel(){
+        osmPanel.style.display = 'block'
+    };
+    #closeOsmPanel(){
+        osmDatacontainer.value.trim() === '';
+        this.toolsMeneger.reset();               //деактивуємо всі кнопки інструментів
+        osmPanel.style.display = 'none';
+
+    };
+    async #parseOsmData(){
+        if(osmDatacontainer.value.trim() === ''){
+            alert ('Введіть спочатку дані ...');
+            return
+        };
+        this.graphEditor.dispose();
+        this.markingEditor.dispose();
+        // this.toolsMeneger.tools.graph.road = true;      // обираємо що тип інструменту для автоматичної
+       
+        const radius = 1000; // Radius in meters
+        const name            = osmDatacontainer.value;
+        const cityCoordinates = await this.getCityCoordinates(name);
+        const result          = await this.getFetch(cityCoordinates, radius);
+        const dataOsm         = JSON.parse(result);
+        console.log(name, cityCoordinates)
+
+        new Osm(cityCoordinates, dataOsm, this.graph).parse();
+        
+        this.#closeOsmPanel();
+    };
+
+    async  getFetch(cityCoordinates, radius) {
+        const q = ` 
+                   [out:json];
+                    (
+                    way['highway'](around:${radius},${cityCoordinates.lat},${cityCoordinates.lon})
+                        ['highway' !~'pedestrian']
+                        ['highway' !~'footway']
+                        ['highway' !~'path'];
+                    way['building'](around:${radius},${cityCoordinates.lat},${cityCoordinates.lon});
+                    );
+                    out body;
+                    >;
+                    out skel;`;
+
+        const url = "https://overpass-api.de/api/interpreter";
+
+        try {
+            const response = await fetch(url, { method: 'POST', body: q });
+            const result   = await response.text();
+            // console.log(result);
+            return result;
+        } catch (error) {
+            console.error('Помилка отримання даних...', error);
+        }
+    };
+
+    async getCityCoordinates(cityName) {
+        const apiKey = '5f1c2d19a8974908b4765bf1c21f8a6a';
+        const geocodingApiUrl = `https://api.opencagedata.com/geocode/v1/json?q=${encodeURIComponent(cityName)}&key=${apiKey}`;
+
+        try {
+            const response = await fetch(geocodingApiUrl);
+            const data = await response.json();
+            if (data && data.results && data.results.length > 0) {
+                const geoLocation = data.results[0].geometry;
+                return { lat: geoLocation.lat, lon: geoLocation.lng };
+            }
+        } catch (error) {
+            console.error('Error fetching city coordinates:', error);
+        }
+        return null;
+    }
+
+
+
 
     // фукція збереження нового graph при натисканні на Enter
     #saveInputKeydown(e) {
@@ -198,9 +292,6 @@ export class App{
         appState.loadButton           = false;
     };
     #loadGraph(saveInfo){
-        const markings = saveInfo.markings
-
-
         const points        = saveInfo.points.map((point) => new Point(point, point.tools, point.radius));
        
         const segments    = saveInfo.segments.map((line) => new Segment(
@@ -226,7 +317,7 @@ export class App{
                 points.find(point => point.equals(line.p2)),
                 line.tools));
         };
-        return new Graph (this.toolsMeneger, this.data, points, sortedPoints, segments, sortedSegments);
+        return new Graph (this, points, sortedPoints, segments, sortedSegments);
     };
 
     newSave(){
@@ -268,9 +359,10 @@ export class App{
     };
 
 
-    draw(ctx){
-        this.graphEditor.draw(ctx);
-        this.markingEditor.draw(ctx);
+    draw(ctx, viewPoint){
+        this.graph.draw(ctx, viewPoint);
+        this.graphEditor.draw(ctx, viewPoint);
+        this.markingEditor.draw(ctx, viewPoint);
     };
     drawDebug(ctx){
         this.graphEditor.drawDebug(ctx)

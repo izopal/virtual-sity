@@ -58,10 +58,6 @@ export class GraphEditor extends Editor{
         });
     };
    
-
-  
-
-   
     #inputMouseDown(e){
         // умови при настику лівої кнопки
         const isBtnLeft   = this.tools.point        || 
@@ -103,7 +99,7 @@ export class GraphEditor extends Editor{
         const isRemoveBtnLeft  = this.tools.remove   && e.buttons === 1;
         
         this.targetPoints = this.graph.filterPointsByTools('curve');
-        this.activePoint = utils.getNearestPoint(this.point, this.targetPoints, this.minDicnance);
+       
         
         // умова використання інструменту curve
         if(isCurveBtnLeft ){
@@ -120,7 +116,9 @@ export class GraphEditor extends Editor{
         if(isDragingBtnLeft && this.activePoint){
             this.activePoint.x = this.point.x;
             this.activePoint.y = this.point.y;
-        };
+        }else{
+            this.activePoint = utils.getNearestPoint(this.point, this.targetPoints, this.minDicnance);
+        }
 
         // умова використання інструменту remove
         if(isRemoveBtnLeft){
@@ -148,9 +146,9 @@ export class GraphEditor extends Editor{
         if (this.lastPoint === point) this.lastPoint = null;
         this.activePoint   = null;
     }
-    draw(ctx){
-        super.draw(ctx)
-        this.graph.draw(ctx);
+    draw(ctx, viewPoint){
+        super.draw(ctx, viewPoint);
+        
         if(this.lastPoint && this.tools.point){
             this.lastPoint.draw(ctx, this.configPoint.lastPoint);
             new Segment (this.lastPoint, this.point).draw(ctx, this.configSegment.dash);

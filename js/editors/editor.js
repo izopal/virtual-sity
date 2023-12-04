@@ -41,16 +41,7 @@ export default class Editor{
     inputMouseMove(e){
         this.point       = this.vieport.getPoint(e, {subtractDragOffset: true});
     };
-    draw(ctx){
-        const viewPoint = utils.operate(this.vieport.getPointOffset(), '*', -1)
-        this.world.draw(ctx, viewPoint, this.vieport.zoom);
-
-        // перевіряємо чи змінилися параметри this в класі Graph
-        if(this.OldGraphHash !== this.graph.hash()){
-            this.world.generateCity();
-            this.OldGraphHash = this.graph.hash()
-        }
-    };
+  
     removeEventListeners(){
         this.body.removeEventListener  ('keydown',    this.boudKeydown);
         this.canvas.removeEventListener('contextmenu', this.boundContextMenu)
@@ -68,7 +59,17 @@ export default class Editor{
         if(['-', '_'].includes(e.key)) zoom('minus');
         if(e.key === 'Escape') this.lastPoint = null;
     };
+    
+    draw(ctx, viewPoint){
+        
+        this.world.draw(ctx, viewPoint, this.vieport.zoom);
 
+        // перевіряємо чи змінилися параметри this в класі Graph
+        if(this.OldGraphHash !== this.graph.hash()){
+            this.world.generateCity();
+            this.OldGraphHash = this.graph.hash()
+        }
+    };
     drawDebug(ctx){
         this.world.drawDebug(ctx);
     }

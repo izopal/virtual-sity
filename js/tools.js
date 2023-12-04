@@ -107,12 +107,13 @@ export class ToolsMeneger{
     }
 
     getActiveEditor(event){
+        
         const button = event.target.closest('button[data-tool]');
         this.buttonName = button.getAttribute('data-tool');
 
         this.resetTools();
         setTool(this.buttonName, this.editorState);
-        this.#updateButtonStyles(buttonFromEditors, this.editorState)
+        this.#updateButtonStyles(buttonFromEditors, this.editorState);
         this.#getToolsBar(this.buttonName);
     };
     getActiveTools(event){
@@ -163,7 +164,6 @@ export class ToolsMeneger{
             `slideArrowDouwn ${this.timeAnimate.arrowBar}s ease forwards`;
     };
     getToolsBar(state, name){
-        
         this.angle = 360 / this.buttonsObject[this.buttonName].length;
  
         bars.forEach(bar => {

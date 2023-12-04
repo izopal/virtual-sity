@@ -164,6 +164,9 @@ export function lerp2D(A, B, t){
     y: lerp(A.y, B.y, t)
   }
   return new Point(coordinates)
+};
+export function invLerp(a, b, v){
+  return (v -a) / (b - a)
 }
 
 // функція визначення перетину двох прямих  за методом Крамера 

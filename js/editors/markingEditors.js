@@ -100,9 +100,9 @@ export class MarkingEditor extends Editor {
     };
     
     
-    draw(ctx){
+    draw(ctx, viewPoint){
         
-        super.draw(ctx);
+        super.draw(ctx, viewPoint);
         if(this.intent) this.intent.draw(ctx);
         for(const marking of this.graph.markings) if(marking) marking.draw(ctx);
     };

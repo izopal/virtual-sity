@@ -118,17 +118,7 @@ button:active {
     top: 50%;
     transform: translateY(-50%);
 }
-@keyframes slideArrow {
-    0%{
-        height: calc(var(--index) * 17.5);
-    }
-    50%{
-        height: calc(var(--index) * 5);
-    }
-    100%{
-        height: calc(var(--index) * 17.5);
-    }
-} 
+
 @keyframes slideArrowUp {
     0%{
         height: calc(var(--index) * 5);
@@ -183,8 +173,6 @@ button:active {
                 rotatex(0deg);
     transform-style: preserve-3d;
     transition: .5s;
- 
-   
 }
 .navig-bar-tools .background{
     display: flex;
@@ -202,11 +190,7 @@ button:active {
     
     transform-style: preserve-3d;
     transform:rotatex(0deg);
-
-                
 }
-
-
 @keyframes toolsBarOn {
     0%   { scale: 0 }
     100% { scale: 1 }
@@ -216,7 +200,6 @@ button:active {
     100% { scale: 0 }
 }
 .graph, .marking {
-
     position: absolute;
     height: calc(var(--index) * 2.5);
     width: calc(var(--index) * 2.5);
@@ -226,10 +209,7 @@ button:active {
 
     transform-origin: center; 
     transform-style: preserve-3d;
-    
-  
 }
-
 .graph{
     --degrees: calc(var(--i) * 40deg);
     --distance: calc(var(--index) * 5.25);
@@ -494,7 +474,41 @@ select {
     user-select: none;
     cursor: pointer;
     }
-
 select#load option{
     background: var(--backgroundColor);
+}
+
+.osmPanel{
+    display: none;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(0, 0, 0, .65);
+    padding: 5000px;
+}
+@keyframes slideScale {
+    0%{
+    }
+    100%{
+    }
+} 
+.osmPanel .icon.close {
+    position: absolute;
+    top: 49%;
+    right: 47.75%;
+    
+    height: calc(var(--index) * .975);
+    width: calc(var(--index) * .975);
+ 
+    transform: scale(1) translate(-50%, -50%);
+    transition: transform .5s linear; 
+}
+.osmPanel .icon.close .ionicon {
+    height: 100%;
+    width: auto;
+    stroke: var(--textColor);
+    fill: rgba(255, 255, 255, .1);
+    filter: 
+    drop-shadow(1px 1px 1px rgba(0, 0, 0, .65));
 }

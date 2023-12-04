@@ -1,15 +1,18 @@
 import * as utils       from './utils.js';
 
 export class Graph{
-    constructor(toolsMeneger, data, points = [], sortedPoints = {}, segments = [], sortedSegments = {},){
-        this.toolsMeneger   = toolsMeneger;
+    constructor(myApp,  points = [], sortedPoints = {}, segments = [], sortedSegments = {},){
+        this.myApp          = myApp;
+        this.toolsMeneger   = this.myApp.toolsMeneger;
         this.tools          = this.toolsMeneger.tools.graph;
-        this.data           = data;
+        this.data           = this.myApp.data;
 
         this.configPoint    = this.data.primitives.point;
         this.points         = points;
         this.sortedPoints   = sortedPoints;
         
+
+        this.renderRadius = 1000 ;
        
         this.configSegment  = this.data.primitives.segment;
         this.segments       = segments;
@@ -21,7 +24,7 @@ export class Graph{
     };
     
     addPoint(point){
-        this.sortedPoints = utils.sortObject(point, this.tools , this.sortedPoints)
+        this.sortedPoints = utils.sortObject(point, this.tools, this.sortedPoints)
         this.points.push(point);
     };
     // Блок додавання сигменів 
@@ -44,14 +47,19 @@ export class Graph{
     hash(){
         return JSON.stringify(this.sortedSegments.city)
     }
-
-    draw(ctx){
-        for(const seg of this.segments){
+        
+    draw(ctx, viewPoint){
+      
+        const allToolFalse =  Object.values(this.tools).every(value => value === false);
+        const segments = this.segments.filter(i => i.distanceToPoint(viewPoint) < this.renderRadius * this.myApp.vieport.zoom  )
+        for(const seg of segments){
+            if(allToolFalse)    {seg.draw(ctx, this.data.openStreetMap.line)}
             if(seg.tools.point) {seg.draw(ctx, this.configSegment.line)};
             if(seg.tools.curve) {seg.draw(ctx, this.configSegment.curve)};
         }
         const points               = this.sortedPoints.point || []
         for(const point of points) {point.draw(ctx, this.configPoint.point)};
+       
     };
     removeAll(){
         this.points         = [];

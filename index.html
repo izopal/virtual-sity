@@ -31,7 +31,7 @@
                 <button class = 'marking' data-tool = 'stop'          style="--i:5;"> <i class='bx bxs-no-entry'></i> </button>
                 <button class = 'marking' data-tool = 'start'         style="--i:3;"> <i class='bx bx-car'     ></i>  </button>
                 <button class = 'marking' data-tool = 'trafficLights' style="--i:2;"> <i class='bx bxs-traffic'></i>  </button>
-                <span class="background"></span>
+                <!-- <span class="background"></span> -->
                 <button class = 'marking' data-tool = 'avtobus'       style="--i:4;"> <i class='bx bx-bus'     ></i>  </button>
                 <button class = 'marking' data-tool = 'parking'       style="--i:6;"> <i class='bx bxs-parking'></i>  </button>
                 <button class = 'marking' data-tool = 'remove'        style="--i:7;"> <i class='bx bxs-eraser'></i>   </button>
@@ -43,7 +43,7 @@
                 <button class = 'graph' data-tool = 'dragging' style="--i:3;"> <i class='bx bx-move'></i>                </button>
                 <button class = 'graph' data-tool = 'remove'   style="--i:4;"> <i class='bx bxs-eraser'></i>             </button>
                 <button class = 'graph' data-tool = 'polygon'  style="--i:5;"> <i class='bx bx-shape-polygon'></i>       </button>
-                <span class="background"></span>
+                <!-- <span class="background"></span> -->
               
               
                 <button class = 'graph' data-tool = 'road'     style="--i:6;"> <i class='bx bx-trip'></i>                </button>
@@ -71,9 +71,28 @@
                 <span class="line"></span>
                 <button class = 'button' id="buttonInputSave"> <i class='bx bx-bookmark-alt-plus'></i>   </button>
             </div>
-            <button class = 'button' id="buttonDispose">                            <i class='bx bx-trash'></i>               </button>
+            <button class = 'button' id="buttonDispose"> <i class='bx bx-trash'></i> </button>
+            
+            <button class = 'map'    id="openOsmPanel">  <i class='bx bx-map' > </i>  </button>
+            <button class = 'map'    id="sendDataOsm">   <i class='bx bx-navigation' ></i> </button>
         </div>
-
+        <div class="osmPanel">
+            <textarea 
+                id="osmDatacontainer" 
+                rows="10"
+                cols="50" 
+                placeholder="Внесіть інформацію...">
+            </textarea>
+            <span class="icon close">
+                <svg 
+                    class="ionicon" 
+                    viewBox="0 0 224 224">
+                    <path 
+                        stroke-width="32" 
+                        d="M0 0L224 224M0 224L224 0" />
+                </svg>
+            </span>
+        </div>
         <div class="scale-bar">
             <button class = 'button' data-zoom = 'plus'>  <i class='bx bx-zoom-out' ></i>  </button>
             <button class = 'button' data-zoom = 'minus'> <i class='bx bx-zoom-in' ></i> </button>
@@ -95,4 +114,3 @@
         
     </body>
     </html>
-
