@@ -78,6 +78,7 @@ export class GraphEditor extends Editor{
             this.graph.addPoint(this.point);
             this.#addSegment(this.point);
         };
+        
         // умова видалення точки
         if(isRemoveBtnLeft){
             this.removePoint = utils.getNearestPoint(this.point, this.graph.points, this.minDicnance = this.sizeRemove)
@@ -90,6 +91,8 @@ export class GraphEditor extends Editor{
                             this.tools.city;
 
         if(isBtnRight && e.buttons === 2)  this.lastPoint = null;
+
+
     };
     #inputMouseMove(e){
         super.inputMouseMove(e);

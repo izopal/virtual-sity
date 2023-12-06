@@ -495,14 +495,15 @@ select#load option{
 } 
 .osmPanel .icon.close {
     position: absolute;
-    top: 49%;
-    right: 47.75%;
+    top: 0%;
+    right: 0%;
     
     height: calc(var(--index) * .975);
     width: calc(var(--index) * .975);
  
-    transform: scale(1) translate(-50%, -50%);
+    transform: scale(1) translate(-50%, 50%);
     transition: transform .5s linear; 
+    cursor: pointer;
 }
 .osmPanel .icon.close .ionicon {
     height: 100%;

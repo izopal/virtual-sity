@@ -3,7 +3,8 @@ import {Point}           from './primitives/point.js';
 import {Segment}         from './primitives/segment.js';
 import { GraphEditor }   from "./editors/graphEditor.js";
 import { MarkingEditor } from "./editors/markingEditors.js";
-import { Osm }           from './math/osm.js'
+import { Osm }           from './math/osm.js';
+import { MapHandler }    from './math/miniMap.js';
 
 const buttonSave         = document.getElementById('buttonSave');
 const buttonload         = document.getElementById('buttonload');
@@ -85,8 +86,8 @@ export class App{
         this.boundClear     = ()  => this.#clearInput();
         this.boundSelecting = (e) => this.#selectingSaveFile(e);
 
-        this.boundSend      = ()  => this.#parseOsmData();
         this.boundOpenMap   = ()  => this.#openOsmPanel();
+        this.boundSend      = ()  => this.#parseOsmData();
         this.boundCloseMap  = ()  => this.#closeOsmPanel();
 
         buttonSave.addEventListener     ('click',   this.boundSave)
@@ -169,31 +170,30 @@ export class App{
     }
     // блок функції для роботи з картою openStreetMap
     #openOsmPanel(){
-        osmPanel.style.display = 'block'
+        osmPanel.style.display = 'block';
+        if(!this.mapHandler) this.mapHandler = new MapHandler();
     };
     #closeOsmPanel(){
-        osmDatacontainer.value.trim() === '';
         this.toolsMeneger.reset();               //деактивуємо всі кнопки інструментів
         osmPanel.style.display = 'none';
 
     };
     async #parseOsmData(){
-        if(osmDatacontainer.value.trim() === ''){
-            alert ('Введіть спочатку дані ...');
-            return
-        };
+       
         this.graphEditor.dispose();
         this.markingEditor.dispose();
         // this.toolsMeneger.tools.graph.road = true;      // обираємо що тип інструменту для автоматичної
-       
+       // Створюємо екземпляр класу
+        
         const radius = 1000; // Radius in meters
-        const name            = osmDatacontainer.value;
-        const cityCoordinates = await this.getCityCoordinates(name);
+       
+        const cityCoordinates = this.mapHandler.coordinates;
+          
         const result          = await this.getFetch(cityCoordinates, radius);
         const dataOsm         = JSON.parse(result);
-        console.log(name, cityCoordinates)
+        console.log(cityCoordinates)
 
-        new Osm(cityCoordinates, dataOsm, this.graph).parse();
+        new Osm(this.canvas, cityCoordinates, dataOsm, this.graph).parse();
         
         this.#closeOsmPanel();
     };
@@ -217,30 +217,11 @@ export class App{
         try {
             const response = await fetch(url, { method: 'POST', body: q });
             const result   = await response.text();
-            // console.log(result);
             return result;
         } catch (error) {
             console.error('Помилка отримання даних...', error);
         }
     };
-
-    async getCityCoordinates(cityName) {
-        const apiKey = '5f1c2d19a8974908b4765bf1c21f8a6a';
-        const geocodingApiUrl = `https://api.opencagedata.com/geocode/v1/json?q=${encodeURIComponent(cityName)}&key=${apiKey}`;
-
-        try {
-            const response = await fetch(geocodingApiUrl);
-            const data = await response.json();
-            if (data && data.results && data.results.length > 0) {
-                const geoLocation = data.results[0].geometry;
-                return { lat: geoLocation.lat, lon: geoLocation.lng };
-            }
-        } catch (error) {
-            console.error('Error fetching city coordinates:', error);
-        }
-        return null;
-    }
-
 
 
 
@@ -282,9 +263,9 @@ export class App{
         // Оновлення GraphEditor з новим saveName
         const graphString = localStorage.getItem(this.saveName);
         this.saveInfo = graphString ? JSON.parse(graphString) : null;
-        this.graph = this.#loadGraph(this.saveInfo)
+        this.graph          = this.#loadGraph(this.saveInfo)
         this.markingEditor  = new MarkingEditor(this);
-        this.graphEditor = new GraphEditor(this);
+        this.graphEditor    = new GraphEditor(this);
         // блок закриття меню загрузки
         setTimeout(() => selectElement.style.display = 'none', `${this.timeAnimate.failBar * 1000}`);
         selectElement.style.animation = `slideLeft ${this.timeAnimate.failBar}s ease forwards`;
