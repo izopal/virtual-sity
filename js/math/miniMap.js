@@ -13,20 +13,20 @@ export class MapHandler {
         this.zoomStart       = 13;
         const homeCoordinates = [49.028894, 24.3613198];
         const options = {
-                draggable: true,
-                opacity: .6,
-                pane: 'markerPane',
-                shadowPane: 'shadowPane',
-                title: 'sityName',
+                draggable:     true,
+                opacity:        .6,
+                pane:           'markerPane',
+                shadowPane:     'shadowPane',
+                title:          'sityName',
                 autoPanOnFocus: true,
         };
 
         const map       = L.map('map').setView(homeCoordinates, this.zoomStart);
 
-        const osmUrl    = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
-        const osmAttrib = '&copy; OpenStreetMap contributors';
-        const mapLayer  = L.tileLayer(osmUrl, { attribution: osmAttrib }).addTo(map);
-        this.bottomRight       = document.querySelector('#map .leaflet-control-container .leaflet-bottom.leaflet-right');
+        const osmUrl     = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+        const osmAttrib  = '&copy; OpenStreetMap contributors';
+        const mapLayer   = L.tileLayer(osmUrl, { attribution: osmAttrib }).addTo(map);
+        this.bottomRight = document.querySelector('#map .leaflet-control-container .leaflet-bottom.leaflet-right');
         
         
         this.coordinates = {};
@@ -49,17 +49,18 @@ export class MapHandler {
     async updateCoordinates(map, options) {
         this.locationName  = searchInput.value;
         const apiUrl       = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(this.locationName)}&format=json`;
-        // if (this.marker)     this.marker.remove();           // Видаляємо попередній маркер, якщо він існує
         try {
             const response    = await fetch(apiUrl);
             const data        = await response.json();
+            
             this.coordinates  = {
                 lat: parseFloat(data[0].lat),
                 lon: parseFloat(data[0].lon),
             }
             
+            // if (this.marker)  this.marker.remove();           // Видаляємо попередній маркер, якщо він існує
             const latLon = [parseFloat(data[0].lat), parseFloat(data[0].lon)];
-          
+            
             locationContainer.innerHTML     = `Назва місцевості: ${this.locationName}`;
             coordinatesContainer.innerHTML  = `Координати: ${latLon[0].toFixed(2)}°N, ${latLon[1].toFixed(2)}°E`;
             
@@ -84,7 +85,7 @@ export class MapHandler {
             lat: latLon.lat,
             lon: latLon.lng,
         }
-        const radius = 1000; // Radius in meters
+        const radius = 500; // Radius in meters
         const result          = await this.getFetch(this.coordinates, radius);
         this.dataOsm         = JSON.parse(result);
         

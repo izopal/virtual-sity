@@ -17,7 +17,7 @@ export class Vieport{
         this.toolsMeneger    = toolsMeneger;
         this.tools           = this.toolsMeneger.tools.graph
       
-        // this.allToolFalse = Object.values(this.tools).every(value => value === false);
+        this.allToolFalse = Object.values(this.tools).every(value => value === false);
 
         this.timeAnimate  = timeAnimate;
         
@@ -128,10 +128,11 @@ export class Vieport{
     }
     // ======================== Блок керування мишкою ===============================>
     inputMouseDown(e){
-        if(e.buttons === 4 || e.buttons === 3) this.inputStart(e);
+        console.log(this.allToolFalse)
+        if((e.buttons === 1 && this.allToolFalse) || e.buttons === 4 || e.buttons === 3) this.inputStart(e);
     };
     inputMouseMove(e){
-        if((e.buttons === 4 || e.buttons === 3) && this.drag.active)this.inputMove(e);
+        if(((e.buttons === 1 && this.allToolFalse) || e.buttons === 4 || e.buttons === 3) && this.drag.active)this.inputMove(e);
     };
     inputMouseUp(){
       this.inputEnd();
@@ -139,19 +140,16 @@ export class Vieport{
     // ======================== Блок керування тачпадом ==============================>
     inputTouchStart(e){
         e.preventDefault()
+        if((e.targetTouches.length < 2 && this.allToolFalse)) this.inputStart(e.touches[0]); 
         if (e.targetTouches.length >= 2) {
-            this.inputStart(e.touches[0]) 
+            this.toolsMeneger.resetTools()        //деактивуємо всі кнопки інструментів
             this.startDistance = this.#getTouchDistance(e);
             this.tools = this.toolsMeneger.resetTools();
         }
     };
     inputTouchMove(e){
         e.preventDefault()
-        if(this.drag.active){
-            this.toolsMeneger.resetTools()        //деактивуємо всі кнопки інструментів
-
-            this.inputMove(e.touches[0])
-        };
+        if(this.drag.active) this.inputMove(e.touches[0])
 
         if (e.targetTouches.length >= 2){
             this.currentDistance = this.#getTouchDistance(e);
