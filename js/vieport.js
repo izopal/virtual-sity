@@ -128,7 +128,6 @@ export class Vieport{
     }
     // ======================== Блок керування мишкою ===============================>
     inputMouseDown(e){
-        console.log(this.allToolFalse)
         if((e.buttons === 1 && this.allToolFalse) || e.buttons === 4 || e.buttons === 3) this.inputStart(e);
     };
     inputMouseMove(e){
@@ -149,7 +148,7 @@ export class Vieport{
     };
     inputTouchMove(e){
         e.preventDefault()
-        if(this.drag.active) this.inputMove(e.touches[0])
+        if(e.targetTouches.length < 2 && this.allToolFalse && this.drag.active) this.inputMove(e.touches[0])
 
         if (e.targetTouches.length >= 2){
             this.currentDistance = this.#getTouchDistance(e);

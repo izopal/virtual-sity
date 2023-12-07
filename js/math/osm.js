@@ -1,9 +1,10 @@
 import * as utils       from './utils.js';
 import { Point }        from '../primitives/point.js';
-import { Segment }       from '../primitives/segment.js';
+import { Segment }      from '../primitives/segment.js';
 
 export class Osm  {
   constructor(canvas, cityCoordinates, osmData, graph){
+    console.log(osmData)
     this.canvas  = canvas;
     this.cityCoordinates = cityCoordinates;
     this.osmData = osmData;

@@ -222,4 +222,12 @@ export function setTool(name, tools) {
   };
 };
 
-
+export function bbox(obj) {
+  let box = [];
+  Object.values(obj).forEach(point => {
+    for(const key in point) {
+      if(!isNaN(point[key])) box.push(parseFloat(point[key]))
+    }
+  })
+  return box
+}

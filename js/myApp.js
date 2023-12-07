@@ -184,8 +184,8 @@ export class App{
         // this.toolsMeneger.tools.graph.road = true;      // обираємо що тип інструменту для автоматичної
        
         const cityCoordinates = this.mapHandler.coordinates;
-        const dataOsm         = this.mapHandler.dataOsm
-        new Osm(this.canvas, cityCoordinates, dataOsm, this.graph).parse();
+        const dataOsm         = this.mapHandler.dataOsm;
+        if(dataOsm) new Osm(this.canvas, cityCoordinates, dataOsm, this.graph).parse();
         
         this.#closeOsmPanel();
     };
