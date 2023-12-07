@@ -484,6 +484,7 @@ select#load option{
 .osmPanel{
     display: none;
     position: absolute;
+    
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
@@ -496,6 +497,10 @@ select#load option{
     100%{
     }
 } 
+#map{
+    width: 60vw; 
+    height: 400px;
+}
 #searchInput{
     position: absolute;
     bottom: 0%;
