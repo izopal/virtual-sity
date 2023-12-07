@@ -179,51 +179,17 @@ export class App{
 
     };
     async #parseOsmData(){
-       
         this.graphEditor.dispose();
         this.markingEditor.dispose();
         // this.toolsMeneger.tools.graph.road = true;      // обираємо що тип інструменту для автоматичної
-       // Створюємо екземпляр класу
-        
-        const radius = 1000; // Radius in meters
        
         const cityCoordinates = this.mapHandler.coordinates;
-          
-        const result          = await this.getFetch(cityCoordinates, radius);
-        const dataOsm         = JSON.parse(result);
-        console.log(cityCoordinates)
-
+        const dataOsm         = this.mapHandler.dataOsm
         new Osm(this.canvas, cityCoordinates, dataOsm, this.graph).parse();
         
         this.#closeOsmPanel();
     };
-
-    async  getFetch(cityCoordinates, radius) {
-        const q = ` 
-                   [out:json];
-                    (
-                    way['highway'](around:${radius},${cityCoordinates.lat},${cityCoordinates.lon})
-                        ['highway' !~'pedestrian']
-                        ['highway' !~'footway']
-                        ['highway' !~'path'];
-                    way['building'](around:${radius},${cityCoordinates.lat},${cityCoordinates.lon});
-                    );
-                    out body;
-                    >;
-                    out skel;`;
-
-        const url = "https://overpass-api.de/api/interpreter";
-
-        try {
-            const response = await fetch(url, { method: 'POST', body: q });
-            const result   = await response.text();
-            return result;
-        } catch (error) {
-            console.error('Помилка отримання даних...', error);
-        }
-    };
-
-
+   
 
     // фукція збереження нового graph при натисканні на Enter
     #saveInputKeydown(e) {

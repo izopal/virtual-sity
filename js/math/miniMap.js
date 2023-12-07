@@ -1,18 +1,11 @@
 
- 
-
-
-
 
 
 const containerInfo         = document.getElementById('map');
 const searchInput           = document.getElementById('searchInput');
 
-let coordinatesContainer           = document.createElement('div');
-let locationContainer              = document.createElement('div');
-containerInfo.append(coordinatesContainer, locationContainer)
-
-
+const coordinatesContainer  = document.getElementById('coordinatesContainer');
+const locationContainer     = document.getElementById('locationContainer');
 
 
 export class MapHandler {
@@ -33,7 +26,7 @@ export class MapHandler {
         const osmUrl    = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
         const osmAttrib = '&copy; OpenStreetMap contributors';
         const mapLayer  = L.tileLayer(osmUrl, { attribution: osmAttrib }).addTo(map);
-        this.elementToRemove       = document.querySelector('#map .leaflet-control-container .leaflet-bottom.leaflet-right');
+        this.bottomRight       = document.querySelector('#map .leaflet-control-container .leaflet-bottom.leaflet-right');
         
         
         this.coordinates = {};
@@ -49,7 +42,8 @@ export class MapHandler {
         searchInput.removeEventListener('change', boundInput);
         searchInput.addEventListener('change',    boundInput);
         
-        if (this.elementToRemove) this.elementToRemove.remove();
+        if (this.bottomRight) this.bottomRight.remove();
+
     }
     
     async updateCoordinates(map, options) {
@@ -63,18 +57,20 @@ export class MapHandler {
                 lat: parseFloat(data[0].lat),
                 lon: parseFloat(data[0].lon),
             }
-            console.log(this.coordinates)
             
             const latLon = [parseFloat(data[0].lat), parseFloat(data[0].lon)];
           
             locationContainer.innerHTML     = `Назва місцевості: ${this.locationName}`;
-            coordinatesContainer.innerHTML  = `Широта: ${latLon[0]}, Довгота: ${latLon[1]}`;
+            coordinatesContainer.innerHTML  = `Координати: ${latLon[0].toFixed(2)}°N, ${latLon[1].toFixed(2)}°E`;
             
             map.setView(latLon, this.zoomStart);
             
             this.marker = L.marker(latLon, options).addTo(map);
-
             this.marker.on('dragend', () => this.getNameLocation());
+
+            const radius = 1000; // Radius in meters
+            const result          = await this.getFetch(this.coordinates, radius);
+            this.dataOsm         = JSON.parse(result);
 
         } catch (error) {
             console.error('Помилка пошуку локації:', error);
@@ -88,7 +84,9 @@ export class MapHandler {
             lat: latLon.lat,
             lon: latLon.lng,
         }
-        console.log(this.marker)
+        const radius = 1000; // Radius in meters
+        const result          = await this.getFetch(this.coordinates, radius);
+        this.dataOsm         = JSON.parse(result);
         
         const url                    = `https://nominatim.openstreetmap.org/reverse?lat=${this.coordinates.lat}&lon=${this.coordinates.lon}&format=json`;
         const response               = await fetch(url);
@@ -102,7 +100,33 @@ export class MapHandler {
         this.locationName               = data.display_name;
 
         locationContainer.innerHTML     = `Назва місцевості: ${this.locationName}`;
-        coordinatesContainer.innerHTML  = `Широта: ${this.coordinates.lat}, Довгота: ${this.coordinates.lon}`;
+        coordinatesContainer.innerHTML  = `Координати: ${this.coordinates.lat.toFixed(2)}°N, ${this.coordinates.lon.toFixed(2)}°E`;
+    };
+
+
+    async  getFetch(cityCoordinates, radius) {
+        const q = ` 
+                   [out:json];
+                    (
+                    way['highway'](around:${radius},${cityCoordinates.lat},${cityCoordinates.lon})
+                        ['highway' !~'pedestrian']
+                        ['highway' !~'footway']
+                        ['highway' !~'path'];
+                    way['building'](around:${radius},${cityCoordinates.lat},${cityCoordinates.lon});
+                    );
+                    out body;
+                    >;
+                    out skel;`;
+
+        const url = "https://overpass-api.de/api/interpreter";
+
+        try {
+            const response = await fetch(url, { method: 'POST', body: q });
+            const result   = await response.text();
+            return result;
+        } catch (error) {
+            console.error('Помилка отримання даних...', error);
+        }
     };
 }
 

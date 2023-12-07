@@ -89,7 +89,7 @@
             <button class = 'map'    id="sendDataOsm">   <i class='bx bx-navigation' ></i> </button>
         </div>
         <div class="osmPanel">
-           <div id="map" style="width: 600px; height: 400px;">
+           <div id="map" style="max-width: 600px; height: 400px;">
                 <span class="icon close">
                     <svg 
                         class="ionicon" 
@@ -99,8 +99,13 @@
                             d="M0 0L224 224M0 224L224 0" />
                     </svg>
                 </span>
+                <div class="info">
+                    <span id="locationContainer"></span>
+                    <span id="coordinatesContainer"></span>
+                </div>
+                <input type="text" id="searchInput" placeholder="Пошук місцевості...">
             </div>
-           <input type="text" id="searchInput" placeholder="Search for places...">
+           
           
         </div>
         <div class="scale-bar">

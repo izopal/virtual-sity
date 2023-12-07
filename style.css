@@ -12,11 +12,18 @@
 
 /* ===================== Задаємо змінні ========================> */
     :root{
-        --index: calc(1vw + 1vh);
+        --index:    calc(1vw + 1vh);
+
+        --textSize: calc(var(--index) * 1.25);
+        --svgSize:  calc(var(--index)* 2.325);
+
         --textColor: #8baaba;
         --menuColor: #6a7b70;
         --backgroundColor: #2a5;
         --inputColor:  #0303037d;
+
+        --boxShadow: -.125rem -.125rem .25rem rgba(255, 255, 255, .1),       
+                      .125rem  .125rem .25rem rgba(0, 0, 0, .35);
 
       
     }
@@ -55,27 +62,17 @@ button{
 
     margin-left: auto;
     /* розмір SVG */
-    font-size: calc(var(--index)* 2.325);
+    font-size: var(--svgSize);
     backdrop-filter: blur(30px);
 
     background-color: transparent;
     border: calc(var(--index) * .35) solid transparent;
     border-radius: .625rem;
-    box-shadow: -.125rem -.125rem .25rem rgba(255, 255, 255, .1),       
-                 .125rem  .125rem .25rem rgba(0, 0, 0, .35);
+    box-shadow: var(--boxShadow);
     cursor: pointer;
 }
-button.active { 
-    color:  rgba(0, 0, 0, .35);
-  
-    border: 0rem solid var(--textColor);
-    box-shadow:        
-          inset -.5rem -.5rem 1rem rgba(255, 255, 255, .1),
-          inset  .5rem  .5rem 1rem rgba(0, 0, 0, .35);
-}
 
-
-button:active { 
+button:active, button.active { 
     color:  rgba(0, 0, 0, .35);
     border: 0rem solid var(--textColor);
     box-shadow:        
@@ -87,7 +84,7 @@ button:active {
 .editor-bar{
     display: flex;
     flex-direction: column;
-    width: auto;
+    width: calc(var(--index) * 20);
     gap: var(--index);
     margin-top: var(--index);
     margin-left: var(--index);
@@ -96,14 +93,20 @@ button:active {
 
 .editor-bar span{
     display: flex;
-    justify-content: center;
-    font-size:  calc(var(--index) * 1);
-    color: red;
+    justify-content: left;
+    font-size:  var(--textSize);
+    color: var(--textColor);
 }
 
 .editor-bar .btnEditor{
     display: flex;
-    gap: calc(var(--index) * 2.75);
+    width: calc(var(--index) * 10);
+    justify-content: left;
+    gap: calc(var(--index) * 1.25);
+  
+}
+.editor-bar .btnEditor button{
+    margin: 0;
 }
 
 /* ========================================================================> */
@@ -140,7 +143,7 @@ button:active {
     width: calc(var(--index) * 2.5);
     background-color: transparent;
     /* розмір SVG */
-    font-size: calc(var(--index)* 1.125);
+    font-size: var(--textSize);
     rotate: 90deg;
     
     cursor: pointer;
@@ -203,7 +206,7 @@ button:active {
     position: absolute;
     height: calc(var(--index) * 2.5);
     width: calc(var(--index) * 2.5);
-    font-size: calc(var(--index)* 1.125);
+    font-size: var(--textSize);
     display: flex;
     scale: 0;
 
@@ -271,12 +274,12 @@ button:active {
     --size: calc(var(--index) * 2.25);
     position: absolute; 
     left: 50%;
-    top: var(--size);
+    top: var(--fontSize);
     transform: translateX(-50%);
     display: none;
     
-    height: var(--size);
-    width: var(--size);
+    height: var(--fontSize);
+    width: var(--fontSize);
     border-radius: 50%;
     box-shadow: -.25rem -.25rem .5rem rgba(255, 255, 255, .1),
                 .25rem  .25rem .5rem rgba(0, 0, 0, .35),
@@ -393,9 +396,9 @@ button:active {
     margin-right: calc(var(--index) * .6);
     text-align: start;
     /* line-height: 12px; */
-    font-size: calc(var(--index) * 1.25);
     
     background-color: transparent;
+    font-size: var(--textSize);
     color: var(--textColor);
     opacity: 0;
     border: none;
@@ -466,7 +469,7 @@ select {
     width: calc(var(--index) * 13);
     margin-right: calc(var(--index) * .6);
     background-color: transparent;
-    font-size:  calc(var(--index) * 1.25);
+    font-size:  var(--textSize);
     color: var(--menuColor);
     opacity: 0;
     border: none;
@@ -493,7 +496,34 @@ select#load option{
     100%{
     }
 } 
-.osmPanel .icon.close {
+#searchInput{
+    position: absolute;
+    bottom: 0%;
+    left: 0%;
+    height:  var(--textSize);
+    background: transparent;
+    border: none;
+    text-align: center;
+    font-size: var(--textSize);
+    color: var(--backgroundColor);
+    z-index: 800;
+}
+
+.osmPanel #map .info{
+    position: absolute;
+    bottom: 0%;
+    right: 0%;
+    display: flex;
+    flex-direction: column;
+    width:  calc(var(--textSize) * 10);
+    font-size: calc(var(--textSize) * .5);
+    color: var(--backgroundColor);
+    ;
+    z-index: 800;
+}
+
+
+.osmPanel #map .icon.close {
     position: absolute;
     top: 0%;
     right: 0%;
@@ -504,8 +534,9 @@ select#load option{
     transform: scale(1) translate(-50%, 50%);
     transition: transform .5s linear; 
     cursor: pointer;
+    z-index: 800;
 }
-.osmPanel .icon.close .ionicon {
+.osmPanel #map .icon.close .ionicon {
     height: 100%;
     width: auto;
     stroke: var(--textColor);
