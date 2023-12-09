@@ -12,10 +12,14 @@ export class Osm  {
     this.osmData = osmData;
     this.graph   = graph;
 
-    
-
+    this.points    = [];
+    this.roads     = [];
     this.buildings = [];
+ 
     this.waterways = [];
+
+
+    this.renderRadius = 1000 ;
     this.initializeCanvas();
     this.initializeMapData();
   };
@@ -65,7 +69,8 @@ export class Osm  {
     // this._parseSegments();
     this._parseRoads();
     this._parseBuildings();
-    this._parseWaterway();
+   
+    // this._parseWaterway();
   };
   _parsePoint(){
     for(const node of this.nodes){
@@ -76,70 +81,114 @@ export class Osm  {
       };
       const point = new Point(coordinates);
       point.id     = node.id;
-      this.graph.addPoint(point);
+      this.points.push(point);
     };
-    console.log(this.graph.points);
   };
-
-  // _parseSegments(){
-  //   for(const way of this.ways){
-  //       const ids = way.nodes;
-  //       for(let i = 1; i < ids.length; ++i){
-  //           const perw = this.graph.points.find(p => p.id == ids[i - 1]);
-  //           perw.tags  = {...way.tags};
-  //           const next = this.graph.points.find(p => p.id == ids[i]);
-  //           const segment = new Segment (perw, next);
-  //           this.graph.addSegment(segment)
-  //       };
-  //   };
-  //   console.log(this.graph.segments)
-  // };
   _parseRoads(){
     const roads = this.osmData.elements.filter(m => m.tags && 'highway' in m.tags);
     for(const road of roads){
       const ids = road.nodes;
       for(let i = 1; i < ids.length; ++i){
-          const perw = this.graph.points.find(p => p.id == ids[i - 1]);
-          perw.tags  = {...road.tags};
-          const next = this.graph.points.find(p => p.id == ids[i]);
+          const perw = this.points.find(p => p.id == ids[i - 1]);
+          const next = this.points.find(p => p.id == ids[i]);
           const segment = new Segment (perw, next);
-          this.graph.addSegment(segment)
+          segment.tags  = {...road.tags};
+          this.roads.push(segment)
       };
+    };
   };
-  }
   _parseBuildings(){
      const buildings = this.osmData.elements.filter(m => m.tags && 'building' in m.tags);
-      console.log(buildings)
       for(const building of buildings ){
           const ids = building.nodes;
           let skeleton  = []
           for(let i = 1; i < ids.length; ++i){
-            const point = this.graph.points.find(p => p.id == ids[i - 1]);
-            point.tags  = {...building.tags};
+            const point = this.points.find(p => p.id == ids[i - 1]);
             skeleton.push(point);
           };
           const polygon = new Polygon (skeleton);
-          this.graph.polygonsBuilding.push(polygon);
-        }
+          polygon.tags  = {...building.tags};
+          this.buildings.push(polygon);
+        };
   };
-  _parseWaterway(){
-    const waterways = this.osmData.elements.filter(m => m.tags && 'natural' in m.tags);
-    for(const waterway of waterways ){
-      const ids = waterway.nodes;
-      let skeleton  = []
-      for(let i = 1; i < ids.length; ++i){
-        const point = this.graph.points.find(p => p.id == ids[i - 1]);
-        point.tags  = {...waterway.tags};
-        skeleton.push(point);
-      };
-      const polygon = new Polygon (skeleton);
-      this.graph.polygonsWaterway.push(polygon);
-    }
-};
+
+  draw(ctx, viewPoint, zoom){
+  const B = this.buildings.filter(polygon => polygon.distanceToPoint(viewPoint) < this.renderRadius * zoom);
+ 
+  const optionsBuilding = {
+      lineWidth  : 1,
+      fill       : 'red',
+      colorStroke: '',
+      globalAlpha: .6,
+  };
   
 
-  draw(ctx){
-   
+
+
+
+  
+  for(const b of B) {
+    if(!b.tags['building:levels'] && b.tags.building === "yes" || b.tags['building:levels'] <= 3) 
+    b.draw(ctx, {
+      lineWidth  : 1,
+      fill       : 'green',
+      globalAlpha: .6,}
+      );
+    if (b.tags['building:levels'] > 3 || b.tags.building === 'apartments') 
+      b.draw(ctx, {
+        lineWidth  : 1,
+        fill       : 'brown',
+        globalAlpha: .4,}
+      );
+    if (b.tags.building === 'commercial' || 
+        b.tags.shop) 
+      b.draw(ctx, {
+        lineWidth  : 1,
+        fill       : 'brown',
+        globalAlpha: .6,}
+      );
+    if(b.tags.building === 'school'       || 
+       b.tags.building === 'kindergarten' ||
+       b.tags.amenity  === 'music_school' ||
+       b.tags.building === 'hospital'      ) 
+    b.draw(ctx, {
+      lineWidth  : 1,
+      fill       : 'orange',
+      globalAlpha: .4,}
+    );
+    if(b.tags.building === 'church') 
+    b.draw(ctx, {
+      lineWidth  : 1,
+      fill       : 'blue',
+      globalAlpha: .8,}
+    );
+    if (b.tags.building === "industrial") 
+    b.draw(ctx, {
+      lineWidth  : 1,
+      fill       : 'red',
+      globalAlpha: .8,}
+    );  
+
   };
+  
+  const R = this.roads.filter(i => i.distanceToPoint(viewPoint) < this.renderRadius * zoom);
+  const optionsRoads = {
+      lineWidth  : 3,
+      fill       : '',
+      color: 'yellow',
+      globalAlpha: .8,
+  };
+  for(const r of R) {
+   
+    r.draw(ctx, optionsRoads)
+  };
+
+ 
+
+  
+  };
+  dispose(){
+    this.buildings = [];
+  }
 }
 

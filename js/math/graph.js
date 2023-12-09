@@ -17,8 +17,7 @@ export class Graph{
         this.segments       = segments;
         this.polygons       = [];
 
-        this.polygonsBuilding       = [];
-        this.polygonsWaterway       = [];
+       
         this.sortedSegments = sortedSegments;
 
         this.markings = []
@@ -55,31 +54,12 @@ export class Graph{
     }
         
     draw(ctx, viewPoint, zoom){
-        const points               = this.sortedPoints.point || []
-        
-        const allToolFalse =  Object.values(this.tools).every(value => value === false);
+        const points   = this.sortedPoints.point || []
         const segments = this.segments.filter(i => i.distanceToPoint(viewPoint) < this.renderRadius * zoom);
         for(const seg of segments){
-            if(allToolFalse)    {seg.draw(ctx, this.data.openStreetMap.line)}
             if(seg.tools.point) {seg.draw(ctx, this.configSegment.line)};
             if(seg.tools.curve) {seg.draw(ctx, this.configSegment.curve)};
         };
-        
-        const optionsBuilding = {
-            lineWidth  : 1,
-            fill       : 'red',
-            colorStroke: '',
-            globalAlpha: .6,
-        };
-        for(const polygon of this.polygonsBuilding) polygon.draw(ctx, optionsBuilding);
-
-        const optionsWaterways = {
-            lineWidth  : 1,
-            fill       : 'green',
-            colorStroke: '',
-            globalAlpha: .4,
-        };
-        for(const polygon of this.polygonsWaterway) polygon.draw(ctx, optionsWaterways)
         
         for(const point of points) {point.draw(ctx, this.configPoint.point)};
     };
@@ -87,7 +67,5 @@ export class Graph{
         this.points         = [];
         this.segments       = [];
         this.polygons       = [];
-        this.polygonsBuilding       = [];
-        this.polygonsWaterway       = [];
     }
 }

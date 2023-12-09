@@ -130,13 +130,18 @@ export class MapHandler {
                     [out:json]
                     [timeout:90];
                     (
+                    relation['admin_level'~'9'];
                     way['highway']
                         ['highway' !~'pedestrian']
                         ['highway' !~'footway']
-                        ['highway' !~'path'];
+                        ['highway' !~'steps']
+                        ['highway' !~'platform']
+                        ['highway' !~'cycleway']
+                        ['highway' !~'path']
+                        ['surface' !~'gravel']
+                        ['highway' !~'track'];
+
                     way['building'];
-                    way['waterway'];
-                    way['natural'='wood'];
                     );
                     out body;
                     >;

@@ -83,7 +83,7 @@ export class App{
         this.boundSave      = ()  => this.#save();
         this.boundLoad      = ()  => this.#load();
         this.boundNewSave   = ()  => this.#newSave();
-        this.boudDisponse   = ()  => this.#disponce();
+        this.boudDisponse   = ()  => this.#dispose();
         this.boudSaveInput  = (e) => this.#saveInputKeydown(e);
         this.boundInputLine = ()  => this.#inputLine();
         this.boundClear     = ()  => this.#clearInput();
@@ -153,7 +153,7 @@ export class App{
         }
     };
     // функція очищення graph
-    #disponce(){
+    #dispose(){
         if(this.saveName === ''){
             buttonInputSave.innerHTML = "<i class='bx bx-bookmark-alt bx-tada'></i>";
         }
@@ -163,8 +163,7 @@ export class App{
         }
         if(appState.save){
             this.saveName = ''
-            this.graphEditor.dispose();
-            this.markingEditor.dispose();
+            this.dispose();
             this.toolsMeneger.reset();               //деактивуємо всі кнопки інструментів
             localStorage.setItem(this.saveName, JSON.stringify(this.graph));
             this.saveNames  = Object.keys(localStorage)
@@ -175,8 +174,7 @@ export class App{
     // блок функції для роботи з картою openStreetMap
     #openOsmPanel(){
         osmPanel.style.display = 'block';
-        this.graphEditor.dispose();
-        this.markingEditor.dispose();
+        this.dispose();
         if(!this.mapHandler) this.mapHandler = new MapHandler();
     };
     #closeOsmPanel(){
@@ -187,7 +185,10 @@ export class App{
         // this.toolsMeneger.tools.graph.road = true;      // обираємо що тип інструменту для автоматичної
         const cityCoordinates = this.mapHandler.coordinates;
         const dataOsm         = this.mapHandler.dataOsm;
-        if(dataOsm) new Osm(this.canvas, cityCoordinates, dataOsm, this.graph).parse();
+        if(dataOsm){
+            this.osm = new Osm(this.canvas, cityCoordinates, dataOsm, this.graph)
+            this.osm.parse()
+        };
         
         this.#closeOsmPanel();
     };
@@ -225,8 +226,7 @@ export class App{
         // загрузка вибраного saveName
         this.saveName    = e.target.value;
         // деактивація всіх кнопок при загрузці
-        this.graphEditor.dispose();
-        this.markingEditor.dispose();
+       
         this.toolsMeneger.reset();               //деактивуємо всі кнопки інструментів
         // Оновлення GraphEditor з новим saveName
         const graphString = localStorage.getItem(this.saveName);
@@ -308,6 +308,7 @@ export class App{
     };
 
     draw(ctx, viewPoint, zoom){
+        if(this.osm) this.osm.draw(ctx, viewPoint, zoom);
         this.graph.draw(ctx, viewPoint, zoom);
         this.graphEditor.draw(ctx, viewPoint);
         this.markingEditor.draw(ctx, viewPoint);
@@ -316,4 +317,9 @@ export class App{
         this.graphEditor.drawDebug(ctx)
         this.markingEditor.drawDebug(ctx)
     };
+    dispose(){
+        this.vieport.dispose();
+        this.graphEditor.dispose();
+        this.markingEditor.dispose();
+    }
 }

@@ -46,8 +46,6 @@ export class Vieport{
         this.touchStartTime  = null;
         this.touchEndTime  = null;
 
-        this.twoFingerTouch = false
-
         this.hideTimeout = null
 
         this.removeEventListener();
@@ -91,8 +89,6 @@ export class Vieport{
         this.canvas.addEventListener('touchmove',  this.boundTouchMove);
         this.canvas.addEventListener('touchend',   this.boundTouchEnd);
     };
-
-    
 
     // функція zoom роликом
     inputMouseWheel(e){
@@ -256,5 +252,8 @@ export class Vieport{
         ctx.rotate(this.angle);
         const offset  = this.getPointOffset();
         ctx.translate(offset.x, offset.y);  
+    };
+    dispose(){
+        this.angle  = null;
     }
 }
