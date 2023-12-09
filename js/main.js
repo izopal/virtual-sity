@@ -1,4 +1,3 @@
-
 import * as utils       from './math/utils.js';
 import { ToolsMeneger } from './tools.js';
 import {Vieport}        from './vieport.js';
@@ -43,7 +42,7 @@ window.addEventListener('load',  () => {
 function animate(){
       const viewPoint    = utils.operate(vieport.getPointOffset(), '*', -1)
       vieport.draw(ctx);
-      myApp.draw(ctx, viewPoint);
+      myApp.draw(ctx, viewPoint, vieport.zoom);
 
       if(data.debug.state) myApp.drawDebug(ctx);
 

@@ -271,15 +271,15 @@ button:active, button.active {
     z-index: 10;
 }
 .indicator-zoom{
-    --size: calc(var(--index) * 2.25);
+    --size: calc(var(--index) * 2.65);
     position: absolute; 
     left: 50%;
-    top: var(--fontSize);
+    top: var(--size);
     transform: translateX(-50%);
     display: none;
     
-    height: var(--fontSize);
-    width: var(--fontSize);
+    height: var(--size);
+    width: var(--size);
     border-radius: 50%;
     box-shadow: -.25rem -.25rem .5rem rgba(255, 255, 255, .1),
                 .25rem  .25rem .5rem rgba(0, 0, 0, .35),
@@ -289,6 +289,7 @@ button:active, button.active {
 .indicator-zoom span{
     display: flex;
     font-size: calc(var(---size) * .5);
+    text-align: center;
     font-weight: 100;
     /* color: blue; */
     margin: auto;
@@ -502,10 +503,13 @@ select#load option{
     height: 400px;
 }
 #searchInput{
+    /* display: none; */
     position: absolute;
     bottom: 0%;
     left: 0%;
     height:  var(--textSize);
+    margin-left: 10px;
+    margin-bottom: 10px;
     background: transparent;
     border: none;
     text-align: center;
@@ -513,7 +517,12 @@ select#load option{
     color: var(--backgroundColor);
     z-index: 800;
 }
-
+#map a{
+    background: transparent;
+    color: var(--textColor);
+     font-weight: 900;
+    /* border: none; */
+}
 .osmPanel #map .info{
     position: absolute;
     bottom: 0%;
@@ -523,10 +532,8 @@ select#load option{
     width:  calc(var(--textSize) * 10);
     font-size: calc(var(--textSize) * .5);
     color: var(--backgroundColor);
-    ;
     z-index: 800;
 }
-
 
 .osmPanel #map .icon.close {
     position: absolute;

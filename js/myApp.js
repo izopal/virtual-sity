@@ -1,3 +1,5 @@
+
+import * as utils       from './math/utils.js';
 import {Graph}           from './math/graph.js';
 import {Point}           from './primitives/point.js';
 import {Segment}         from './primitives/segment.js';
@@ -5,6 +7,7 @@ import { GraphEditor }   from "./editors/graphEditor.js";
 import { MarkingEditor } from "./editors/markingEditors.js";
 import { Osm }           from './math/osm.js';
 import { MapHandler }    from './math/miniMap.js';
+
 
 const buttonSave         = document.getElementById('buttonSave');
 const buttonload         = document.getElementById('buttonload');
@@ -48,7 +51,7 @@ export class App{
         
         this.vieport     = vieport;
 
-        this.graph         = new Graph(this);
+        this.graph         = new Graph(this.toolsMeneger, this.data);
         this.markingEditor = new MarkingEditor(this);
         this.graphEditor   = new GraphEditor(this);
 
@@ -167,22 +170,21 @@ export class App{
             this.saveNames  = Object.keys(localStorage)
             appState.save = false;
         };
-    }
+    };
+
     // блок функції для роботи з картою openStreetMap
     #openOsmPanel(){
         osmPanel.style.display = 'block';
+        this.graphEditor.dispose();
+        this.markingEditor.dispose();
         if(!this.mapHandler) this.mapHandler = new MapHandler();
     };
     #closeOsmPanel(){
         this.toolsMeneger.reset();               //деактивуємо всі кнопки інструментів
         osmPanel.style.display = 'none';
-
     };
-    async #parseOsmData(){
-        this.graphEditor.dispose();
-        this.markingEditor.dispose();
+    #parseOsmData(){
         // this.toolsMeneger.tools.graph.road = true;      // обираємо що тип інструменту для автоматичної
-       
         const cityCoordinates = this.mapHandler.coordinates;
         const dataOsm         = this.mapHandler.dataOsm;
         if(dataOsm) new Osm(this.canvas, cityCoordinates, dataOsm, this.graph).parse();
@@ -239,7 +241,7 @@ export class App{
         appState.loadButton           = false;
     };
     #loadGraph(saveInfo){
-        const points        = saveInfo.points.map((point) => new Point(point, point.tools, point.radius));
+        const points       = saveInfo.points.map((point) => new Point(point, point.tools, point.radius));
        
         const segments    = saveInfo.segments.map((line) => new Segment(
             points.find(point => point.equals(line.p1)),
@@ -264,7 +266,7 @@ export class App{
                 points.find(point => point.equals(line.p2)),
                 line.tools));
         };
-        return new Graph (this, points, sortedPoints, segments, sortedSegments);
+        return new Graph (this.toolsMeneger, this.data, points, sortedPoints, segments, sortedSegments);
     };
 
     newSave(){
@@ -305,9 +307,8 @@ export class App{
         }
     };
 
-
-    draw(ctx, viewPoint){
-        this.graph.draw(ctx, viewPoint);
+    draw(ctx, viewPoint, zoom){
+        this.graph.draw(ctx, viewPoint, zoom);
         this.graphEditor.draw(ctx, viewPoint);
         this.markingEditor.draw(ctx, viewPoint);
     };

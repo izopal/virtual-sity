@@ -8,20 +8,21 @@ import {Road}      from './items/road.js';
 import {Building}  from './items/building.js';
 
 export class World{
-    constructor(data, graph = {}){
+    constructor(myApp, graph = {}){
+       
         this.graph      = graph;
-        this.data       = data;
+        this.data       = myApp.data;
         this.config     = this.data.world            || {};
         this.segments   = this.graph.sortedSegments || {};
         this.points     = this.graph.sortedPoints   || {};
         
         // параметри класу Polygon
-        this.configPolygon  = data.primitives.polygon 
+        this.configPolygon  = this.data.primitives.polygon 
         this.polygons       = [];
         // параметри класу Road
-        this.road         = new Road ();
-        this.configRoad   = this.config.road;
-        this.laneGuides  = [];
+        this.road       = {};
+        this.configRoad = this.config.road;
+        this.laneGuides = [];
         // параметри класу Tree
         this.tree           = new Tree();
         this.configTree     = this.tree.config;
@@ -37,7 +38,7 @@ export class World{
         // праметри розмітки
         this.laneGuides         = [];
         
-        this.generateCity()
+        this.generateCity();
     };
 
     generateCity(){
@@ -203,9 +204,11 @@ export class World{
         road.draw(ctx)
     };
     drawPolygon(ctx){
-        const polygonPoints   = this.graph.sortedPoints.polygon || [];
-        new Polygon(polygonPoints).draw(ctx, this.configPolygon.segment)
-        for(const point of polygonPoints )    {point.draw(ctx,   this.configPolygon.point)};
+        const polygons   = this.graph.polygons || [];
+        for(const sceleton of polygons){
+            new Polygon(sceleton).draw(ctx, this.configPolygon.segment);
+            for(const point of sceleton )    {point.draw(ctx,   this.configPolygon.point)};
+        }
     };
     drawTree(ctx, viewPoint, zoom){
         const treePoints = this.graph.sortedPoints.tree   || [];

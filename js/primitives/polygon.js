@@ -1,11 +1,12 @@
 import * as utils  from '../math/utils.js';
+import {data}      from '../constants.js';
 import { Point }   from './point.js';
 import { Segment } from './segment.js';
 
 export class Polygon {
     constructor(points = []){
         this.points = points;
-
+        // console.log(points)
         this.segments = [];
         for(let i = 1; i <= points.length; ++i){
             this.segments.push(new Segment(points[i - 1], points[i % points.length]))
@@ -103,12 +104,12 @@ export class Polygon {
             colorStroke  = '',
             globalAlpha  = NaN,
         } = options;
-
+        
         ctx.save();
-            ctx.globalAlpha = globalAlpha;
+        ctx.globalAlpha = globalAlpha;
             ctx.beginPath();
-                ctx.fillStyle   = fill;
                 ctx.strokeStyle = colorStroke;
+                ctx.fillStyle   = fill;
                 ctx.lineWidth   = lineWidth;
                 // малюємо лінію
                 if (this.points.length > 0){

@@ -1,6 +1,4 @@
-import * as utils from '../math/utils.js';
 import {World}    from '../world.js';
-
 
 const body               = document.body;
 
@@ -18,6 +16,8 @@ export default class Editor{
 
         this.data           = this.myApp.data;
         this.config         = this.data.editor;
+
+        this.configPolygon  = this.data.primitives.polygon 
         
         this.minDicnance   = this.config.minDistance;
         this.sizeRemove    = this.config.sizeRemove;
@@ -31,7 +31,7 @@ export default class Editor{
         this.vieport       = this.myApp.vieport;
         this.graph         = this.myApp.graph;
         this.OldGraphHash  = this.graph.hash();    //параметри запуска малювання 
-        this.world         = new World(this.data, this.graph);
+        this.world         = new World(this.myApp, this.graph);
     };
 
     inputMouseDown(e){
@@ -61,9 +61,7 @@ export default class Editor{
     };
     
     draw(ctx, viewPoint){
-        
         this.world.draw(ctx, viewPoint, this.vieport.zoom);
-
         // перевіряємо чи змінилися параметри this в класі Graph
         if(this.OldGraphHash !== this.graph.hash()){
             this.world.generateCity();
@@ -78,5 +76,4 @@ export default class Editor{
         this.graph.removeAll();
         this.world.removeAll();
     }
-
 }

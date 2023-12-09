@@ -1,16 +1,21 @@
 import * as utils       from './utils.js';
 import { Point }        from '../primitives/point.js';
 import { Segment }      from '../primitives/segment.js';
+import { Polygon }      from '../primitives/polygon.js';
 
 export class Osm  {
   constructor(canvas, cityCoordinates, osmData, graph){
     console.log(osmData)
     this.canvas  = canvas;
+    this.ctx = canvas.getContext('2d');
     this.cityCoordinates = cityCoordinates;
     this.osmData = osmData;
     this.graph   = graph;
 
+    
 
+    this.buildings = [];
+    this.waterways = [];
     this.initializeCanvas();
     this.initializeMapData();
   };
@@ -25,6 +30,8 @@ export class Osm  {
 
   initializeMapData(){
     this.nodes = this.osmData.elements.filter((n) => n.type === 'node');
+    // this.ways  = this.osmData.elements.filter(m => m.type === 'way' );
+   
     this.calculateMapDimensions();
     this.calculateMapOffset();
   };
@@ -54,44 +61,85 @@ export class Osm  {
   }
 
   parse(){
-    this.#parsePoint();
-    this.#parseRoads();
-    this.#parseBuildings();
+    this._parsePoint();
+    // this._parseSegments();
+    this._parseRoads();
+    this._parseBuildings();
+    this._parseWaterway();
   };
-  #parsePoint(){
+  _parsePoint(){
     for(const node of this.nodes){
+      
       const coordinates = {
           x: utils.invLerp(this.minLon, this.maxLon, node.lon) * this.width - this.offset.x,
-          y: utils.invLerp(this.maxLat, this.minLat,  node.lat) * this.height - this.offset.y,
+          y: utils.invLerp(this.maxLat, this.minLat, node.lat) * this.height - this.offset.y,
       };
       const point = new Point(coordinates);
       point.id     = node.id;
-      this.graph.addPoint(point)
+      this.graph.addPoint(point);
     };
-    console.log(this.graph.points)
+    console.log(this.graph.points);
   };
-  #parseRoads(){
-    // створюємо масив із дорогами
-    const ways = this.osmData.elements.filter(m => m.type === 'way');
-    for(const way of ways){
-        const ids = way.nodes;
-        for(let i = 1; i < ids.length; ++i){
-            const perw = this.graph.points.find(p => p.id == ids[i - 1]);
-            const next = this.graph.points.find(p => p.id == ids[i]);
-            const segment = new Segment (perw, next);
-            this.graph.addSegment(segment)
-        };
-    };
-  };
-  #parseBuildings(){
-      const buildings = this.osmData.elements.filter(m => m.tags && 'building' in m.tags);
-      // console.log(buildings)
-      for(const building of buildings ){
-          const points = building.nodes;
 
-      }
+  // _parseSegments(){
+  //   for(const way of this.ways){
+  //       const ids = way.nodes;
+  //       for(let i = 1; i < ids.length; ++i){
+  //           const perw = this.graph.points.find(p => p.id == ids[i - 1]);
+  //           perw.tags  = {...way.tags};
+  //           const next = this.graph.points.find(p => p.id == ids[i]);
+  //           const segment = new Segment (perw, next);
+  //           this.graph.addSegment(segment)
+  //       };
+  //   };
+  //   console.log(this.graph.segments)
+  // };
+  _parseRoads(){
+    const roads = this.osmData.elements.filter(m => m.tags && 'highway' in m.tags);
+    for(const road of roads){
+      const ids = road.nodes;
+      for(let i = 1; i < ids.length; ++i){
+          const perw = this.graph.points.find(p => p.id == ids[i - 1]);
+          perw.tags  = {...road.tags};
+          const next = this.graph.points.find(p => p.id == ids[i]);
+          const segment = new Segment (perw, next);
+          this.graph.addSegment(segment)
+      };
   };
-  draw(){
+  }
+  _parseBuildings(){
+     const buildings = this.osmData.elements.filter(m => m.tags && 'building' in m.tags);
+      console.log(buildings)
+      for(const building of buildings ){
+          const ids = building.nodes;
+          let skeleton  = []
+          for(let i = 1; i < ids.length; ++i){
+            const point = this.graph.points.find(p => p.id == ids[i - 1]);
+            point.tags  = {...building.tags};
+            skeleton.push(point);
+          };
+          const polygon = new Polygon (skeleton);
+          this.graph.polygonsBuilding.push(polygon);
+        }
+  };
+  _parseWaterway(){
+    const waterways = this.osmData.elements.filter(m => m.tags && 'natural' in m.tags);
+    for(const waterway of waterways ){
+      const ids = waterway.nodes;
+      let skeleton  = []
+      for(let i = 1; i < ids.length; ++i){
+        const point = this.graph.points.find(p => p.id == ids[i - 1]);
+        point.tags  = {...waterway.tags};
+        skeleton.push(point);
+      };
+      const polygon = new Polygon (skeleton);
+      this.graph.polygonsWaterway.push(polygon);
+    }
+};
+  
+
+  draw(ctx){
+   
   };
 }
 

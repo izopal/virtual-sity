@@ -24,7 +24,6 @@ const options = {
         autoPanOnFocus: true,
 };     
 
-
 export class MapHandler {
     constructor() {
         this.options = options;
@@ -36,7 +35,8 @@ export class MapHandler {
         L.tileLayer(osmUrl, { attribution: osmAttrib }).addTo(this.map);
         
         this.bottomRight =  document.querySelector('#map .leaflet-control-container .leaflet-bottom.leaflet-right');
-        this.dataOsm     = {}
+        this.bbox        = [];
+        this.dataOsm     = {};
         this.coordinates = {};
         this.marker      = {};
     
@@ -45,7 +45,7 @@ export class MapHandler {
     
     init() {
         const boundInput = () => this.updateFromInput();
-        const boundZoom  = async () =>  this.dataOsm = await this.updateDataOsm(); 
+        const boundZoom  = this.updateBoundZoom()
         
         searchInput.removeEventListener('change', boundInput);
         searchInput.addEventListener('change',    boundInput);
@@ -54,18 +54,24 @@ export class MapHandler {
         if (this.bottomRight) this.bottomRight.remove();
     };
 
-    async update(name, coordinates){
-        this.dataOsm = await  this.updateDataOsm();
+    update(name, coordinates){
         this.updateTextInfo(name, coordinates);
         this.updateCenterMarker();
     };
 
-    async  updateDataOsm() {
-        const visibleBounds = this.map.getBounds();
+    updateBbox(map) {
+        const visibleBounds = map.getBounds();
         const bbox          = utils.bbox(visibleBounds);
-        const result        = await this.getFetch(bbox);
-        return JSON.parse(result);
+        return bbox   
     };
+    updateBoundZoom() {
+        return async () => {
+            this.bbox    = this.updateBbox(this.map);
+            const result = await this.getFetch(this.bbox);
+            this.dataOsm = JSON.parse(result);
+        };
+    }
+
 
     updateTextInfo(name, coordinates){
         locationContainer.innerHTML     = `Назва місцевості: ${name}`;
@@ -90,8 +96,14 @@ export class MapHandler {
         this.marker = L.marker([lat, lon], this.options).addTo(this.map);
         this.marker.on('dragend', () => this.updateFromDragend());
         
-        await this.update(locationName, this.coordinates);
+
+        this.update(locationName, this.coordinates);
+        this.bbox           = this.updateBbox(this.map);
+        const result        = await this.getFetch(this.bbox);
+        this.dataOsm        = JSON.parse(result);
+
         // if (this.marker)  this.marker.remove();           // Видаляємо попередній маркер, якщо він існує
+        searchInput.value = '';
     };
 
     async updateFromDragend() {
@@ -107,7 +119,10 @@ export class MapHandler {
         const data         = await response.json();
         const locationName = data.display_name;
         
-        await this.update(locationName, this.coordinates);
+        this.update(locationName, this.coordinates);
+        this.bbox           = this.updateBbox(this.map);
+        const result        = await this.getFetch(this.bbox);
+        this.dataOsm        = JSON.parse(result);
     };
 
     async  getFetch(bbox) {
@@ -120,6 +135,8 @@ export class MapHandler {
                         ['highway' !~'footway']
                         ['highway' !~'path'];
                     way['building'];
+                    way['waterway'];
+                    way['natural'='wood'];
                     );
                     out body;
                     >;
@@ -128,6 +145,8 @@ export class MapHandler {
         const url = "https://overpass-api.de/api/interpreter";
         try {
             const response = await fetch(url, { method: 'POST', body: q });
+            console.log('Відповідь:', response.status, response.headers);
+
             const result   = await response.text();
             return result;
         } catch (error) {

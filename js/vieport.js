@@ -128,10 +128,11 @@ export class Vieport{
     }
     // ======================== Блок керування мишкою ===============================>
     inputMouseDown(e){
-        if((e.buttons === 1 && this.allToolFalse) || e.buttons === 4 || e.buttons === 3) this.inputStart(e);
+        if( e.buttons === 4 || e.buttons === 3) this.inputStart(e);
     };
     inputMouseMove(e){
-        if(((e.buttons === 1 && this.allToolFalse) || e.buttons === 4 || e.buttons === 3) && this.drag.active)this.inputMove(e);
+        // const d =(e.buttons === 1 && this.allToolFalse  && this.drag.active)
+        if(( e.buttons === 4 || e.buttons === 3) && this.drag.active)this.inputMove(e);
     };
     inputMouseUp(){
       this.inputEnd();

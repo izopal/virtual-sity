@@ -2,7 +2,7 @@ import * as utils       from '../math/utils.js';
 import Editor from './editor.js';
 
 import {Segment}   from '../primitives/segment.js';
-
+import { Polygon } from '../primitives/polygon.js';
 
 
 export class GraphEditor extends Editor{
@@ -11,12 +11,16 @@ export class GraphEditor extends Editor{
         this.keys         = utils.keys;
         console.table(this.keys);
 
+        this.ctx = this.canvas.getContext('2d');
+
         this.configPoint    = this.data.primitives.point;
         this.configSegment  = this.data.primitives.segment;
         
         // парметр обєкта який обираємо
         this.lastPoint     = null;
         this.activePoint   = null;
+
+        this.skeleton = [];
         
         this.counter       = 0;
     };
@@ -69,30 +73,32 @@ export class GraphEditor extends Editor{
         const isRemoveBtnLeft  = this.tools.remove  && e.buttons === 1;
 
         this.point = this.vieport.getPoint(e, { subtractDragOffset: true });
-
         if (isBtnLeft && e.buttons === 1) {
             if (this.activePoint) {
                 this.#addSegment(this.activePoint);
                 return;
-            }
+            };
             this.graph.addPoint(this.point);
             this.#addSegment(this.point);
+            if(this.tools.polygon) this.#addPolygon(this.point);
         };
-        
+        // умови при натиску правої кнопки
+        const isBtnRight  = this.tools.point        || 
+                            this.tools.road         || 
+                            this.tools.polygon      ||
+                            this.tools.city;
+
+        if(isBtnRight && e.buttons === 2){
+            this.graph.addPolygon(this.skeleton);
+            this.skeleton  = [];
+            this.lastPoint = null;
+        };
+
         // умова видалення точки
         if(isRemoveBtnLeft){
             this.removePoint = utils.getNearestPoint(this.point, this.graph.points, this.minDicnance = this.sizeRemove)
             if(this.activePoint) this.#remove(this.removePoint); 
         };
-        
-        // умови при натиску правої кнопки
-        const isBtnRight  = this.tools.point        || 
-                            this.tools.road         || 
-                            this.tools.city;
-
-        if(isBtnRight && e.buttons === 2)  this.lastPoint = null;
-
-
     };
     #inputMouseMove(e){
         super.inputMouseMove(e);
@@ -141,7 +147,12 @@ export class GraphEditor extends Editor{
         const line       = new Segment(this.lastPoint, point, {...this.tools});
         if(this.lastPoint) this.graph.addSegment(line);          // додаємо лінію
         this.lastPoint   = point;
-    }
+    };
+    #addPolygon(point){
+            this.skeleton.push(point);
+            this.polygon = new Polygon(this.skeleton)
+    };
+
     #remove(point){
         this.graph.remove(point);
         this.world.remove(point);
@@ -151,6 +162,11 @@ export class GraphEditor extends Editor{
     }
     draw(ctx, viewPoint){
         super.draw(ctx, viewPoint);
+
+        if(this.polygon) {
+            this.polygon.draw(ctx, this.configPolygon.segment);
+            for(const point of this.polygon.points) {point.draw(ctx, this.configPolygon.point)};
+        };
         
         if(this.lastPoint && this.tools.point){
             this.lastPoint.draw(ctx, this.configPoint.lastPoint);
@@ -166,5 +182,7 @@ export class GraphEditor extends Editor{
         super.dispose();    
         this.lastPoint     = null;
         this.activePoint   = null;
+        this.skeleton = [];
+        this.counter       = 0;
     }
 }

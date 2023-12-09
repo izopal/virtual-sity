@@ -10,6 +10,9 @@ export class Building{
         this.config      = data.world.building
         this.coefficient = this.config.coefficient;
     };
+    generate(){
+        
+    }
    
     draw(ctx, viewPoint, zoom){
         const height =  this.coefficient / zoom;
