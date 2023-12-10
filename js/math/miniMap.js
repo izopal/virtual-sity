@@ -130,18 +130,19 @@ export class MapHandler {
                     [out:json]
                     [timeout:90];
                     (
-                    relation['admin_level'~'9'];
+                    
                     way['highway']
-                        ['highway' !~'pedestrian']
-                        ['highway' !~'footway']
-                        ['highway' !~'steps']
-                        ['highway' !~'platform']
-                        ['highway' !~'cycleway']
-                        ['highway' !~'path']
-                        ['surface' !~'gravel']
-                        ['highway' !~'track'];
+                        ['highway'!~'pedestrian|footway|steps|platform|cycleway|path|track']
+                        ['surface' !~'gravel'];
 
                     way['building'];
+                    way['landuse'~'industrial|garages|commercial'];
+                    relation['landuse'~'industrial|garages|commercial'];
+
+                    way['landuse'~'forest|wood|grass|meadow|flowerbed|vineyard|recreation_ground'];
+                    way['leisure'~'park|garden|grassland'];
+                    way['natural'~'wood|tree_row|scrub|heath|fell'];
+
                     );
                     out body;
                     >;
