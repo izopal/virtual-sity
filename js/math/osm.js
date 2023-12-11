@@ -130,26 +130,42 @@ export class Osm  {
   _parsePolygon_relation(relationPolygons) {
     for (const relationData of relationPolygons) {
         const members = relationData.members;
-
-        let skeleton = [];
+        const ways    = [];
+       
         for (const member of members) {
-    
           const wayData = this.osmData.elements.find((m) => m.type === 'way' && m.id === member.ref);
-          const ids     = wayData.nodes;
-          
-          for (let i = 1; i < ids.length; ++i) {
-              const point = this.points.find((p) => p.id === ids[i - 1]);
-              console
-              skeleton.push(point);
-          };
+          ways.push(wayData.nodes)
         };
 
-        const polygon = new Polygon(skeleton);
+        const sortedPoints = this._getSortedPoints(ways);
+        const sceleton = sortedPoints.map((id) => this.points.find((p) => p.id === id));
+        
+        const polygon = new Polygon(sceleton);
         polygon.tags = { ...relationData.tags };
         this.relationPolygons.push(polygon);
     }
   };
+  _getSortedPoints(ways){
+    const sort = [ways[0]];
+    let perw  = ways[0][ways[0].length - 1];
 
+    for(let i = 1; i < ways.length; ++i){
+      const way= ways[i];
+      if(perw === way[0] ){
+        perw = way[way.length - 1];
+        sort.push(way);
+      }
+      else if(perw === way[way.length - 1]){
+        perw = way[0];
+        sort.push(way.slice().reverse());
+      }
+      else {
+        ways.push(way);
+      };
+    };
+    return  sort.flat();
+  };
+  
   _getBuilding(b){
       const options = {
         lineWidth: 1,
@@ -226,9 +242,6 @@ export class Osm  {
           options.globalAlpha = 0.6;
           break;
       };
-      switch (false){
-
-      }
       return options;
   };
 

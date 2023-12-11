@@ -254,6 +254,10 @@ export class Vieport{
         ctx.translate(offset.x, offset.y);  
     };
     dispose(){
+        this.coordinatesCentre = {
+            x: this.canvas.width * .5,
+            y: this.canvas.height * .5
+        };
         this.angle  = null;
     }
 }

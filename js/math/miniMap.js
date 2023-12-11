@@ -133,7 +133,7 @@ export class MapHandler {
                     
                     way['highway']
                         ['highway'!~'pedestrian|footway|steps|platform|cycleway|path|track']
-                        ['surface' !~'gravel'];
+                        ['surface' !~'gravel|ground'];
 
                     way['building'];
                     way['landuse'~'industrial|garages|commercial'];
