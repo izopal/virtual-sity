@@ -25,12 +25,10 @@ export class World{
         this.configRoad = this.config.road;
         this.laneGuides = [];
         // параметри класу Tree
-        this.tree           = new Tree();
-        this.configTree     = this.tree.config;
+        this.configTree     = this.config.tree;
         this.trees          = [];
         // параметри класу Будинок
-        this.building       = new Building();
-        this.configBuilding = this.building.config;
+        this.configBuilding = this.config.building;
         this.buildings      = [];
         // параметри класу City
         this.buildingsCity      = [];

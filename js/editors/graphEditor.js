@@ -1,6 +1,6 @@
 import * as utils       from '../math/utils.js';
 import Editor from './editor.js';
-
+import {World}    from '../world.js';
 import {Segment}   from '../primitives/segment.js';
 import { Polygon } from '../primitives/polygon.js';
 
@@ -23,6 +23,9 @@ export class GraphEditor extends Editor{
         this.skeleton = [];
         
         this.counter       = 0;
+
+        this.OldGraphHash  = this.graph.hash();    //параметри запуска малювання 
+        this.world         = new World(this.myApp, this.graph);
     };
   
     disable(){
@@ -63,6 +66,7 @@ export class GraphEditor extends Editor{
     };
    
     #inputMouseDown(e){
+        this.point = this.vieport.getPoint(e, { subtractDragOffset: true });
         // умови при настику лівої кнопки
         const isBtnLeft   = this.tools.point        || 
                             this.tools.polygon      || 
@@ -72,7 +76,6 @@ export class GraphEditor extends Editor{
                             this.tools.building;
         const isRemoveBtnLeft  = this.tools.remove  && e.buttons === 1;
 
-        this.point = this.vieport.getPoint(e, { subtractDragOffset: true });
         if (isBtnLeft && e.buttons === 1) {
             if (this.activePoint) {
                 this.#addSegment(this.activePoint);
@@ -113,10 +116,8 @@ export class GraphEditor extends Editor{
         const isRemoveBtnLeft  = this.tools.remove   && e.buttons === 1;
         const isPolygonBtnLeft = this.tools.polygon  && e.buttons === 1;
         
-        this.point = this.vieport.getPoint(e, { subtractDragOffset: true });
         this.targetPoints = this.graph.filterPointsByTools('curve');
        
-        
         // умова використання інструменту curve
         if(isCurveBtnLeft ){
             this.#addSegment(this.point);
@@ -128,7 +129,14 @@ export class GraphEditor extends Editor{
         }
         ++this.counter;
 
-        if(isPolygonBtnLeft) this.lastPoint = null
+        if(isPolygonBtnLeft) {
+            if(this.tools.polygon){
+                const polygon  = new Polygon(this.skeleton);
+                this.graph.addPolygon(polygon);
+                this.skeleton  = [];
+            };
+            this.lastPoint = null;
+        }
         
         // умова використання інструменту dragging
         if(isDragingBtnLeft && this.activePoint){
@@ -169,7 +177,12 @@ export class GraphEditor extends Editor{
 
    
     draw(ctx, viewPoint){
-        super.draw(ctx, viewPoint);
+        this.world.draw(ctx, viewPoint, this.vieport.zoom);
+        // перевіряємо чи змінилися параметри this в класі Graph
+        if(this.OldGraphHash !== this.graph.hash()){
+            this.world.generateCity();
+            this.OldGraphHash = this.graph.hash()
+        };
 
         if(this.lastPoint && this.polygon) {
             this.polygon.draw(ctx, this.configPolygon.segment);
@@ -183,7 +196,7 @@ export class GraphEditor extends Editor{
         if(this.activePoint) this.activePoint.draw(ctx, this.configPoint.activePoint);
     };
     drawDebug(ctx){
-        super.drawDebug(ctx)
+        this.world.drawDebug(ctx);
     };
 
 
@@ -197,6 +210,7 @@ export class GraphEditor extends Editor{
     };
     dispose(){
         super.dispose();    
+        this.world.removeAll();
         this.lastPoint     = null;
         this.activePoint   = null;
         this.polygon       = null;

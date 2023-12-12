@@ -1,4 +1,4 @@
-import {World}    from '../world.js';
+
 
 const body               = document.body;
 
@@ -30,14 +30,8 @@ export default class Editor{
         // підключаємо необхідні нам класи
         this.vieport       = this.myApp.vieport;
         this.graph         = this.myApp.graph;
-       
-        this.OldGraphHash  = this.graph.hash();    //параметри запуска малювання 
-        this.world         = new World(this.myApp, this.graph);
     };
 
-    inputMouseDown(e){
-        this.point       = this.vieport.getPoint(e, {subtractDragOffset: true});
-    };
 
     inputMouseMove(e){
         this.point       = this.vieport.getPoint(e, {subtractDragOffset: true});
@@ -61,20 +55,7 @@ export default class Editor{
         if(e.key === 'Escape') this.lastPoint = null;
     };
     
-    draw(ctx, viewPoint){
-        this.world.draw(ctx, viewPoint, this.vieport.zoom);
-        // перевіряємо чи змінилися параметри this в класі Graph
-        if(this.OldGraphHash !== this.graph.hash()){
-            this.world.generateCity();
-            this.OldGraphHash = this.graph.hash()
-        }
-    };
-    drawDebug(ctx){
-        this.world.drawDebug(ctx);
-    }
-    
     dispose(){
         this.graph.removeAll();
-        this.world.removeAll();
     }
 }
