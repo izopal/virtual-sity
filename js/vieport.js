@@ -170,7 +170,7 @@ export class Vieport{
     };
 
     inputStart(e){
-        this.drag.active = true;
+        // this.drag.active = true;
         this.drag.start  = this.getPoint(e); 
     };
     inputMove(e){

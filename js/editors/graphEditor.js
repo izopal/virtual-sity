@@ -103,6 +103,7 @@ export class GraphEditor extends Editor{
             this.removePoint = utils.getNearestPoint(this.point, this.graph.points, this.minDicnance = this.sizeRemove)
             if(this.activePoint) this.#remove(this.removePoint); 
         };
+        this.vieport.drag.active = this.lastPoint ? false : true
     };
     #inputMouseMove(e){
         super.inputMouseMove(e);
@@ -139,6 +140,7 @@ export class GraphEditor extends Editor{
             this.removePoint = utils.getNearestPoint(this.point, this.graph.points, this.minDicnance = this.sizeRemove)
             this.#remove(this.removePoint); 
         };
+        this.vieport.drag.active = this.lastPoint ? false : true
     };
     #inputMouseUp(e){
         const isBtnUp =     this.tools.curve      ||
@@ -146,6 +148,7 @@ export class GraphEditor extends Editor{
                             this.tools.building;
         if(isBtnUp) this.lastPoint = null;
         if(this.tools.dragging) this.activePoint = null;
+        
     };
 
     #addSegment(point){
