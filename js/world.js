@@ -12,6 +12,7 @@ export class World{
        
         this.graph      = graph;
         this.data       = myApp.data;
+        this.tools      = myApp.toolsMeneger.tools;
         this.config     = this.data.world            || {};
         this.segments   = this.graph.sortedSegments || {};
         this.points     = this.graph.sortedPoints   || {};
@@ -38,7 +39,7 @@ export class World{
         // праметри розмітки
         this.laneGuides         = [];
         
-        this.generateCity();
+        if(this.tools.city) this.generateCity();
     };
 
     generateCity(){
@@ -189,7 +190,7 @@ export class World{
     
 
     draw(ctx, viewPoint, zoom){
-        this.drawPolygon(ctx);
+        // this.drawPolygon(ctx);
         this.drawRoad(ctx);
         
         this.drawTree(ctx, viewPoint, zoom)
@@ -203,13 +204,7 @@ export class World{
         const road = new Road(this.segments,  this.points, 'road')
         road.draw(ctx)
     };
-    drawPolygon(ctx){
-        const polygons   = this.graph.polygons || [];
-        for(const sceleton of polygons){
-            new Polygon(sceleton).draw(ctx, this.configPolygon.segment);
-            for(const point of sceleton )    {point.draw(ctx,   this.configPolygon.point)};
-        }
-    };
+    
     drawTree(ctx, viewPoint, zoom){
         const treePoints = this.graph.sortedPoints.tree   || [];
         this.trees      = [...treePoints.map(point=> new Tree(point)).flat()];
@@ -246,13 +241,13 @@ export class World{
                 if(point.tools[key]){
                     this.graph.sortedPoints[key]   = this.graph.sortedPoints[key].filter(p => !p.equals(point));
                     if (this.graph.sortedPoints[key].length === 1) this.graph.sortedPoints[key].pop();
-                    if(this.graph.sortedSegments[key])this.graph.sortedSegments[key] = this.graph.sortedSegments[key].filter(segment => !segment.p1.equals(point) && !segment.p2.equals(point));
+                    if (this.graph.sortedSegments[key])            this.graph.sortedSegments[key] = this.graph.sortedSegments[key].filter(segment => !segment.p1.equals(point) && !segment.p2.equals(point));
                 };
             }
         }
     }
     removeAll(){
-        for(const key in  this.graph.sortedSegments){this.graph.sortedSegments[key] = []};
-        for(const key in  this.graph.sortedPoints)  {this.graph.sortedPoints[key] = []};
+        for(const key in  this.graph.sortedSegments) {this.graph.sortedSegments[key] = []};
+        for(const key in  this.graph.sortedPoints)   {this.graph.sortedPoints[key] = []};
     }
 }

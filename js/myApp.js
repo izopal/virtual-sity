@@ -54,7 +54,7 @@ export class App{
         this.graph         = new Graph(this.toolsMeneger, this.data);
         this.markingEditor = new MarkingEditor(this);
         this.graphEditor   = new GraphEditor(this);
-
+       
         this.initialize();
     };
     

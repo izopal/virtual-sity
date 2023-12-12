@@ -80,7 +80,8 @@ export class GraphEditor extends Editor{
             };
             this.graph.addPoint(this.point);
             this.#addSegment(this.point);
-            if(this.tools.polygon) this.#addPolygon(this.point);
+            
+            this.tools.polygon ? this.#addPolygon(this.point) : this.polygon = null;
         };
         // умови при натиску правої кнопки
         const isBtnRight  = this.tools.point        || 
@@ -89,8 +90,11 @@ export class GraphEditor extends Editor{
                             this.tools.city;
 
         if(isBtnRight && e.buttons === 2){
-            this.graph.addPolygon(this.skeleton);
-            this.skeleton  = [];
+            if(this.tools.polygon){
+                const polygon  = new Polygon(this.skeleton);
+                this.graph.addPolygon(polygon);
+                this.skeleton  = [];
+            };
             this.lastPoint = null;
         };
 
@@ -107,6 +111,7 @@ export class GraphEditor extends Editor{
         const isDragingBtnLeft = this.tools.dragging && e.buttons === 1;
         const isRemoveBtnLeft  = this.tools.remove   && e.buttons === 1;
         
+        this.point = this.vieport.getPoint(e, { subtractDragOffset: true });
         this.targetPoints = this.graph.filterPointsByTools('curve');
        
         
@@ -149,21 +154,15 @@ export class GraphEditor extends Editor{
         this.lastPoint   = point;
     };
     #addPolygon(point){
-            this.skeleton.push(point);
-            this.polygon = new Polygon(this.skeleton)
+        this.skeleton.push(point);
+        this.polygon = new Polygon(this.skeleton);
     };
 
-    #remove(point){
-        this.graph.remove(point);
-        this.world.remove(point);
-
-        if (this.lastPoint === point) this.lastPoint = null;
-        this.activePoint   = null;
-    }
+   
     draw(ctx, viewPoint){
         super.draw(ctx, viewPoint);
 
-        if(this.polygon) {
+        if(this.lastPoint && this.polygon) {
             this.polygon.draw(ctx, this.configPolygon.segment);
             for(const point of this.polygon.points) {point.draw(ctx, this.configPolygon.point)};
         };
@@ -178,11 +177,21 @@ export class GraphEditor extends Editor{
         super.drawDebug(ctx)
     };
 
+
+    #remove(point){
+        if(this.myApp.osm) this.myApp.osm.remove(this.point);
+        this.graph.remove(point);
+        this.world.remove(point);
+
+        if (this.lastPoint === point) this.lastPoint = null;
+        this.activePoint   = null;
+    };
     dispose(){
         super.dispose();    
         this.lastPoint     = null;
         this.activePoint   = null;
-        this.skeleton = [];
+        this.polygon       = null;
+        this.skeleton      = [];
         this.counter       = 0;
-    }
+    };
 }

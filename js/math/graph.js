@@ -1,4 +1,5 @@
 import * as utils       from './utils.js';
+import { Polygon } from '../primitives/polygon.js';
 
 export class Graph{
     constructor(toolsMeneger, data, points = [], sortedPoints = {}, segments = [], sortedSegments = {},){
@@ -6,18 +7,16 @@ export class Graph{
         this.tools          = this.toolsMeneger.tools.graph;
         this.data           = data;
 
-        this.configPoint    = this.data.primitives.point;
-        this.points         = points;
-        this.sortedPoints   = sortedPoints;
-        
-
         this.renderRadius = 1000 ;
-       
+
+        this.configPoint    = this.data.primitives.point;
         this.configSegment  = this.data.primitives.segment;
+        this.configPolygon  = this.data.primitives.polygon
+        this.points         = points;
         this.segments       = segments;
         this.polygons       = [];
-
-       
+        
+        this.sortedPoints   = sortedPoints;
         this.sortedSegments = sortedSegments;
 
         this.markings = []
@@ -44,28 +43,59 @@ export class Graph{
             return keys.some(key => !point.tools[key]);
         });
     }
-    remove(point){
-        this.points   = this.points.filter(p => !p.equals(point));
-        this.segments = this.segments.filter(segment => !segment.p1.equals(point) && !segment.p2.equals(point));  
-    };
-    // 
+  
     hash(){
         return JSON.stringify(this.sortedSegments.city)
     }
         
     draw(ctx, viewPoint, zoom){
-        const points   = this.sortedPoints.point || []
-        const segments = this.segments.filter(i => i.distanceToPoint(viewPoint) < this.renderRadius * zoom);
-        for(const seg of segments){
-            if(seg.tools.point) {seg.draw(ctx, this.configSegment.line)};
-            if(seg.tools.curve) {seg.draw(ctx, this.configSegment.curve)};
+        const config = {
+            ctx,
+            viewPoint,
+            zoom
         };
-        
-        for(const point of points) {point.draw(ctx, this.configPoint.point)};
+        this._drawPoints(config);
+        this._drawSegments(config);
+        this._drawPolygons(config);
     };
+    _drawPoints(config){
+        const points   = this.sortedPoints.point || []
+        for(const point of points) {point.draw(config.ctx, this.configPoint.point)};
+    };
+    _drawSegments(config){
+        const segments = this.segments.filter(i => i.distanceToPoint(config.viewPoint) < this.renderRadius * config.zoom);
+        for(const seg of segments){
+            if(seg.tools.point) {seg.draw(config.ctx, this.configSegment.line)};
+            if(seg.tools.curve) {seg.draw(config.ctx, this.configSegment.curve)};
+        };
+    };
+    _drawPolygons(config){
+        for(const polygon of this.polygons){
+            polygon.draw(config.ctx, this.configPolygon.segment);
+            for(const point of polygon.points)    {point.draw(config.ctx, this.configPolygon.point)};
+        }
+    };
+
     removeAll(){
         this.points         = [];
         this.segments       = [];
         this.polygons       = [];
-    }
+    };
+    remove(point){
+        this._removePoint(point);
+        this._removeSegment(point);
+        this._removePolygons(point);
+    };
+    _removePoint(point){
+        this.points   = this.points.filter(p => !p.equals(point));
+    };
+    _removeSegment(point){
+        this.segments = this.segments.filter(segment => !segment.p1.equals(point) && !segment.p2.equals(point));  
+    };
+    _removePolygons(point){
+        this.polygons = this.polygons.filter(polygon => polygon.points.length > 1);
+        this.polygons = this.polygons.map(polygon => {
+            return new Polygon(polygon.points.filter(p => !p.equals(point)));
+        });
+    };
 }

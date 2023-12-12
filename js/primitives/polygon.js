@@ -1,5 +1,4 @@
 import * as utils  from '../math/utils.js';
-import {data}      from '../constants.js';
 import { Point }   from './point.js';
 import { Segment } from './segment.js';
 

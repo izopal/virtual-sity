@@ -9,17 +9,15 @@ export class Point {
         this.radius = radius || this.config.point.radius;
         
         this.tools = tools;
-        
-    }
+    };
 
-  equals(point) {
-    return point && 
-           point.x !== undefined && 
-           point.y !== undefined && 
-           this.x === point.x && 
-           this.y === point.y;
-}
-
+    equals(point) {
+        return point && 
+            point.x !== undefined && 
+            point.y !== undefined && 
+            this.x === point.x && 
+            this.y === point.y;
+    };
 
     draw(ctx, options = {}) {
         const { 

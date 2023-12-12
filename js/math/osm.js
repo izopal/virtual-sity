@@ -24,6 +24,7 @@ export class Osm  {
 
     this.nodes = this.osmData.elements.filter((n) => n.type === 'node');
     this.renderRadius = 1000 ;
+    this.sizeRemove   = 30;
     this.initializeCanvas();
     this.initializeMapData();
   };
@@ -137,7 +138,7 @@ export class Osm  {
           ways.push(wayData.nodes)
         };
 
-        const sortedPoints = this._getSortedPoints(ways);
+        const sortedPoints = this.#getSortedPoints(ways);
         const sceleton = sortedPoints.map((id) => this.points.find((p) => p.id === id));
         
         const polygon = new Polygon(sceleton);
@@ -145,7 +146,7 @@ export class Osm  {
         this.relationPolygons.push(polygon);
     }
   };
-  _getSortedPoints(ways){
+  #getSortedPoints(ways){
     const sort = [ways[0]];
     let perw  = ways[0][ways[0].length - 1];
 
@@ -183,24 +184,54 @@ export class Osm  {
           options.fill = 'brown';
           options.globalAlpha = 0.8;
           break;
+
         // умова для шкіл, садіків і лікарень
         case (
-          b.tags.building === 'school'       ||
           b.tags.building === 'kindergarten' ||
-          b.tags.amenity  === 'music_school' ||
           b.tags.building === 'college'      ||
-          b.tags.building === 'hospital'     ||
+          b.tags.building === 'school'       ||
+          b.tags.amenity  === 'music_school' ||
           b.tags.sport    === 'swimming'     ||
+
+          b.tags.building === 'hospital'     ||
           b.tags.amenity  === 'clinic' 
         ):
           options.fill = 'orange';
           options.globalAlpha = 0.4;
           break;
+          
+        // умова для адміністративних
+        case (
+          b.tags.office   === 'yes'                  ||
+          b.tags.office   === 'government'           ||
+          b.tags.amenity  === 'townhall'             ||
+          b.tags.amenity  === 'community_centre'     ||
+          b.tags.amenity  === 'fire_station'         ||
+          b.tags.amenity  === 'police'               ||
+          b.tags.amenity  === 'arts_centre'          ||
+          b.tags.amenity  === 'post_office'          
+        ):
+          options.fill = 'orange';
+          options.globalAlpha = 0.8;
+          break;
+
         // умова церков
         case b.tags.building === 'church':
           options.fill = 'blue';
           options.globalAlpha = 0.8;
           break;
+
+        // умова для будинків які будуються
+        case (
+          b.tags.building === 'construction' ||
+          b.tags.building === 'roof'         ||
+          b.tags.power    === 'plant'        ||
+          b.tags.building === 'service' 
+        ):
+          options.fill = 'black';
+          options.globalAlpha = 0.4;
+          break;
+
         // умова для промислових преміщень
         case (
           b.tags.building === 'industrial' ||
@@ -209,6 +240,7 @@ export class Osm  {
           options.fill = 'red';
           options.globalAlpha = 0.8;
           break;
+
         // умова для приватних будинків і які мають менше 3 поперхів
         case (
           !b.tags['building:levels']      &&
@@ -219,6 +251,7 @@ export class Osm  {
           options.fill = 'green';
           options.globalAlpha = 0.6;
           break;
+          
         // умова для багатоповерхівок
         case (
           b.tags['building:levels'] >= 3 || 
@@ -227,15 +260,7 @@ export class Osm  {
           options.fill = 'brown';
           options.globalAlpha = 0.4;
           break;
-        // умова для будинків які будуються
-        case (
-          b.tags.building === 'construction' ||
-          b.tags.building === 'roof'         ||
-          b.tags.building === 'service' 
-        ):
-          options.fill = 'black';
-          options.globalAlpha = 0.4;
-          break;
+        
         // умова длоя рештт типів будинків
         default:
           options.fill        = 'green';
@@ -246,15 +271,18 @@ export class Osm  {
   };
 
   draw(ctx, viewPoint, zoom){
+    // маолюємо дороги
     const R = this.roads.filter(i => i.distanceToPoint(viewPoint) < this.renderRadius * zoom);
     const optionsRoads = {
         lineWidth  : 3,
+        lineCap:   'round',
         fill       : '',
         color: 'yellow',
         globalAlpha: .8,
     };
     for(const r of R) r.draw(ctx, optionsRoads);
 
+    // малюємо полігони
     const optionsAreals = {
       lineWidth  : 3,
       fill       : 'red',
@@ -267,7 +295,8 @@ export class Osm  {
       colorStroke: '#2d592f',
       globalAlpha: .3,
     };
-
+    
+    for(const n of this.naturals) n.draw(ctx, optionsNatural);
     for(const a of this.relationPolygons)  a.draw(ctx, optionsAreals);
     for(const a of this.areals) {
       if( a.tags.landuse === 'industrial' ||
@@ -280,8 +309,7 @@ export class Osm  {
         }
     };
    
-    for(const n of this.naturals) n.draw(ctx, optionsNatural);
-
+    // малюємо будівлі
     const B = this.buildings.filter(polygon => polygon.distanceToPoint(viewPoint) < this.renderRadius * zoom);
     for (const b of B) {
       const options = this._getBuilding(b);
@@ -297,6 +325,30 @@ export class Osm  {
     this.naturals  = [];
 
     this.relationPolygons = [];
+  };
+  remove(point){
+    const removePoint = utils.getNearestPoint(point, this.points, this.sizeRemove)
+   
+    if(removePoint){
+      this._removePoint(removePoint);
+      this._removeSegment(removePoint);
+      this._removePolygons(removePoint);
+    }
+  };
+  _removePoint(point) {
+    this.points = this.points.filter(p => !p.equals(point));
   }
+  _removeSegment(point) {
+    this.roads = this.roads.filter(s => s.distanceToPoint(point) > this.sizeRemove);
+  };
+  _removePolygons(point){
+    this.buildings        = this.__remove(this.buildings,        point);
+    this.areals           = this.__remove(this.areals,           point);
+    this.naturals         = this.__remove(this.naturals,         point);
+    this.relationPolygons = this.__remove(this.relationPolygons, point);
+  };
+  __remove(arrey, point){
+    return arrey.filter(polygon => polygon && polygon.distanceToPoint(point) > this.sizeRemove);
+  };
 }
 

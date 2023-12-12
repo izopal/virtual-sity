@@ -30,6 +30,7 @@ export default class Editor{
         // підключаємо необхідні нам класи
         this.vieport       = this.myApp.vieport;
         this.graph         = this.myApp.graph;
+       
         this.OldGraphHash  = this.graph.hash();    //параметри запуска малювання 
         this.world         = new World(this.myApp, this.graph);
     };
