@@ -140,7 +140,10 @@ export class GraphEditor extends Editor{
             this.removePoint = utils.getNearestPoint(this.point, this.graph.points, this.minDicnance = this.sizeRemove)
             this.#remove(this.removePoint); 
         };
-        this.vieport.drag.active = this.lastPoint ? false : true
+        const isMouseMove = isCurveBtnLeft      ||
+                            isDragingBtnLeft    ||
+                            isRemoveBtnLeft;
+        this.vieport.drag.active = isMouseMove ? false : true;
     };
     #inputMouseUp(e){
         const isBtnUp =     this.tools.curve      ||
