@@ -136,31 +136,26 @@ export class Vieport{
     // ======================== Блок керування тачпадом ==============================>
     inputTouchStart(e){
         e.preventDefault()
-        if((e.targetTouches.length < 2 && this.allToolFalse)) this.inputStart(e.touches[0]); 
+        if (e.targetTouches.length < 2) this.inputStart(e.touches[0]); 
         if (e.targetTouches.length >= 2) {
-            this.toolsMeneger.resetTools()        //деактивуємо всі кнопки інструментів
             this.startDistance = this.#getTouchDistance(e);
-            this.tools = this.toolsMeneger.resetTools();
         }
     };
     inputTouchMove(e){
         e.preventDefault()
-        if(e.targetTouches.length < 2 && this.allToolFalse && this.drag.active) this.inputMove(e.touches[0])
+        if(e.targetTouches.length < 2 && this.drag.active) this.inputMove(e.touches[0])
 
         if (e.targetTouches.length >= 2){
             this.currentDistance = this.#getTouchDistance(e);
             const scale = this.startDistance / this.currentDistance;
 
-                this.zoom *= scale;
-        
+            this.zoom *= scale;
             this.zoom = this.#clampZoom(this.zoom);
             this.getIndicatorZoom(this.zoom)
             this.startDistance = this.currentDistance;
 
             // Обчислюємо кут повороту
             this.angle = this.#getTouchAngle(e);
-
-           
         } 
     };
     inputTouchEnd(e){
