@@ -103,7 +103,7 @@ export class GraphEditor extends Editor{
             this.removePoint = utils.getNearestPoint(this.point, this.graph.points, this.minDicnance = this.sizeRemove)
             if(this.activePoint) this.#remove(this.removePoint); 
         };
-        this.vieport.drag.active = this.lastPoint ? false : true
+        // this.vieport.drag.active = this.lastPoint ? false : true
     };
     #inputMouseMove(e){
         super.inputMouseMove(e);
@@ -111,6 +111,7 @@ export class GraphEditor extends Editor{
         const isTreeBtnLeft    = this.tools.tree     && e.buttons === 1;
         const isDragingBtnLeft = this.tools.dragging && e.buttons === 1;
         const isRemoveBtnLeft  = this.tools.remove   && e.buttons === 1;
+        const isPolygonBtnLeft = this.tools.polygon  && e.buttons === 1;
         
         this.point = this.vieport.getPoint(e, { subtractDragOffset: true });
         this.targetPoints = this.graph.filterPointsByTools('curve');
@@ -126,6 +127,8 @@ export class GraphEditor extends Editor{
             this.graph.addPoint(this.point);
         }
         ++this.counter;
+
+        if(isPolygonBtnLeft) this.lastPoint = null
         
         // умова використання інструменту dragging
         if(isDragingBtnLeft && this.activePoint){

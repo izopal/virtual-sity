@@ -165,7 +165,6 @@ export class Vieport{
     };
 
     inputStart(e){
-        // this.drag.active = true;
         this.drag.start  = this.getPoint(e); 
     };
     inputMove(e){
@@ -179,7 +178,7 @@ export class Vieport{
         this.drag    = {start:  this.point,
                         end:    this.point,
                         offset: this.point,
-                        active: false};
+                        active: true};
     };
 
     
@@ -196,7 +195,6 @@ export class Vieport{
                centerX = e.pageX;
                centerY = e.pageY;
            }
-              
            
            const rotatedX = (centerX - this.coordinatesCentre.x) ;
            const rotatedY = (centerY - this.coordinatesCentre.y);
