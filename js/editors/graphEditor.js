@@ -65,6 +65,7 @@ export class GraphEditor extends Editor{
     };
    
     #inputMouseDown(e){
+        this.vieport.drag.active = false; 
         this.point = this.vieport.getPoint(e, { subtractDragOffset: true });
         // умови при настику лівої кнопки
         const isBtnLeft   = this.tools.point        || 
@@ -105,7 +106,7 @@ export class GraphEditor extends Editor{
             this.removePoint = utils.getNearestPoint(this.point, this.graph.points, this.minDicnance = this.sizeRemove)
             if(this.activePoint) this.#remove(this.removePoint); 
         };
-        // this.vieport.drag.active = this.lastPoint ? false : true
+       
     };
     #inputMouseMove(e){
         super.inputMouseMove(e);
@@ -156,6 +157,7 @@ export class GraphEditor extends Editor{
         this.vieport.drag.active = isMouseMove ? false : true;
     };
     #inputMouseUp(e){
+        this.vieport.drag.active = false; 
         const isBtnUp =     this.tools.curve      ||
                             this.tools.tree       || 
                             this.tools.building;
