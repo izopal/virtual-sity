@@ -129,7 +129,7 @@ export class GraphEditor extends Editor{
         }
         ++this.counter;
 
-        if(e instanceof TouchEven && isPolygonBtnLeft) {
+        if(e instanceof TouchEvent && e.touches.length === 1 && this.tools.polygon) {
             if(this.tools.polygon){
                 const polygon  = new Polygon(this.skeleton);
                 this.graph.addPolygon(polygon);
