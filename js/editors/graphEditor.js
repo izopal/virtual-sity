@@ -129,14 +129,7 @@ export class GraphEditor extends Editor{
         }
         ++this.counter;
 
-        if(e instanceof TouchEvent && e.touches.length === 1 && this.tools.polygon) {
-            if(this.tools.polygon){
-                const polygon  = new Polygon(this.skeleton);
-                this.graph.addPolygon(polygon);
-                this.skeleton  = [];
-            };
-            this.lastPoint = null;
-        }
+        
         
         // умова використання інструменту dragging
         if(isDragingBtnLeft && this.activePoint){
@@ -155,9 +148,9 @@ export class GraphEditor extends Editor{
                             isDragingBtnLeft    ||
                             isRemoveBtnLeft;
         this.vieport.drag.active = isMouseMove ? false : true;
+       
     };
     #inputMouseUp(e){
-        this.vieport.drag.active = false; 
         const isBtnUp =     this.tools.curve      ||
                             this.tools.tree       || 
                             this.tools.building;

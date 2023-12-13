@@ -143,9 +143,8 @@ export class Vieport{
     };
     inputTouchMove(e){
         e.preventDefault()
-        if(e.targetTouches.length < 2 && this.drag.active) this.inputMove(e.touches[0])
-
-        if (e.targetTouches.length >= 2){
+        if(e.targetTouches.length < 2 && this.drag.active) this.inputMove(e.touches[0]);
+        else if (e.targetTouches.length >= 2){
             this.currentDistance = this.#getTouchDistance(e);
             const scale = this.startDistance / this.currentDistance;
 
@@ -156,7 +155,7 @@ export class Vieport{
 
             // Обчислюємо кут повороту
             this.angle = this.#getTouchAngle(e);
-        } 
+        };
     };
     inputTouchEnd(e){
         e.preventDefault()
