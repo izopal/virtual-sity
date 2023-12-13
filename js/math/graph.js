@@ -34,6 +34,7 @@ export class Graph{
     };
     addPolygon(polygon){
         this.polygons.push(polygon);
+        console.log(this.polygons)
     }
  
     filterPointsByTools(...keys) {
@@ -72,7 +73,9 @@ export class Graph{
     _drawPolygons(config){
         for(const polygon of this.polygons){
             polygon.draw(config.ctx, this.configPolygon.segment);
-            for(const point of polygon.points)    {point.draw(config.ctx, this.configPolygon.point)};
+            for(const point of polygon.points){
+                point.draw(config.ctx, this.configPolygon.point)
+            };
         }
     };
 

@@ -1,12 +1,14 @@
 
-import * as utils       from './math/utils.js';
+
 import {Graph}           from './math/graph.js';
-import {Point}           from './primitives/point.js';
-import {Segment}         from './primitives/segment.js';
+import {World}           from './world.js';
 import { GraphEditor }   from "./editors/graphEditor.js";
 import { MarkingEditor } from "./editors/markingEditors.js";
 import { Osm }           from './math/osm.js';
 import { MapHandler }    from './math/miniMap.js';
+
+import {Point}           from './primitives/point.js';
+import {Segment}         from './primitives/segment.js';
 
 
 const buttonSave         = document.getElementById('buttonSave');
@@ -52,6 +54,9 @@ export class App{
         this.vieport     = vieport;
 
         this.graph         = new Graph(this.toolsMeneger, this.data);
+        this.OldGraphHash  = this.graph.hash();    //параметри запуска малювання 
+        this.world         = new World(this.data, this.toolsMeneger, this.graph,);
+        
         this.markingEditor = new MarkingEditor(this);
         this.graphEditor   = new GraphEditor(this);
        
@@ -310,10 +315,19 @@ export class App{
     draw(ctx, viewPoint, zoom){
         if(this.osm) this.osm.draw(ctx, viewPoint, zoom);
         this.graph.draw(ctx, viewPoint, zoom);
+
+        this.world.draw(ctx, viewPoint, this.vieport.zoom);
+        // перевіряємо чи змінилися параметри this в класі Graph
+        if(this.OldGraphHash !== this.graph.hash()){
+            this.world.generateCity();
+            this.OldGraphHash = this.graph.hash()
+        };
+
         this.graphEditor.draw(ctx, viewPoint);
         this.markingEditor.draw(ctx, viewPoint);
     };
     drawDebug(ctx){
+        this.world.drawDebug(ctx);
         this.graphEditor.drawDebug(ctx)
         this.markingEditor.drawDebug(ctx)
     };

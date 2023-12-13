@@ -1,6 +1,6 @@
 import * as utils       from '../math/utils.js';
 import Editor from './editor.js';
-import {World}    from '../world.js';
+
 import {Segment}   from '../primitives/segment.js';
 import { Polygon } from '../primitives/polygon.js';
 
@@ -24,8 +24,7 @@ export class GraphEditor extends Editor{
         
         this.counter       = 0;
 
-        this.OldGraphHash  = this.graph.hash();    //параметри запуска малювання 
-        this.world         = new World(this.myApp, this.graph);
+        
     };
   
     disable(){
@@ -129,7 +128,7 @@ export class GraphEditor extends Editor{
         }
         ++this.counter;
 
-        if(isPolygonBtnLeft) {
+        if(e instanceof TouchEven && isPolygonBtnLeft) {
             if(this.tools.polygon){
                 const polygon  = new Polygon(this.skeleton);
                 this.graph.addPolygon(polygon);
@@ -177,13 +176,6 @@ export class GraphEditor extends Editor{
 
    
     draw(ctx, viewPoint){
-        this.world.draw(ctx, viewPoint, this.vieport.zoom);
-        // перевіряємо чи змінилися параметри this в класі Graph
-        if(this.OldGraphHash !== this.graph.hash()){
-            this.world.generateCity();
-            this.OldGraphHash = this.graph.hash()
-        };
-
         if(this.lastPoint && this.polygon) {
             this.polygon.draw(ctx, this.configPolygon.segment);
             for(const point of this.polygon.points) {point.draw(ctx, this.configPolygon.point)};
@@ -196,7 +188,7 @@ export class GraphEditor extends Editor{
         if(this.activePoint) this.activePoint.draw(ctx, this.configPoint.activePoint);
     };
     drawDebug(ctx){
-        this.world.drawDebug(ctx);
+        
     };
 
 
@@ -210,7 +202,7 @@ export class GraphEditor extends Editor{
     };
     dispose(){
         super.dispose();    
-        this.world.removeAll();
+        
         this.lastPoint     = null;
         this.activePoint   = null;
         this.polygon       = null;

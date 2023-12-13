@@ -3,16 +3,17 @@ import { Point }   from './primitives/point.js';
 import { Segment } from './primitives/segment.js';
 import {Polygon}   from './primitives/polygon.js';
 import {Envelope}  from './primitives/envelope.js';
+
 import {Tree}      from './items/tree.js';
 import {Road}      from './items/road.js';
 import {Building}  from './items/building.js';
 
 export class World{
-    constructor(myApp, graph = {}){
+    constructor(data, toolsMeneger, graph = {}){
        
         this.graph      = graph;
-        this.data       = myApp.data;
-        this.tools      = myApp.toolsMeneger.tools;
+        this.data       = data;
+        this.tools      = toolsMeneger.tools;
         this.config     = this.data.world            || {};
         this.segments   = this.graph.sortedSegments || {};
         this.points     = this.graph.sortedPoints   || {};
@@ -188,14 +189,10 @@ export class World{
     
 
     draw(ctx, viewPoint, zoom){
-        // this.drawPolygon(ctx);
         this.drawRoad(ctx);
-        
         this.drawTree(ctx, viewPoint, zoom)
-        this.drawBuilding(ctx, viewPoint)
-        this.drawCity(ctx, viewPoint, zoom);
 
-        // console.log(this.laneGuides)
+        this.drawCity(ctx, viewPoint, zoom);
     };
 
     drawRoad(ctx){
@@ -208,14 +205,6 @@ export class World{
         this.trees      = [...treePoints.map(point=> new Tree(point)).flat()];
         this.trees.sort((a, b) => b.base.distanceToPoint(viewPoint) - a.base.distanceToPoint(viewPoint))
         for(const tree of this.trees) tree.draw(ctx, viewPoint, zoom)
-    };
-    drawBuilding(ctx, viewPoint, zoom){
-        // const buildingPoints = this.graph.sortedPoints.building   || [];
-        // const newPoint = utils.pointFrom3D(point, viewPoint, height);
-        // this.buildingsPolygon       =  new Polygon(buildingPoints, this.configBuilding) || {};
-        // this.buildings              = new Building(this.buildingsPolygon, this.configBuilding)
-        // console.log(this.buildings)
-        // this.buildings.draw(ctx, viewPoint, zoom)
     };
     
     drawCity(ctx, viewPoint, zoom){
