@@ -200,7 +200,7 @@ export class Osm  {
   
   _getBuilding(b){
       const options = {
-        lineWidth: 1,
+        lineWidth: null,
         fill: '',
         globalAlpha: 1,
       };
@@ -208,12 +208,14 @@ export class Osm  {
       
       
       const data = {
+        // параметри криші
         ceiling:{
                 fill:           '',
                 colorStroke:    '',
                 lineWidth:       NaN,
                 globalAlpha:     1,
         },
+        // параметри стін
         side:{
                 fill:           '',
                 colorStroke:    '',
@@ -246,6 +248,13 @@ export class Osm  {
         ):
           options.fill = 'orange';
           options.globalAlpha = 0.4;
+        
+          // data.ceiling.fill        = 'green';
+          // data.ceiling.lineWidth   =   1;
+          // data.ceiling.globalAlpha =     .8;
+
+          // data.side.fill         = 'orange';
+          // data.side.globalAlpha  = 0.4;
           break;
           
         // умова для адміністративних
@@ -309,7 +318,7 @@ export class Osm  {
           options.globalAlpha = 0.4;
           break;
         
-        // умова длоя рештт типів будинків
+        // умова длоя решти типів будинків
         default:
           options.fill        = 'green';
           options.globalAlpha = 0.6;
@@ -340,7 +349,8 @@ export class Osm  {
     });
     for (const b of B) {
       const options = this._getBuilding(b.base);
-      b.draw(ctx, viewPoint, zoom);
+      console.log(options)
+      b.draw(ctx, viewPoint, zoom, options);
     };
 
     // малюємо полігони

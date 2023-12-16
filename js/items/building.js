@@ -6,7 +6,6 @@ import { Polygon } from "../primitives/polygon.js";
 
 export class Building{
     constructor(polygon, level = 1){
-        console.log(level)
         this.base        = polygon;
         this.config      = data.world.building;
         this.coefficient = this.config.coefficient * level;
@@ -15,7 +14,25 @@ export class Building{
         
     }
    
-    draw(ctx, viewPoint, zoom){
+    draw(ctx, viewPoint, zoom, options = {}){
+        // const {
+        //     configCeiling = {
+        //                 fill:        '',
+        //                 colorStroke: '',
+        //                 lineWidth:    NaN,
+        //                 globalAlpha:  1,
+        //     },
+        //     configSide = {
+        //             fill:           '',
+        //             colorStroke:    '',
+        //             lineWidth:       1,
+        //             globalAlpha:     1,
+        //     },
+        //   } = options
+
+        this.config.ceiling = options || this.config.ceiling;
+        this.config.side    = options || this.config.side;
+
         const height =  this.coefficient / zoom;
         const pointsFromCeiling = [];
         // створюємо стелю
