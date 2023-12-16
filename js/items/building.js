@@ -5,10 +5,11 @@ import { Polygon } from "../primitives/polygon.js";
 
 
 export class Building{
-    constructor(polygon){
+    constructor(polygon, level = 1){
+        console.log(level)
         this.base        = polygon;
-        this.config      = data.world.building
-        this.coefficient = this.config.coefficient;
+        this.config      = data.world.building;
+        this.coefficient = this.config.coefficient * level;
     };
     generate(){
         
@@ -39,7 +40,6 @@ export class Building{
         }
         // сортуємо сітни    
         sides.sort((a, b) => b.distanceToPoint(viewPoint) - a.distanceToPoint(viewPoint))
-
 
         this.base.draw(ctx, this.config);
         for(const side of sides) {side.draw(ctx, this.config.side)};

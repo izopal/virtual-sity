@@ -49,7 +49,7 @@ const parameters =   {  editor:   {name:                   'remove',
                                         building:       {key:           'building',
                                                         class:          'Building',
                                                         width:          125,
-                                                        coefficient:    .15,   //коефіцієнт висоти 
+                                                        coefficient:    .02,   //коефіцієнт висоти 
 
                                                         minLenght:      125,
                                                         spacing:        125,

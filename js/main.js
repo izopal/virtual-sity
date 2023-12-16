@@ -5,19 +5,58 @@ import { App }          from './myApp.js';
 import { data }         from './constants.js';
 import { timeAnimate }  from './animateList.js';
 
+import { Polygon }      from './primitives/polygon.js';
+
 const canvas        = document.getElementById('canvasMS');
       canvas.width  = innerWidth;
       canvas.height = innerHeight;
-const ctx = canvas.getContext('2d');
+
+const ctx           = canvas.getContext('2d');
+//  параметри рамки в які будуть генеруватися наші обєктм
+const canvasSize    = canvas.getBoundingClientRect();
+const bbox =  [
+      {x:canvasSize.right, y:canvasSize.bottom},
+      {x:canvasSize.right, y:canvasSize.top},
+      {x:canvasSize.left, y:canvasSize.top},
+      {x:canvasSize.left, y:canvasSize.bottom},
+]
+
+console.log(bbox);
+
+
+
+
+
+
+const renderRadius  = Math.hypot(canvas.width, canvas.height) * .5;
+      
 
 
 const barFromEditors    = document.querySelector('.btnEditor');
 const buttonFromEditors = barFromEditors.querySelectorAll('button');
 
-const toolsMeneger = new ToolsMeneger(data, timeAnimate);
+const config = {
+      canvas,
+      renderRadius,
+      timeAnimate,
+      data,
+      toolsMeneger:     new ToolsMeneger(data, timeAnimate),
+};
 
-const vieport      = new Vieport(canvas, toolsMeneger, data, timeAnimate);
-const myApp        = new App(canvas, toolsMeneger, data, timeAnimate, vieport);
+
+const vieport      = new Vieport(config);
+
+const sceleton = [];
+for(const point of bbox){
+    const currentPoint = utils.operate(point, '*', vieport.zoom)
+    console.log(currentPoint)
+    sceleton.push(point);
+}
+const monitor = new Polygon(sceleton);
+
+
+
+const myApp        = new App(vieport, config);
 
 
 buttonFromEditors.forEach((button) => {
@@ -27,8 +66,8 @@ buttonFromEditors.forEach((button) => {
 
 
 function boundEditorClick(){
-   for(const tool in toolsMeneger.editorState){
-      toolsMeneger.editorState[tool]  ? 
+   for(const tool in config.toolsMeneger.editorState){
+      config.toolsMeneger.editorState[tool]  ? 
             myApp[`${tool}Editor`].enable() :
             myApp[`${tool}Editor`].disable(); 
    }

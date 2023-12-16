@@ -9,11 +9,13 @@ import {Road}      from './items/road.js';
 import {Building}  from './items/building.js';
 
 export class World{
-    constructor(data, toolsMeneger, graph = {}){
-       
+    constructor(config, graph = {}){
+        this.config     = config
         this.graph      = graph;
-        this.data       = data;
-        this.tools      = toolsMeneger.tools;
+        this.data       = this.config.data;
+        this.renderRadius = this.config.renderRadius
+      
+        this.tools      = this.config.toolsMeneger.tools;
         this.config     = this.data.world            || {};
         this.segments   = this.graph.sortedSegments || {};
         this.points     = this.graph.sortedPoints   || {};
@@ -42,7 +44,6 @@ export class World{
     };
 
     generateCity(){
-        this.road          = new Road(this.segments,  this.points, 'city');
         this.buildingsCity = this.#generateBuilding();
         this.treesCity     = this.#generateTrees(); 
         
@@ -196,7 +197,7 @@ export class World{
     };
 
     drawRoad(ctx){
-        const road = new Road(this.segments,  this.points, 'road')
+        const road = new Road(this.segments,  this.points,  'road')
         road.draw(ctx)
     };
     
@@ -208,13 +209,18 @@ export class World{
     };
     
     drawCity(ctx, viewPoint, zoom){
-        this.road = new Road(this.segments,  this.points, 'city');
+   
+        this.road          = new Road(this.segments,  this.points,  'city');
         this.road.draw(ctx);
         
-        this.items = [...this.buildingsCity, ...this.treesCity];
-        this.items.sort((a, b) => b.base.distanceToPoint(viewPoint) - a.base.distanceToPoint(viewPoint))
-        for(const item of this.items) {item.draw(ctx, viewPoint, zoom)}
+        const items = [...this.buildingsCity, ...this.treesCity].filter((i) => {
+           return i.base.distanceToPoint(viewPoint) < 300 * zoom;
+        });
+       
+        items.sort((a, b) => b.base.distanceToPoint(viewPoint) - a.base.distanceToPoint(viewPoint))
+        for(const item of items) {item.draw(ctx, viewPoint, zoom)}
     };
+    
 
     drawDebug(ctx){
         for(const segment of this.laneGuides) segment.draw(ctx, this.data.debug);

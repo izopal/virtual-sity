@@ -9,6 +9,7 @@ import { MapHandler }    from './math/miniMap.js';
 
 import {Point}           from './primitives/point.js';
 import {Segment}         from './primitives/segment.js';
+import { Polygon } from './primitives/polygon.js';
 
 
 const buttonSave         = document.getElementById('buttonSave');
@@ -38,24 +39,27 @@ let appState = {
 };
 
 export class App{
-    constructor(canvas, toolsMeneger, data, timeAnimate, vieport) {
-        this.canvas = canvas;
-        this.toolsMeneger       = toolsMeneger;
-
-        this.data    = data;
-
+    constructor(vieport, config) {
+      
+        this.vieport = vieport;
+        this.config  = config;
+        
+        this.canvas       = this.config.canvas;
+        this.renderRadius = this.config.renderRadius;
+        this.data         = this.config.data;
+        this.timeAnimate  = this.config.timeAnimate
+        this.toolsMeneger = this.config.toolsMeneger;
+        
         // Парамтри часу для анімації
-        this.timeAnimate = timeAnimate
             
         this.saveName  = '';
         this.saveNames =  Object.keys(localStorage);         // отримуємо всі ключі з localStorage і поміщаємо їх в окремий масив;
         this.saveInfo  = '';
         
-        this.vieport     = vieport;
 
-        this.graph         = new Graph(this.toolsMeneger, this.data);
+        this.graph         = new Graph(this.config);
         this.OldGraphHash  = this.graph.hash();    //параметри запуска малювання 
-        this.world         = new World(this.data, this.toolsMeneger, this.graph,);
+        this.world         = new World(this.config, this.graph);
         
         this.markingEditor = new MarkingEditor(this);
         this.graphEditor   = new GraphEditor(this);
@@ -191,7 +195,7 @@ export class App{
         const cityCoordinates = this.mapHandler.coordinates;
         const dataOsm         = this.mapHandler.dataOsm;
         if(dataOsm){
-            this.osm = new Osm(this.canvas, cityCoordinates, dataOsm, this.graph)
+            this.osm = new Osm(this.config, cityCoordinates, dataOsm, this.graph, this.vieport.zoom)
             this.osm.parse()
         };
         
@@ -234,9 +238,11 @@ export class App{
        
         this.toolsMeneger.reset();               //деактивуємо всі кнопки інструментів
         // Оновлення GraphEditor з новим saveName
-        const graphString = localStorage.getItem(this.saveName);
-        this.saveInfo = graphString ? JSON.parse(graphString) : null;
-        this.graph          = this.#loadGraph(this.saveInfo)
+        const graphString   = localStorage.getItem(this.saveName);
+        this.saveInfo       = graphString ? JSON.parse(graphString) : null;
+
+        this.graph          = this.#loadGraph(this.saveInfo);
+        this.world          = new World(this.config, this.graph);
         this.markingEditor  = new MarkingEditor(this);
         this.graphEditor    = new GraphEditor(this);
         // блок закриття меню загрузки
@@ -246,19 +252,19 @@ export class App{
         appState.loadButton           = false;
     };
     #loadGraph(saveInfo){
-        const points       = saveInfo.points.map((point) => new Point(point, point.tools, point.radius));
+        const points   = saveInfo.points.map((point) => new Point(point, point.tools, point.radius));
        
-        const segments    = saveInfo.segments.map((line) => new Segment(
+        const segments = saveInfo.segments.map((line) => new Segment(
             points.find(point => point.equals(line.p1)),
             points.find(point => point.equals(line.p2)),
             line.tools,
             line.size));
-            
+
         const sortedPoints = {};
         points.forEach((point) => {
             for (const tool in point.tools) {
                 if (point.tools[tool]) {
-                    sortedPoints[tool] = sortedPoints[tool] || []
+                    sortedPoints[tool] = []
                     sortedPoints[tool].push(point);
                 };
             };
@@ -271,7 +277,13 @@ export class App{
                 points.find(point => point.equals(line.p2)),
                 line.tools));
         };
-        return new Graph (this.toolsMeneger, this.data, points, sortedPoints, segments, sortedSegments);
+        const loadInfo = {
+            points, 
+            sortedPoints, 
+            segments, 
+            sortedSegments,
+        }
+        return new Graph (this.config, loadInfo);
     };
 
     newSave(){
@@ -316,7 +328,7 @@ export class App{
         if(this.osm) this.osm.draw(ctx, viewPoint, zoom);
         this.graph.draw(ctx, viewPoint, zoom);
 
-        this.world.draw(ctx, viewPoint, this.vieport.zoom);
+        this.world.draw(ctx, viewPoint, zoom);
         // перевіряємо чи змінилися параметри this в класі Graph
         if(this.OldGraphHash !== this.graph.hash()){
             this.world.generateCity();

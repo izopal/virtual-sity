@@ -7,7 +7,14 @@ const indicatorZoom     = document.querySelector('.indicator-zoom');
 const zoomValue         = document.getElementById('zoomValue')
 
 export class Vieport{
-    constructor(canvas, toolsMeneger, data, timeAnimate){
+    constructor(config = {}){
+        const { 
+            canvas       = NaN,
+            data         = NaN,
+            timeAnimate  = NaN,
+            toolsMeneger = NaN,
+        } = config;
+
         this.canvas       = canvas;
         this.ctx          = this.canvas.getContext('2d');
 

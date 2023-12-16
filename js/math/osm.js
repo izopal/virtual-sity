@@ -2,12 +2,17 @@ import * as utils       from './utils.js';
 import { Point }        from '../primitives/point.js';
 import { Segment }      from '../primitives/segment.js';
 import { Polygon }      from '../primitives/polygon.js';
+import { Building }     from '../items/building.js';
 
 export class Osm  {
-  constructor(canvas, cityCoordinates, osmData, graph){
-    console.log(osmData)
-    this.canvas  = canvas;
-    this.ctx = canvas.getContext('2d');
+  constructor(config, cityCoordinates, osmData, graph){
+    console.log(osmData);
+    this.config  = config;
+    this.canvas       = this.config.canvas;
+    // this.renderRadius = this.config.renderRadius;
+    this.renderRadius = 300;
+
+    this.ctx = this.canvas.getContext('2d');
     this.cityCoordinates = cityCoordinates;
     this.osmData         = osmData;
     this.graph           = graph;
@@ -23,10 +28,28 @@ export class Osm  {
     this.waterways = [];
 
     this.nodes = this.osmData.elements.filter((n) => n.type === 'node');
-    this.renderRadius = 1000 ;
+  
     this.sizeRemove   = 30;
+
+
+    const canvasSize    = this.canvas.getBoundingClientRect();
+    const bbox =  [
+          {x:canvasSize.right, y:canvasSize.bottom},
+          {x:canvasSize.right, y:canvasSize.top},
+          {x:canvasSize.left, y:canvasSize.top},
+          {x:canvasSize.left, y:canvasSize.bottom},
+    ];
+    this.monitor = new Polygon(bbox);
+    console.log(this.monitor)
+
+
+
     this.initializeCanvas();
     this.initializeMapData();
+    
+
+   
+
   };
 
   initializeCanvas(){
@@ -166,6 +189,14 @@ export class Osm  {
     };
     return  sort.flat();
   };
+
+  _filterPolygons(A, viewPoint, zoom){
+    return A.map(polygon => {
+      const sceleton = polygon.points.filter(point => 
+        point.distanceToPoint(viewPoint) < this.renderRadius * zoom);
+      return Object.assign(new Polygon(sceleton), { tags: { ...polygon.tags } });
+    });
+  }
   
   _getBuilding(b){
       const options = {
@@ -173,6 +204,23 @@ export class Osm  {
         fill: '',
         globalAlpha: 1,
       };
+      
+      
+      
+      const data = {
+        ceiling:{
+                fill:           '',
+                colorStroke:    '',
+                lineWidth:       NaN,
+                globalAlpha:     1,
+        },
+        side:{
+                fill:           '',
+                colorStroke:    '',
+                lineWidth:       1,
+                globalAlpha:     1,
+        },
+      }
     
       switch (true) {
         // умова для комерційних преміщень і магазинів
@@ -271,7 +319,8 @@ export class Osm  {
   };
 
   draw(ctx, viewPoint, zoom){
-    // маолюємо дороги
+        
+    // малюємо дороги
     const R = this.roads.filter(i => i.distanceToPoint(viewPoint) < this.renderRadius * zoom);
     const optionsRoads = {
         lineWidth  : 3,
@@ -281,6 +330,18 @@ export class Osm  {
         globalAlpha: .8,
     };
     for(const r of R) r.draw(ctx, optionsRoads);
+
+    // малюємо будівлі
+    const B = this.buildings.filter(polygon => 
+      polygon.distanceToPoint(viewPoint) < this.renderRadius * zoom)
+      .map(b => {
+      const Level = parseInt(b.tags["building:levels"]) || 1
+      return new Building(b, Level)
+    });
+    for (const b of B) {
+      const options = this._getBuilding(b.base);
+      b.draw(ctx, viewPoint, zoom);
+    };
 
     // малюємо полігони
     const optionsAreals = {
@@ -295,10 +356,14 @@ export class Osm  {
       colorStroke: '#2d592f',
       globalAlpha: .3,
     };
-    
-    for(const n of this.naturals) n.draw(ctx, optionsNatural);
-    for(const a of this.relationPolygons)  a.draw(ctx, optionsAreals);
-    for(const a of this.areals) {
+      
+    const RP = this._filterPolygons(this.relationPolygons, viewPoint, zoom)
+    const N  = this._filterPolygons(this.naturals, viewPoint, zoom)
+    const A  = this._filterPolygons(this.areals, viewPoint, zoom)
+
+    for(const n of N)  n.draw(ctx, optionsNatural);
+    for(const r of RP) r.draw(ctx, optionsAreals);
+    for(const a of A) {
       if( a.tags.landuse === 'industrial' ||
           a.tags.landuse === 'garages'    ||
           a.tags.landuse === 'commercial') 
@@ -309,12 +374,7 @@ export class Osm  {
         }
     };
    
-    // малюємо будівлі
-    const B = this.buildings.filter(polygon => polygon.distanceToPoint(viewPoint) < this.renderRadius * zoom);
-    for (const b of B) {
-      const options = this._getBuilding(b);
-      b.draw(ctx, options);
-    };
+ 
   };
 
   dispose(){

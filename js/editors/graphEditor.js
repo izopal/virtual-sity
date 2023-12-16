@@ -65,8 +65,8 @@ export class GraphEditor extends Editor{
     };
    
     #inputMouseDown(e){
-        this.vieport.drag.active = false; 
         this.point = this.vieport.getPoint(e, { subtractDragOffset: true });
+        
         // умови при настику лівої кнопки
         const isBtnLeft   = this.tools.point        || 
                             this.tools.polygon      || 
@@ -92,15 +92,15 @@ export class GraphEditor extends Editor{
                             this.tools.polygon      ||
                             this.tools.city;
 
-        if(isBtnRight && e.buttons === 2){
-            if(this.tools.polygon){
-                const polygon  = new Polygon(this.skeleton);
-                this.graph.addPolygon(polygon);
-                this.skeleton  = [];
-            };
+        if(e.buttons === 2){
             this.lastPoint = null;
         };
-
+        // умова побудови полігонів
+        if( !this.lastPoint && this.polygon){
+            this.polygon  = new Polygon(this.skeleton);
+            this.graph.addPolygon(this.polygon);
+            this.skeleton  = [];
+        };
         // умова видалення точки
         if(isRemoveBtnLeft){
             this.removePoint = utils.getNearestPoint(this.point, this.graph.points, this.minDicnance = this.sizeRemove)
@@ -151,6 +151,7 @@ export class GraphEditor extends Editor{
        
     };
     #inputMouseUp(e){
+        this.vieport.drag.active = false; 
         const isBtnUp =     this.tools.curve      ||
                             this.tools.tree       || 
                             this.tools.building;
@@ -180,6 +181,7 @@ export class GraphEditor extends Editor{
             this.lastPoint.draw(ctx, this.configPoint.lastPoint);
             new Segment (this.lastPoint, this.point).draw(ctx, this.configSegment.dash);
         };
+        
         if(this.activePoint) this.activePoint.draw(ctx, this.configPoint.activePoint);
     };
     drawDebug(ctx){

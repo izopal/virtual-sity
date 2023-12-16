@@ -2,7 +2,6 @@
 import * as utils       from '../math/utils.js';
 import Editor           from './editor.js';
 
-
 import { Stop }             from '../markings/stop.js';
 import { Pedestrian }       from '../markings/pedestrian.js';
 import { Start }            from '../markings/start.js';
@@ -67,7 +66,7 @@ export class MarkingEditor extends Editor {
         if (this.tools.stop)          this.getIntent(this.world.laneGuides,     Stop);
         if (this.tools.start)         this.getIntent(this.world.laneGuides,     Start);
         if (this.tools.parking)       this.getIntent(this.world.laneGuides,     Parking);
-        if (this.tools.pedestrian)    this.getIntent(this.graph.segments, Pedestrian);
+        if (this.tools.pedestrian)    this.getIntent(this.graph.segments,       Pedestrian);
         if (this.tools.trafficLights) this.getIntent(this.world.laneGuides,     TrafficLights);
     };
 

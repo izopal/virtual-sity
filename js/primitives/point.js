@@ -1,10 +1,12 @@
 import {data}      from '../constants.js';
+import * as utils  from '../math/utils.js';
+
 export class Point {
     constructor(coordinates = { x: 0, y: 0 }, tools = {}, radius) {
-     
-             
-        this.x    = coordinates.x;
-        this.y    = coordinates.y;
+        this.coordinates = coordinates;
+        this.x    = this.coordinates.x;
+        this.y    = this.coordinates.y;
+
         this.config = data.primitives.point;
         this.radius = radius || this.config.point.radius;
         
@@ -17,6 +19,10 @@ export class Point {
             point.y !== undefined && 
             this.x === point.x && 
             this.y === point.y;
+    };
+    distanceToPoint(point){
+        const c =  utils.operate(point, '-', this.coordinates);
+        return Math.sqrt(c.x * c.x + c.y * c.y)
     };
 
     draw(ctx, options = {}) {
