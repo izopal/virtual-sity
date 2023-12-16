@@ -3,6 +3,7 @@ import { Point }        from '../primitives/point.js';
 import { Segment }      from '../primitives/segment.js';
 import { Polygon }      from '../primitives/polygon.js';
 import { Building }     from '../items/building.js';
+import { Road }         from '../items/road.js';
 
 export class Osm  {
   constructor(config, cityCoordinates, osmData, graph){
@@ -200,30 +201,18 @@ export class Osm  {
   
   _getBuilding(b){
       const options = {
-        lineWidth: null,
-        fill: '',
-        globalAlpha: 1,
-      };
-      
-      
-      
-      const data = {
-        // параметри криші
-        ceiling:{
-                fill:           '',
-                colorStroke:    '',
-                lineWidth:       NaN,
-                globalAlpha:     1,
+        ceiling: {
+          lineWidth: null,
+          fill: '',
+          globalAlpha: 1,
         },
-        // параметри стін
-        side:{
-                fill:           '',
-                colorStroke:    '',
-                lineWidth:       1,
-                globalAlpha:     1,
+        side: {
+          lineWidth: null,
+          fill: '',
+          globalAlpha: 1,
         },
       }
-    
+     
       switch (true) {
         // умова для комерційних преміщень і магазинів
         case (
@@ -231,8 +220,9 @@ export class Osm  {
           b.tags.shop     === 'mall'       ||
           b.tags.shop     === 'supermarket'
         ):
-          options.fill = 'brown';
-          options.globalAlpha = 0.8;
+          options.ceiling.fill = 'brown';
+          options.side.fill = 'brown';
+          options.side.globalAlpha = .8;
           break;
 
         // умова для шкіл, садіків і лікарень
@@ -246,15 +236,9 @@ export class Osm  {
           b.tags.building === 'hospital'     ||
           b.tags.amenity  === 'clinic' 
         ):
-          options.fill = 'orange';
-          options.globalAlpha = 0.4;
-        
-          // data.ceiling.fill        = 'green';
-          // data.ceiling.lineWidth   =   1;
-          // data.ceiling.globalAlpha =     .8;
-
-          // data.side.fill         = 'orange';
-          // data.side.globalAlpha  = 0.4;
+          options.ceiling.fill = 'orange';
+          options.side.fill = 'orange';
+          options.side.globalAlpha = .4;
           break;
           
         // умова для адміністративних
@@ -268,14 +252,16 @@ export class Osm  {
           b.tags.amenity  === 'arts_centre'          ||
           b.tags.amenity  === 'post_office'          
         ):
-          options.fill = 'orange';
-          options.globalAlpha = 0.8;
+          options.ceiling.fill = 'orange';
+          options.side.fill = 'orange';
+          options.side.globalAlpha = .8;
           break;
 
         // умова церков
         case b.tags.building === 'church':
-          options.fill = 'blue';
-          options.globalAlpha = 0.8;
+          options.ceiling.fill = 'blue';
+          options.side.fill = 'blue';
+          options.side.globalAlpha = .8;
           break;
 
         // умова для будинків які будуються
@@ -285,8 +271,9 @@ export class Osm  {
           b.tags.power    === 'plant'        ||
           b.tags.building === 'service' 
         ):
-          options.fill = 'black';
-          options.globalAlpha = 0.4;
+          options.ceiling.fill = 'black';
+          options.side.fill = 'black';
+          options.side.globalAlpha = .4;
           break;
 
         // умова для промислових преміщень
@@ -294,8 +281,9 @@ export class Osm  {
           b.tags.building === 'industrial' ||
           b.tags.building === 'garages'
         ):
-          options.fill = 'red';
-          options.globalAlpha = 0.8;
+          options.ceiling.fill = 'red';
+          options.side.fill = 'red';
+          options.side.globalAlpha = .8;
           break;
 
         // умова для приватних будинків і які мають менше 3 поперхів
@@ -305,8 +293,9 @@ export class Osm  {
           b.tags['building:levels'] < 3   ||
           b.tags.building === 'house'     
         ):
-          options.fill = 'green';
-          options.globalAlpha = 0.6;
+          options.ceiling.fill = 'green';
+          options.side.fill = 'green';
+          options.side.globalAlpha = .6;
           break;
           
         // умова для багатоповерхівок
@@ -314,23 +303,48 @@ export class Osm  {
           b.tags['building:levels'] >= 3 || 
           b.tags.building === 'apartments'
         ):
-          options.fill = 'brown';
-          options.globalAlpha = 0.4;
+          options.ceiling.fill = 'brown';
+          options.side.fill = 'brown';
+          options.side.globalAlpha = .4;
           break;
         
         // умова длоя решти типів будинків
         default:
-          options.fill        = 'green';
-          options.globalAlpha = 0.6;
+          options.ceiling.fill = 'green';
+          options.side.fill = 'green';
+          options.side.globalAlpha = .6;
           break;
       };
       return options;
   };
 
   draw(ctx, viewPoint, zoom){
-        
-    // малюємо дороги
+    this._drawRoads(ctx, viewPoint, zoom);
+    this._drawBuildings(ctx, viewPoint, zoom);
+    this._drawPolygons(ctx, viewPoint, zoom);
+  };
+  _drawBuildings(ctx, viewPoint, zoom){
+    // малюємо будівлі в 3D графіці
+    const B = this.buildings.filter(polygon => 
+      polygon.distanceToPoint(viewPoint) < this.renderRadius * zoom)
+      .map(b => {
+      const Level = parseInt(b.tags["building:levels"]) || 1
+      return new Building(b, Level)
+    });
+   
+    B.sort((a, b) => b.base.distanceToPoint(viewPoint) - a.base.distanceToPoint(viewPoint))
+    
+    // малюємо будівлі в 2D графіці
+    // const B = this.buildings.filter(i => i.distanceToPoint(viewPoint) < this.renderRadius * zoom);
+    
+    for (const b of B) {
+      const options = this._getBuilding(b.base);
+      b.draw(ctx, viewPoint, zoom, options);
+    };
+  };
+  _drawRoads(ctx, viewPoint, zoom){
     const R = this.roads.filter(i => i.distanceToPoint(viewPoint) < this.renderRadius * zoom);
+   
     const optionsRoads = {
         lineWidth  : 3,
         lineCap:   'round',
@@ -338,64 +352,42 @@ export class Osm  {
         color: 'yellow',
         globalAlpha: .8,
     };
+    // const road = new Road(this.roads,  this.points,  'road')
+    // road.draw(ctx)
+    // console.log(road)
     for(const r of R) r.draw(ctx, optionsRoads);
-
-    // малюємо будівлі
-    const B = this.buildings.filter(polygon => 
-      polygon.distanceToPoint(viewPoint) < this.renderRadius * zoom)
-      .map(b => {
-      const Level = parseInt(b.tags["building:levels"]) || 1
-      return new Building(b, Level)
-    });
-    for (const b of B) {
-      const options = this._getBuilding(b.base);
-      console.log(options)
-      b.draw(ctx, viewPoint, zoom, options);
-    };
-
-    // малюємо полігони
-    const optionsAreals = {
-      lineWidth  : 3,
-      fill       : 'red',
-      colorStroke: 'red',
-      globalAlpha: .4,
-    };
-    const optionsNatural = {
-      lineWidth  : 3,
-      fill       : '#328037',
-      colorStroke: '#2d592f',
-      globalAlpha: .3,
+  };
+  _drawPolygons(ctx, viewPoint, zoom){
+    const options = { 
+      areal: {
+        lineWidth  : 3,
+        fill       : 'red',
+        colorStroke: 'red',
+        globalAlpha: .4,
+      },
+      natural: {
+        lineWidth  : 3,
+        fill       : '#328037',
+        colorStroke: '#2d592f',
+        globalAlpha: .3,
+      },
     };
       
     const RP = this._filterPolygons(this.relationPolygons, viewPoint, zoom)
     const N  = this._filterPolygons(this.naturals, viewPoint, zoom)
     const A  = this._filterPolygons(this.areals, viewPoint, zoom)
 
-    for(const n of N)  n.draw(ctx, optionsNatural);
-    for(const r of RP) r.draw(ctx, optionsAreals);
+    for(const n of N)  n.draw(ctx, options.natural);
+    for(const r of RP) r.draw(ctx, options.areal);
     for(const a of A) {
-      if( a.tags.landuse === 'industrial' ||
-          a.tags.landuse === 'garages'    ||
-          a.tags.landuse === 'commercial') 
-        {
-          a.draw(ctx, optionsAreals)
-          }else{
-          a.draw(ctx, optionsNatural)
-        }
-    };
-   
- 
+      const tags =  a.tags.landuse === 'industrial' ||
+                    a.tags.landuse === 'garages'    ||
+                    a.tags.landuse === 'commercial'
+      tags ? a.draw(ctx, options.areal) : a.draw(ctx, options.natural)
+    }
   };
 
-  dispose(){
-    this.points    = [];
-    this.roads     = [];
-    this.buildings = [];
-    this.areals    = [];
-    this.naturals  = [];
 
-    this.relationPolygons = [];
-  };
   remove(point){
     const removePoint = utils.getNearestPoint(point, this.points, this.sizeRemove)
    
@@ -419,6 +411,17 @@ export class Osm  {
   };
   __remove(arrey, point){
     return arrey.filter(polygon => polygon && polygon.distanceToPoint(point) > this.sizeRemove);
+  };
+
+
+  dispose(){
+    this.points    = [];
+    this.roads     = [];
+    this.buildings = [];
+    this.areals    = [];
+    this.naturals  = [];
+
+    this.relationPolygons = [];
   };
 }
 
