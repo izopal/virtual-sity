@@ -58,7 +58,7 @@ export class Segment{
             },
         } = options;
        
-        this.size = this.tools.point ? size : this.size;
+        this.size = size || this.size;
         this.size = dash.size ? dash.size : this.size
         
         ctx.save();

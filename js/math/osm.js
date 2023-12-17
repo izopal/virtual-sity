@@ -4,10 +4,11 @@ import { Segment }      from '../primitives/segment.js';
 import { Polygon }      from '../primitives/polygon.js';
 import { Building }     from '../items/building.js';
 import { Road }         from '../items/road.js';
+import { Envelope }     from '../primitives/envelope.js';
 
 export class Osm  {
-  constructor(config, cityCoordinates, osmData, graph){
-    console.log(osmData);
+  constructor(config, cityCoordinates, graph){
+    
     this.config  = config;
     this.canvas       = this.config.canvas;
     // this.renderRadius = this.config.renderRadius;
@@ -15,21 +16,27 @@ export class Osm  {
 
     this.ctx = this.canvas.getContext('2d');
     this.cityCoordinates = cityCoordinates;
-    this.osmData         = osmData;
+   
     this.graph           = graph;
 
+
+
+
+    this.crossing  = [];
+    this.bus_stop  = [];
+    this.traffic_signals = []
+    
+    
+    
     this.points    = [];
+    this.markers   = [];
     this.roads     = [];
     this.buildings = [];
     this.areals    = [];
     this.naturals  = [];
-
     this.relationPolygons = [];
  
-    this.waterways = [];
 
-    this.nodes = this.osmData.elements.filter((n) => n.type === 'node');
-  
     this.sizeRemove   = 30;
 
 
@@ -43,16 +50,8 @@ export class Osm  {
     this.monitor = new Polygon(bbox);
     console.log(this.monitor)
 
-
-
     this.initializeCanvas();
-    this.initializeMapData();
-    
-
-   
-
   };
-
   initializeCanvas(){
     const { width, height } = this.canvas;
     this.canvasCentre = { 
@@ -61,54 +60,66 @@ export class Osm  {
     };
   };
 
-  initializeMapData(){
-    this.calculateMapDimensions();
-    this.calculateMapOffset();
+ 
+  parse(osmData){
+    const parse = {
+        nodes:          [],
+        roadsPolygons:  [],
+        wayPolygons:    [],
+        relations:      [],
+        wayNotTags:     [],
+    }
+    const result = this.parseDataElement(osmData, parse);
+    
+    this._parsePoint(result);
+    this._parseSegments(result);
+    this._parsePolygons(result);
   };
-  calculateMapDimensions() {
-    const lons = this.nodes.map((n) => n.lon);
-    const lats = this.nodes.map((n) => n.lat);
-
-    this.minLon = Math.min(...lons);
-    this.maxLon = Math.max(...lons);
-    this.minLat = Math.min(...lats);
-    this.maxLat = Math.max(...lats);
-
-    const deltaLon = this.maxLon - this.minLon;
-    const deltaLat = this.maxLat - this.minLat;
-    const ar = deltaLon / deltaLat;
-
-    this.height = deltaLat * 111000 ;
-    this.width = this.height * ar * Math.cos(this.maxLat * Math.PI / 180);
-  };
-  calculateMapOffset() {
-    this.coordinatesCenter = {
-      x: utils.invLerp(this.minLon, this.maxLon, this.cityCoordinates.lon) * this.width,
-      y: utils.invLerp(this.maxLat, this.minLat, this.cityCoordinates.lat) * this.height,
+  parseDataElement(osmData, data){
+    for(const e of osmData.elements){
+      switch(true){
+        case (e.type === 'node' ):
+          data.nodes.push(e)
+          break;
+        case (e.type === 'way' && e.tags && 'highway' in e.tags):
+          data.roadsPolygons.push(e)
+          break;
+        case (e.type === 'way'  && e.tags && !('highway' in e.tags)):
+          data.wayPolygons.push(e)
+          break;
+        case (e.type === 'way'  && !e.tags ):
+          data.wayNotTags.push(e)
+          break;
+        case (e.type === 'relation' ):
+          data.relations.push(e)
+          break;
+      }
     };
-
-    this.offset = utils.operate(this.coordinatesCenter, '-', this.canvasCentre);
-  };
-
-  parse(){
-    this._parsePoint();
-    this._parseSegments();
-    this._parsePolygons();
-  };
-  _parsePoint(){
-    for(const node of this.nodes){
+    return data
+  }
+  _parsePoint(result){
+    this.__initializeMapData(result);
+    for(const node of result.nodes){
       const coordinates = {
           x: utils.invLerp(this.minLon, this.maxLon, node.lon) * this.width - this.offset.x,
           y: utils.invLerp(this.maxLat, this.minLat, node.lat) * this.height - this.offset.y,
       };
       const point = new Point(coordinates);
       point.id     = node.id;
+      if(node.tags) {
+        point.tags   = node.tags
+        this.markers.push(point);
+      };
       this.points.push(point);
     };
   };
-  _parseSegments(){
-    const roads = this.osmData.elements.filter(m => m.tags && 'highway' in m.tags);
-    for(const road of roads){
+  __initializeMapData(result){
+    this.#calculateMapDimensions(result);
+    this.#calculateMapOffset();
+  };
+  
+  _parseSegments(result){
+    for(const road of result.roadsPolygons){
       const ids = road.nodes;
       for(let i = 1; i < ids.length; ++i){
           const perw = this.points.find(p => p.id == ids[i - 1]);
@@ -119,26 +130,43 @@ export class Osm  {
       };
     };
   };
-  _parsePolygons() {
-    const wayPolygons      = this.osmData.elements.filter(w => w.type === 'way');
-    const relationPolygons = this.osmData.elements.filter(r => r.type === 'relation');
+  _parsePolygons(result) {
+    this.__parseBuildings(result.wayPolygons);
+    this.__parseAreal(result.wayPolygons);
+    this.__parseNatural(result.wayPolygons);
   
-    this.#parseBuildings(wayPolygons);
-    this.#parseAreal(wayPolygons);
-    this.#parseNatural(wayPolygons);
-    
-    this._parsePolygon_relation(relationPolygons);
+    this.__parsePolygon_relation(result);
   };
-  #parseBuildings(osmData){
-    this._parsePolygon_way(osmData, this.buildings, 'building');
+  __parseBuildings(osmData){
+    this.#parsePolygon_way(osmData, this.buildings, 'building');
   };
-  #parseAreal(osmData){
-    this._parsePolygon_way(osmData, this.areals, 'landuse');
+  __parseAreal(osmData){
+    this.#parsePolygon_way(osmData, this.areals, 'landuse');
   };
-  #parseNatural(osmData){
-    this._parsePolygon_way(osmData, this.naturals, 'leisure', 'natural');
+  __parseNatural(osmData){
+    this.#parsePolygon_way(osmData, this.naturals, 'leisure', 'natural');
   };
-  _parsePolygon_way(data, arrey, name_1, name_2){
+  __parsePolygon_relation(result) {
+    for (const relationData of result.relations) {
+        const members = relationData.members;
+        const ways    = [];
+       
+        for (const member of members) {
+          const wayData = result.wayNotTags.find((m) => m.id === member.ref);
+          console.log(wayData)
+          ways.push(wayData.nodes)
+        };
+
+        const sortedPoints = this.#getSortedPoints(ways);
+        const sceleton = sortedPoints.map((id) => this.points.find((p) => p.id === id));
+        
+        const polygon = new Polygon(sceleton);
+        polygon.tags = { ...relationData.tags };
+        this.relationPolygons.push(polygon);
+    }
+  };
+
+  #parsePolygon_way(data, arrey, name_1, name_2){
     const buildings = data.filter(m => m.tags && (`${name_1}` in m.tags || `${name_2}` in m.tags));
     for(const building of buildings ){
         const ids = building.nodes;
@@ -151,24 +179,6 @@ export class Osm  {
         polygon.tags  = {...building.tags};
         arrey.push(polygon);
       };
-  };
-  _parsePolygon_relation(relationPolygons) {
-    for (const relationData of relationPolygons) {
-        const members = relationData.members;
-        const ways    = [];
-       
-        for (const member of members) {
-          const wayData = this.osmData.elements.find((m) => m.type === 'way' && m.id === member.ref);
-          ways.push(wayData.nodes)
-        };
-
-        const sortedPoints = this.#getSortedPoints(ways);
-        const sceleton = sortedPoints.map((id) => this.points.find((p) => p.id === id));
-        
-        const polygon = new Polygon(sceleton);
-        polygon.tags = { ...relationData.tags };
-        this.relationPolygons.push(polygon);
-    }
   };
   #getSortedPoints(ways){
     const sort = [ways[0]];
@@ -190,16 +200,153 @@ export class Osm  {
     };
     return  sort.flat();
   };
+  #calculateMapDimensions(result) {
+    const lons = result.nodes.map((n) => n.lon);
+    const lats = result.nodes.map((n) => n.lat);
 
-  _filterPolygons(A, viewPoint, zoom){
+    this.minLon = Math.min(...lons);
+    this.maxLon = Math.max(...lons);
+    this.minLat = Math.min(...lats);
+    this.maxLat = Math.max(...lats);
+
+    const deltaLon = this.maxLon - this.minLon;
+    const deltaLat = this.maxLat - this.minLat;
+    const ar = deltaLon / deltaLat;
+
+    this.height = deltaLat * 111000 ;
+    this.width = this.height * ar * Math.cos(this.maxLat * Math.PI / 180);
+  };
+  #calculateMapOffset() {
+    this.coordinatesCenter = {
+      x: utils.invLerp(this.minLon, this.maxLon, this.cityCoordinates.lon) * this.width,
+      y: utils.invLerp(this.maxLat, this.minLat, this.cityCoordinates.lat) * this.height,
+    };
+    this.offset = utils.operate(this.coordinatesCenter, '-', this.canvasCentre);
+  };
+
+  draw(ctx, viewPoint, zoom){
+    this._drawRoads(ctx, viewPoint, zoom);
+    // this._drawMarker(ctx, viewPoint, zoom);
+    this._drawBuildings(ctx, viewPoint, zoom);
+    this._drawPolygons(ctx, viewPoint, zoom);
+  };
+  _drawBuildings(ctx, viewPoint, zoom){
+    // малюємо будівлі в 3D графіці
+    const B = this.buildings.filter(polygon => 
+      polygon.distanceToPoint(viewPoint) < this.renderRadius * zoom)
+      .map(b => {
+      const Level = parseInt(b.tags["building:levels"]) || 1
+      return new Building(b, Level)
+    });
+   
+    B.sort((a, b) => b.base.distanceToPoint(viewPoint) - a.base.distanceToPoint(viewPoint))
+    
+    // малюємо будівлі в 2D графіці
+    // const B = this.buildings.filter(i => i.distanceToPoint(viewPoint) < this.renderRadius * zoom);
+    
+    for (const b of B) {
+      const options = this.#getBuilding(b.base);
+      b.draw(ctx, viewPoint, zoom, options);
+    };
+  };
+  _drawRoads(ctx, viewPoint, zoom){
+    const R = this.roads.filter(i => i.distanceToPoint(viewPoint) < this.renderRadius * zoom);
+   
+    const optionsRoads = {
+        lineWidth  : 3,
+        lineCap:   'round',
+        fill       : '',
+        color: 'yellow',
+        globalAlpha: .8,
+    };
+
+
+    const road = {key:           'road',
+            current:        5,
+            width:          10,
+            lineWidth:      2,
+            colorStroke:    'black',
+            lineCap:        'round',
+            fill:           '#BBB',
+            colorStroke:    '#BBB',
+            globalAlpha:    1,
+            border:         {size:         .5,
+                            lineCap:      'round',
+                            color:        'white',
+                            globalAlpha:  1},
+            dash:           {globalAlpha:  .8,
+                            dash:{
+                                    size:     .5,
+                                    length:   3,
+                                    interval: 2,
+                                    color:    'white',
+                            }},
+            point:          {radius:        5,
+                            color:        'white', 
+                            globalAlpha:   .3},
+        };
+
+
+
+    // const road = new Road(this.roads,  this.points,  'road')
+    // road.draw(ctx)
+    // console.log(road)
+    const layers  = R.map(segment => new Envelope(segment, road))       || [];
+    // const Border = layers.map(road => road.polygon)
+    // const borders = Polygon.union(Border)        || [];
+
+    for(const layer  of layers)   {
+      // console.log(layer)
+      layer.draw(ctx,  road)
+    };
+    for(const line   of R)             {line.draw(ctx,   road.dash)};
+    // for(const border of borders)  {border.draw(ctx, road.border)}; 
+    // for(const r of R) r.draw(ctx, optionsRoads);
+  };
+  _drawMarker(ctx, viewPoint, zoom){
+    for(const marker of this.markers){
+      if      (marker.tags.highway === 'traffic_signals' ) this.traffic_signals.push(marker);
+      else if (marker.tags.highway === 'crossing' )        this.crossing.push(marker);
+      else if (marker.tags.highway === 'bus_stop' )        this.bus_stop.push(marker);
+    };
+  }
+  _drawPolygons(ctx, viewPoint, zoom){
+    const options = { 
+      areal: {
+        lineWidth  : 3,
+        fill       : 'red',
+        colorStroke: 'red',
+        globalAlpha: .4,
+      },
+      natural: {
+        lineWidth  : 3,
+        fill       : '#328037',
+        colorStroke: '#2d592f',
+        globalAlpha: .3,
+      },
+    };
+      
+    const RP = this.#filterPolygons(this.relationPolygons, viewPoint, zoom)
+    const N  = this.#filterPolygons(this.naturals, viewPoint, zoom)
+    const A  = this.#filterPolygons(this.areals, viewPoint, zoom)
+
+    for(const n of N)  n.draw(ctx, options.natural);
+    for(const r of RP) r.draw(ctx, options.areal);
+    for(const a of A) {
+      const tags =  a.tags.landuse === 'industrial' ||
+                    a.tags.landuse === 'garages'    ||
+                    a.tags.landuse === 'commercial'
+      tags ? a.draw(ctx, options.areal) : a.draw(ctx, options.natural)
+    }
+  };
+  #filterPolygons(A, viewPoint, zoom){
     return A.map(polygon => {
       const sceleton = polygon.points.filter(point => 
         point.distanceToPoint(viewPoint) < this.renderRadius * zoom);
       return Object.assign(new Polygon(sceleton), { tags: { ...polygon.tags } });
     });
   }
-  
-  _getBuilding(b){
+  #getBuilding(b){
       const options = {
         ceiling: {
           lineWidth: null,
@@ -318,74 +465,8 @@ export class Osm  {
       return options;
   };
 
-  draw(ctx, viewPoint, zoom){
-    this._drawRoads(ctx, viewPoint, zoom);
-    this._drawBuildings(ctx, viewPoint, zoom);
-    this._drawPolygons(ctx, viewPoint, zoom);
-  };
-  _drawBuildings(ctx, viewPoint, zoom){
-    // малюємо будівлі в 3D графіці
-    const B = this.buildings.filter(polygon => 
-      polygon.distanceToPoint(viewPoint) < this.renderRadius * zoom)
-      .map(b => {
-      const Level = parseInt(b.tags["building:levels"]) || 1
-      return new Building(b, Level)
-    });
-   
-    B.sort((a, b) => b.base.distanceToPoint(viewPoint) - a.base.distanceToPoint(viewPoint))
-    
-    // малюємо будівлі в 2D графіці
-    // const B = this.buildings.filter(i => i.distanceToPoint(viewPoint) < this.renderRadius * zoom);
-    
-    for (const b of B) {
-      const options = this._getBuilding(b.base);
-      b.draw(ctx, viewPoint, zoom, options);
-    };
-  };
-  _drawRoads(ctx, viewPoint, zoom){
-    const R = this.roads.filter(i => i.distanceToPoint(viewPoint) < this.renderRadius * zoom);
-   
-    const optionsRoads = {
-        lineWidth  : 3,
-        lineCap:   'round',
-        fill       : '',
-        color: 'yellow',
-        globalAlpha: .8,
-    };
-    // const road = new Road(this.roads,  this.points,  'road')
-    // road.draw(ctx)
-    // console.log(road)
-    for(const r of R) r.draw(ctx, optionsRoads);
-  };
-  _drawPolygons(ctx, viewPoint, zoom){
-    const options = { 
-      areal: {
-        lineWidth  : 3,
-        fill       : 'red',
-        colorStroke: 'red',
-        globalAlpha: .4,
-      },
-      natural: {
-        lineWidth  : 3,
-        fill       : '#328037',
-        colorStroke: '#2d592f',
-        globalAlpha: .3,
-      },
-    };
-      
-    const RP = this._filterPolygons(this.relationPolygons, viewPoint, zoom)
-    const N  = this._filterPolygons(this.naturals, viewPoint, zoom)
-    const A  = this._filterPolygons(this.areals, viewPoint, zoom)
 
-    for(const n of N)  n.draw(ctx, options.natural);
-    for(const r of RP) r.draw(ctx, options.areal);
-    for(const a of A) {
-      const tags =  a.tags.landuse === 'industrial' ||
-                    a.tags.landuse === 'garages'    ||
-                    a.tags.landuse === 'commercial'
-      tags ? a.draw(ctx, options.areal) : a.draw(ctx, options.natural)
-    }
-  };
+
 
 
   remove(point){
@@ -415,12 +496,17 @@ export class Osm  {
 
 
   dispose(){
+    this.crossing  = [];
+    this.bus_stop  = [];
+    this.traffic_signals = []
+    
+    
+    
     this.points    = [];
     this.roads     = [];
     this.buildings = [];
     this.areals    = [];
     this.naturals  = [];
-
     this.relationPolygons = [];
   };
 }

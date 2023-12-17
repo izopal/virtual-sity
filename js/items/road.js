@@ -24,8 +24,8 @@ export class Road {
     
     draw(ctx){
         for(const layer  of this.layers)   {layer.draw(ctx,  this.config)};
-        for(const line   of this.lines)    {line.draw(ctx,   this.config.dash)};
         for(const border of this.borders)  {border.draw(ctx, this.config.border)}; 
+        for(const line   of this.lines)    {line.draw(ctx,   this.config.dash)};
         for(const marker of this.markers ) {marker.draw(ctx, this.config.point)};
     }
 }

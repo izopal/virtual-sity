@@ -24,6 +24,34 @@ const options = {
         autoPanOnFocus: true,
 };     
 
+// Запит для отримання всіх доріг
+const roadsQuery = ` 
+  way['highway']
+    ['highway'!~'pedestrian|footway|steps|platform|cycleway|path|track']
+    ['surface'!~'gravel|ground'];
+`;
+
+// Запит для отримання всіх будівель
+const buildingsQuery = `
+  way['building'];
+`;
+// Запит для отримання всіх промислових індустріальних гаражних зон
+const industrialAreeasQuery = `
+    way['landuse'~'industrial|garages|commercial'];
+    relation['landuse'~'industrial|garages|commercial'];
+`
+// Запит для отримання всіх зелених зон
+const greenAreasQuery = ` 
+    way['landuse'~'forest|wood|grass|meadow|flowerbed|vineyard|recreation_ground'];
+    way['leisure'~'park|garden|grassland'];
+    way['natural'~'wood|tree_row|scrub|heath|fell'];
+`;
+
+// Запит для отримання всіх дорожніх знаків, перехресть та зупинок
+const trafficQuery = `
+    node['highway'~'traffic_signals|crossing|bus_stop'];
+`;
+
 export class MapHandler {
     constructor() {
         this.options = options;
@@ -130,24 +158,15 @@ export class MapHandler {
                     [out:json]
                     [timeout:90];
                     (
-                    
-                    way['highway']
-                        ['highway'!~'pedestrian|footway|steps|platform|cycleway|path|track']
-                        ['surface' !~'gravel|ground'];
-
-                    way['building'];
-                    way['landuse'~'industrial|garages|commercial'];
-                    relation['landuse'~'industrial|garages|commercial'];
-
-                    way['landuse'~'forest|wood|grass|meadow|flowerbed|vineyard|recreation_ground'];
-                    way['leisure'~'park|garden|grassland'];
-                    way['natural'~'wood|tree_row|scrub|heath|fell'];
-
+                        ${roadsQuery.trim().replace('"', "'")}
+                        ${buildingsQuery.trim().replace('"', "'")}
+                        ${industrialAreeasQuery.trim().replace('"', "'")}
+                        ${greenAreasQuery.trim().replace('"', "'")}
+                        ${trafficQuery.trim().replace('"', "'")}
                     );
                     out body;
                     >;
                     out skel;`;
-       
         const url = "https://overpass-api.de/api/interpreter";
         try {
             const response = await fetch(url, { method: 'POST', body: q });

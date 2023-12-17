@@ -195,8 +195,8 @@ export class App{
         const cityCoordinates = this.mapHandler.coordinates;
         const dataOsm         = this.mapHandler.dataOsm;
         if(dataOsm){
-            this.osm = new Osm(this.config, cityCoordinates, dataOsm, this.graph, this.vieport.zoom)
-            this.osm.parse()
+            this.osm = new Osm(this.config, cityCoordinates, this.graph, this.vieport.zoom)
+            this.osm.parse(dataOsm)
         };
         
         this.#closeOsmPanel();

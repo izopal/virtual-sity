@@ -1,12 +1,8 @@
 import * as utils  from '../math/utils.js';
-import { data }    from '../constants.js';
 import {Polygon}   from './polygon.js';
 
 export class Envelope{
     constructor(skeleton = {p1: 0, p2: 0}, dataConfig){
-        
-        this.envelopData = data.primitives.envelope || {};
-        
         this.skeleton    = skeleton;
 
         this.dataConfig  = dataConfig;
