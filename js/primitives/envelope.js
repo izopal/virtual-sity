@@ -2,11 +2,11 @@ import * as utils  from '../math/utils.js';
 import {Polygon}   from './polygon.js';
 
 export class Envelope{
-    constructor(skeleton = {p1: 0, p2: 0}, dataConfig){
+    constructor(skeleton = {p1: 0, p2: 0}, dataConfig, {roadLevels = 1} = {}){
         this.skeleton    = skeleton;
-
+       
         this.dataConfig  = dataConfig;
-        this.width       = utils.getValidValue(this.dataConfig.width, 0);
+        this.width       = utils.getValidValue(this.dataConfig.width, 0) * roadLevels;
         this.current     = utils.getValidValue(Math.floor(this.dataConfig.current), 1) || 1;
       
         this.points =  [];

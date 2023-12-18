@@ -30,7 +30,7 @@ import { Parking }          from '../markings/parking.js';
 
 const configRoad = {key:           'road',
           current:        5,
-          width:          10,
+          width:          2.5,
           lineWidth:      0,
           colorStroke:    'black',
           lineCap:        'round',
@@ -196,21 +196,23 @@ export class Osm  {
           const next = this.points.find(p => p.id == ids[i]);
           const segment = new Segment (perw, next);
           segment.tags  = {...road.tags};
+          
+          this.roadWidth = road.tags.lanes ? 
+            configRoad.width * parseInt(road.tags.lanes, 10) : 
+            configRoad.width;
           this.roads.push(segment)
       };
     };
     this._parseMarkers()
   };
   _parseMarkers() {
-    const width = configRoad.width;
     for (const marker of this.markers) {
         const parameters = {
-            segments: this.roads,
-            point: marker,
-            distance: this.distance,
-            roadwidth: width,
+            segments:   this.roads,
+            point:      marker,
+            distance:   this.distance,
+            roadwidth:  this.roadWidth,
         };
-
         switch (marker.tags.highway) {
             case 'traffic_signals':
                 this.traffic_signals.push(marker);
@@ -225,7 +227,7 @@ export class Osm  {
                 break;
         }
     }
-    console.log(this.bus_stop);
+    // console.log(this.crossing);
   };
   _parsePolygons(result) {
     this.__parseBuildings(result.wayPolygons);
@@ -348,14 +350,53 @@ export class Osm  {
   _drawRoads(ctx, viewPoint, zoom){
     const R = this.roads.filter(i => i.distanceToPoint(viewPoint) < this.renderRadius * zoom);
    
-
     // параметри 3D
-    const layers  = R.map(segment => new Envelope(segment, this.configRoad))       || [];
+    const layers  = R.map((segment) => { 
+      const levels = this.getRoadLevels(segment);
+      segment.tags.roadLevels = levels;
+      return new Envelope(segment, this.configRoad,  { roadLevels:  levels})
+    });
+
     for(const layer  of layers) layer.draw(ctx,  this.configRoad);
-    for(const line   of R)      line.draw(ctx,   this.configRoad.dash);
+    for(const line   of R){
+       if(line.tags.roadLevels > 1) line.draw(ctx,   this.configRoad.dash)
+    };
+   
    
     // параметри 2D
     // for(const r of R) r.draw(ctx, optionsRoads);
+  };
+  getRoadLevels(segment){
+    let levels = null;
+
+    switch (true) {
+        case (
+          segment.tags.highway === 'residential' && 
+          !segment.tags.lanes                    &&
+          !segment.tags.oneway
+        ):  
+            levels = 2; 
+            break;
+        case (
+          segment.tags.highway === 'primary'  
+        ):  
+            levels = 4; 
+            break;
+        case (
+          segment.tags.oneway  === 'yes' &&
+          !segment.tags.lanes
+        ):  
+            levels = 1; 
+            break;
+        case (
+          'lanes' in segment.tags 
+          ):  
+            levels = parseInt(segment.tags.lanes, 10); 
+            break;
+        default: levels = 1;
+            break;
+    };
+    return levels
   };
   _drawMarker(ctx, viewPoint, zoom){
     
