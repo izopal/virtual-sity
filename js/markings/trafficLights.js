@@ -51,7 +51,7 @@ export class TrafficLights extends Markings{
 
         
     };
-   drawDebug(ctx){
-        super.drawDebug(ctx)
+   drawDebug(ctx, debug){
+        super.drawDebug(ctx, debug)
    }
 }

@@ -1,10 +1,9 @@
-import {data}      from '../constants.js';
 import { Envelope } from '../primitives/envelope.js';
 import { Polygon }  from '../primitives/polygon.js';
 
 export class Road {
-    constructor(segments = {}, points = {}, tool) {
-        this.config = data.world.road
+    constructor(segments = {}, points = {}, config, tool) {
+        this.config   = config;
 
         this.points   = points;
         this.segments = segments;

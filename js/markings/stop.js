@@ -18,7 +18,7 @@ export class Stop extends Markings{
         super.drawText(ctx, options); 
         
    };
-   drawDebug(ctx){
-        super.drawDebug(ctx)
+   drawDebug(ctx, debug){
+        super.drawDebug(ctx, debug)
    }
 }

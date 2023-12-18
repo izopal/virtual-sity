@@ -8,10 +8,20 @@ import { Start }            from '../markings/start.js';
 import { TrafficLights }    from '../markings/trafficLights.js';
 import { Parking }          from '../markings/parking.js';
 
+
+
+const toolIntents = {
+    stop: Stop,
+    start: Start,
+    parking: Parking,
+    pedestrian: Pedestrian,
+    trafficLights: TrafficLights,
+};
+
 export class MarkingEditor extends Editor {
     constructor(myApp){
         super(myApp, 'marking');
-        
+        this.config = this.data.markings;
         this.intent = null;
     
     };
@@ -44,7 +54,7 @@ export class MarkingEditor extends Editor {
     };
 
     #inputMouseDown(e){
-        
+        console.log(this.data)
         this.graph.markings.push(this.intent);
         this.intent = null;
 
@@ -63,39 +73,61 @@ export class MarkingEditor extends Editor {
 
     #inputMouseMove(e) {
         super.inputMouseMove(e);
-        if (this.tools.stop)          this.getIntent(this.world.laneGuides,     Stop);
-        if (this.tools.start)         this.getIntent(this.world.laneGuides,     Start);
-        if (this.tools.parking)       this.getIntent(this.world.laneGuides,     Parking);
-        if (this.tools.pedestrian)    this.getIntent(this.graph.segments,       Pedestrian);
-        if (this.tools.trafficLights) this.getIntent(this.world.laneGuides,     TrafficLights);
+        this.toolsHandler();
     };
+    toolsHandler(){
+        const width = this.data.world.road.width;
+       
+        for (const [tool, Class] of Object.entries(toolIntents)) {
+            if (this.tools[tool]) {
+                const parameters = {
+                    segments:  tool === 'pedestrian' ? this.graph.segments : this.world.laneGuides, 
+                    point:     this.point, 
+                    distance:  this.minDicnance, 
+                    roadwidth: width,  
+                };
+                
+                this.intent = this.getIntent(Class, parameters);
+            }
+        }
+    }
 
-    getIntent (segments, Class) {
+    getIntent (Class, parameters) {
+        const {
+            segments    = [],
+            point       = {}, 
+            distance    = null, 
+            roadwidth   = null,  
+          } = parameters
+
         const segment = utils.getNearestSegment(
-            this.point,
+            point,
             segments,
-            this.minDicnance = this.sizeRemove
+            distance,
         );
-
+        let intent = null;
         if (segment) {
-            const projectPoint = segment.projectPoint(this.point);
-            if (projectPoint.offset > 0 && projectPoint.offset < 1) {
+            const projectPoint = segment.projectPoint(point);
+            // console.log(projectPoint)
+            if (projectPoint.offset >= 0 && projectPoint.offset <= 1) {
 
                 const parameters = {
                     point:           projectPoint.point,
                     directionVector: segment.directionVector(),
-                    data:            this.data,
+                    width:           roadwidth,
                     key:             Class.name[0].toLowerCase() + Class.name.slice(1),
                 };
                 
-                this.intent = new Class(parameters);
+                 intent = new Class(parameters);
             } else {
-                this.intent = null;
+             intent = null;
+             console.log(projectPoint);
             }
         } else {
-            this.intent = null;
+         intent = null;
+        //  console.log(point);
         };
-        return this.intent
+        return intent
     };
     
     
@@ -103,9 +135,9 @@ export class MarkingEditor extends Editor {
         if(this.intent) this.intent.draw(ctx);
         for(const marking of this.graph.markings) if(marking) marking.draw(ctx);
     };
-    drawDebug(ctx){
-        if(this.intent) this.intent.drawDebug(ctx);
-        for(const marking of this.graph.markings) if(marking) marking.drawDebug(ctx);
+    drawDebug(ctx, debug){
+        if(this.intent) this.intent.drawDebug(ctx, debug);
+        for(const marking of this.graph.markings) if(marking) marking.drawDebug(ctx, debug);
     };
     
     dispose(){

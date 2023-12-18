@@ -16,7 +16,7 @@ export class World{
         this.renderRadius = this.config.renderRadius
       
         this.tools      = this.config.toolsMeneger.tools;
-        this.config     = this.data.world            || {};
+        this.config     = this.data.world           || {};
         this.segments   = this.graph.sortedSegments || {};
         this.points     = this.graph.sortedPoints   || {};
         
@@ -197,7 +197,7 @@ export class World{
     };
 
     drawRoad(ctx){
-        const road = new Road(this.segments,  this.points,  'road')
+        const road = new Road(this.segments,  this.points, this.configRoad, 'road')
         road.draw(ctx)
     };
     
@@ -210,7 +210,7 @@ export class World{
     
     drawCity(ctx, viewPoint, zoom){
    
-        this.road          = new Road(this.segments,  this.points,  'city');
+        this.road          = new Road(this.segments,  this.points, this.configRoad, 'city');
         this.road.draw(ctx);
         
         const items = [...this.buildingsCity, ...this.treesCity].filter((i) => {
@@ -222,10 +222,10 @@ export class World{
     };
     
 
-    drawDebug(ctx){
-        for(const segment of this.laneGuides) segment.draw(ctx, this.data.debug);
-        for(const tree of this.trees) tree.drawDebug(ctx, this.data.debug);
-        for(const tree of this.treesCity) tree.drawDebug(ctx, this.data.debug);
+    drawDebug(ctx, debug){
+        for(const segment of this.laneGuides) segment.draw(ctx, debug);
+        for(const tree of this.trees) tree.drawDebug(ctx, debug);
+        for(const tree of this.treesCity) tree.drawDebug(ctx, debug);
     };
 
     remove(point){

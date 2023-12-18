@@ -195,7 +195,7 @@ export class App{
         const cityCoordinates = this.mapHandler.coordinates;
         const dataOsm         = this.mapHandler.dataOsm;
         if(dataOsm){
-            this.osm = new Osm(this.config, cityCoordinates, this.graph, this.vieport.zoom)
+            this.osm = new Osm(this.config, cityCoordinates, this.graph, this.markingEditor)
             this.osm.parse(dataOsm)
         };
         
@@ -338,10 +338,10 @@ export class App{
         this.graphEditor.draw(ctx, viewPoint);
         this.markingEditor.draw(ctx, viewPoint);
     };
-    drawDebug(ctx){
-        this.world.drawDebug(ctx);
-        this.graphEditor.drawDebug(ctx)
-        this.markingEditor.drawDebug(ctx)
+    drawDebug(ctx, debug){
+        this.world.drawDebug(ctx, debug);
+        this.graphEditor.drawDebug(ctx, debug)
+        this.markingEditor.drawDebug(ctx, debug)
     };
     dispose(){
         this.vieport.dispose();

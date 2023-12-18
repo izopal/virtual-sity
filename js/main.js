@@ -83,7 +83,7 @@ function animate(){
       vieport.draw(ctx);
       myApp.draw(ctx, viewPoint, vieport.zoom);
 
-      if(data.debug.state) myApp.drawDebug(ctx);
+      if(data.debug.state) myApp.drawDebug(ctx, data.debug);
 
       requestAnimationFrame(animate);
 };

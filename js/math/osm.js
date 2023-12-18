@@ -6,19 +6,89 @@ import { Building }     from '../items/building.js';
 import { Road }         from '../items/road.js';
 import { Envelope }     from '../primitives/envelope.js';
 
-export class Osm  {
-  constructor(config, cityCoordinates, graph){
-    
-    this.config  = config;
-    this.canvas       = this.config.canvas;
-    // this.renderRadius = this.config.renderRadius;
-    this.renderRadius = 300;
 
-    this.ctx = this.canvas.getContext('2d');
+import { Stop }             from '../markings/stop.js';
+import { Pedestrian }       from '../markings/pedestrian.js';
+import { Start }            from '../markings/start.js';
+import { TrafficLights }    from '../markings/trafficLights.js';
+import { Parking }          from '../markings/parking.js';
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+const configRoad = {key:           'road',
+          current:        5,
+          width:          10,
+          lineWidth:      0,
+          colorStroke:    'black',
+          lineCap:        'round',
+          fill:           '#BBB',
+          colorStroke:    '#BBB',
+          globalAlpha:    1,
+          border:         {size:         .5,
+                          lineCap:      'round',
+                          color:        'white',
+                          globalAlpha:  1},
+          dash:           {globalAlpha:  .8,
+                          dash:{
+                                  size:     .5,
+                                  length:   3,
+                                  interval: 2,
+                                  color:    'white',
+                          }}, 
+          point:          {radius:        5,
+                          color:        'white', 
+                          globalAlpha:   .3},
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+export class Osm  {
+  constructor(config, cityCoordinates, graph, markingEditor){
+    
+    this.config       = config;
+    this.canvas       = this.config.canvas;
+    this.renderRadius = this.config.renderRadius * .6;
+    
+
+    this.configRoad   = configRoad;
+    
     this.cityCoordinates = cityCoordinates;
    
     this.graph           = graph;
+    this.markingEditor   = markingEditor;
+    this.data             = markingEditor.data;
 
+
+    this.distance = .0005
 
 
 
@@ -129,6 +199,33 @@ export class Osm  {
           this.roads.push(segment)
       };
     };
+    this._parseMarkers()
+  };
+  _parseMarkers() {
+    const width = configRoad.width;
+    for (const marker of this.markers) {
+        const parameters = {
+            segments: this.roads,
+            point: marker,
+            distance: this.distance,
+            roadwidth: width,
+        };
+
+        switch (marker.tags.highway) {
+            case 'traffic_signals':
+                this.traffic_signals.push(marker);
+                break;
+            case 'crossing':
+                const crossingIntent = this.markingEditor.getIntent(Pedestrian, parameters);
+                this.crossing.push(crossingIntent);
+                break;
+            case 'bus_stop':
+                const busStopIntent = this.markingEditor.getIntent(Stop, parameters);
+                this.bus_stop.push(busStopIntent);
+                break;
+        }
+    }
+    console.log(this.bus_stop);
   };
   _parsePolygons(result) {
     this.__parseBuildings(result.wayPolygons);
@@ -153,7 +250,6 @@ export class Osm  {
        
         for (const member of members) {
           const wayData = result.wayNotTags.find((m) => m.id === member.ref);
-          console.log(wayData)
           ways.push(wayData.nodes)
         };
 
@@ -226,7 +322,7 @@ export class Osm  {
 
   draw(ctx, viewPoint, zoom){
     this._drawRoads(ctx, viewPoint, zoom);
-    // this._drawMarker(ctx, viewPoint, zoom);
+    this._drawMarker(ctx, viewPoint, zoom);
     this._drawBuildings(ctx, viewPoint, zoom);
     this._drawPolygons(ctx, viewPoint, zoom);
   };
@@ -252,63 +348,23 @@ export class Osm  {
   _drawRoads(ctx, viewPoint, zoom){
     const R = this.roads.filter(i => i.distanceToPoint(viewPoint) < this.renderRadius * zoom);
    
-    const optionsRoads = {
-        lineWidth  : 3,
-        lineCap:   'round',
-        fill       : '',
-        color: 'yellow',
-        globalAlpha: .8,
-    };
 
-
-    const road = {key:           'road',
-            current:        5,
-            width:          10,
-            lineWidth:      2,
-            colorStroke:    'black',
-            lineCap:        'round',
-            fill:           '#BBB',
-            colorStroke:    '#BBB',
-            globalAlpha:    1,
-            border:         {size:         .5,
-                            lineCap:      'round',
-                            color:        'white',
-                            globalAlpha:  1},
-            dash:           {globalAlpha:  .8,
-                            dash:{
-                                    size:     .5,
-                                    length:   3,
-                                    interval: 2,
-                                    color:    'white',
-                            }},
-            point:          {radius:        5,
-                            color:        'white', 
-                            globalAlpha:   .3},
-        };
-
-
-
-    // const road = new Road(this.roads,  this.points,  'road')
-    // road.draw(ctx)
-    // console.log(road)
-    const layers  = R.map(segment => new Envelope(segment, road))       || [];
-    // const Border = layers.map(road => road.polygon)
-    // const borders = Polygon.union(Border)        || [];
-
-    for(const layer  of layers)   {
-      // console.log(layer)
-      layer.draw(ctx,  road)
-    };
-    for(const line   of R)             {line.draw(ctx,   road.dash)};
-    // for(const border of borders)  {border.draw(ctx, road.border)}; 
+    // параметри 3D
+    const layers  = R.map(segment => new Envelope(segment, this.configRoad))       || [];
+    for(const layer  of layers) layer.draw(ctx,  this.configRoad);
+    for(const line   of R)      line.draw(ctx,   this.configRoad.dash);
+   
+    // параметри 2D
     // for(const r of R) r.draw(ctx, optionsRoads);
   };
   _drawMarker(ctx, viewPoint, zoom){
-    for(const marker of this.markers){
-      if      (marker.tags.highway === 'traffic_signals' ) this.traffic_signals.push(marker);
-      else if (marker.tags.highway === 'crossing' )        this.crossing.push(marker);
-      else if (marker.tags.highway === 'bus_stop' )        this.bus_stop.push(marker);
+    
+    for(const marker of this.crossing){
+     if(marker) marker.draw(ctx)
     };
+    // for(const marker of this.bus_stop){
+    //  if(marker) marker.draw(ctx)
+    // };
   }
   _drawPolygons(ctx, viewPoint, zoom){
     const options = { 

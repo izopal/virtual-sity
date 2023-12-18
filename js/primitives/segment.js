@@ -34,7 +34,7 @@ export class Segment{
         const a      = utils.operate  (point,   '-',    this.p1);
         const b      = utils.operate  (this.p2, '-',    this.p1);
         const normB  = utils.normalize(b);
-        const scaler = utils.operate  (a,       '+dot', normB);
+        const scaler = Math.abs(utils.operate  (a,       '+dot', normB));
         const p2     = utils.operate  (normB,    '*',   scaler);
         const proj = {
             point:  utils.operate(this.p1, '+', p2),
@@ -64,10 +64,13 @@ export class Segment{
         ctx.save();
             ctx.globalAlpha = globalAlpha  ;
             ctx.beginPath();
-                    ctx.lineWidth   =  lineWidth || this.size;
-                    ctx.lineCap     =  lineCap; 
-                    ctx.strokeStyle =  color || dash.color;
+                    ctx.lineWidth       =  lineWidth || this.size;
+                    ctx.lineCap         =  lineCap; 
+                    ctx.strokeStyle     =  color || dash.color;
+                    // параметри штрихпунтиру
+                    ctx.lineDashOffset  = dash.interval / 2;
                     ctx.setLineDash([dash.length, dash.interval]);
+
                     ctx.moveTo(this.p1.x, this.p1.y);
                     ctx.lineTo(this.p2.x, this.p2.y);
             ctx.stroke();

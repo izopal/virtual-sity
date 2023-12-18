@@ -1,18 +1,22 @@
 import * as utils       from '../math/utils.js';
-import { Segment } from "../primitives/segment.js";
+import { data }     from '../constants.js';
+import { Segment }  from "../primitives/segment.js";
 import { Envelope } from "../primitives/envelope.js";
 
 
 export class Markings{
-    constructor(parameters){
+    constructor(parameters = {}){
+        this.data            = data;
+        this.autoHeight      = data.markings.start.height;
+        
+        this.parameters      = parameters;
         this.center          = parameters.point;
         this.directionVector = parameters.directionVector;
-        
-        this.data            = parameters.data;
-        this.configDebug     = this.data.debug;
-        this.dataConfig      = this.data.markings[`${parameters.key}`];
-        this.autoHeight      = this.data.markings.start.height;
-        this.roadWidth       = this.data.world.road.width *.5;
+        this.roadWidth       = parameters.width *.5;
+        this.key             = parameters.key;
+        // console.log(this.data)
+
+        this.dataConfig      = this.data.markings[`${this.key }`];
         this.dh              = this.dataConfig.dh;
         this.dw              = this.dataConfig.dw;
         this.width           = this.roadWidth * this.dw;
@@ -22,7 +26,8 @@ export class Markings{
         this.perpedicular = utils.perpedicular(this.directionVector);
         
         this.line   = this.updateLine();
-        this.polygon = new Envelope(this.line, {width: this.dataConfig.lineWidth}).polygon;
+        this.polygon = new Envelope(this.line, {width: this.width}).polygon;
+        // this.polygon = {}
         
     };
 
@@ -74,8 +79,7 @@ export class Markings{
         ctx.restore();
     };
 
-    drawDebug(ctx){
-       
-        if(this.polygon) this.polygon.draw(ctx, this.configDebug);
+    drawDebug(ctx, debug){
+        if(this.polygon) this.polygon.draw(ctx, debug);
     }
 }

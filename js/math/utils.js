@@ -73,14 +73,24 @@ export  function getMouseEventFromTouchEvent(e) {
 
 // 
 export function operate(p1, operator, p2) {
-  return operator === '+' ? { x: p1.x + p2.x, y: p1.y + p2.y } :
-         operator === '-' ? { x: p1.x - p2.x, y: p1.y - p2.y } :
-         operator === '*' ? { x: p1.x * p2, y: p1.y * p2 } :
-         operator === 'average' ? { x: (p1.x + p2.x) * 0.5, y: (p1.y + p2.y) * 0.5 } :
-         operator === '+dot' ? p1.x * p2.x + p1.y * p2.y :
-         operator === '-dot' ? p1.x * p2.x - p1.y * p2.y :
-         null; // Додайте власні обробники для інших випадків або повертайте null як значення за замовчуванням
-};
+  switch (operator) {
+      case '+':
+          return { x: p1.x + p2.x, y: p1.y + p2.y };
+      case '-':
+          return { x: p1.x - p2.x, y: p1.y - p2.y };
+      case '*':
+          return { x: p1.x * p2, y: p1.y * p2 };
+      case 'average':
+          return { x: (p1.x + p2.x) * 0.5, y: (p1.y + p2.y) * 0.5 };
+      case '+dot':
+          return p1.x * p2.x + p1.y * p2.y;
+      case '-dot':
+          return p1.x * p2.x - p1.y * p2.y;
+      default:
+          return null; // Додайте власні обробники для інших випадків або повертайте null як значення за замовчуванням
+  }
+}
+
 export function getPoint(coordinatesPoint){
   return new Point(coordinatesPoint)
 }

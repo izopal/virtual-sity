@@ -30,7 +30,7 @@ export class Start extends Markings{
                 this.height);
         ctx.restore();
    };
-   drawDebug(ctx){
-        super.drawDebug(ctx)
+   drawDebug(ctx, debug){
+        super.drawDebug(ctx, debug)
    }
 }
