@@ -88,7 +88,7 @@ export class Osm  {
     this.data             = markingEditor.data;
 
 
-    this.distance = .0005
+    
 
 
 
@@ -190,16 +190,16 @@ export class Osm  {
   
   _parseSegments(result){
     for(const road of result.roadsPolygons){
-      const ids = road.nodes;
+      const ids    = road.nodes;
+      let levels = null
       for(let i = 1; i < ids.length; ++i){
-          const perw = this.points.find(p => p.id == ids[i - 1]);
-          const next = this.points.find(p => p.id == ids[i]);
+          const perw    = this.points.find(p => p.id == ids[i - 1]);
+          const next    = this.points.find(p => p.id == ids[i]);
           const segment = new Segment (perw, next);
           segment.tags  = {...road.tags};
+          levels        = this.#getRoadLevels(segment);
+          segment.tags.roadLevels = levels;
           
-          this.roadWidth = road.tags.lanes ? 
-            configRoad.width * parseInt(road.tags.lanes, 10) : 
-            configRoad.width;
           this.roads.push(segment)
       };
     };
@@ -207,11 +207,12 @@ export class Osm  {
   };
   _parseMarkers() {
     for (const marker of this.markers) {
+        const distance = .0005
         const parameters = {
             segments:   this.roads,
             point:      marker,
-            distance:   this.distance,
-            roadwidth:  this.roadWidth,
+            distance:   distance,
+            roadWidth:  this.configRoad.width,
         };
         switch (marker.tags.highway) {
             case 'traffic_signals':
@@ -225,9 +226,8 @@ export class Osm  {
                 const busStopIntent = this.markingEditor.getIntent(Stop, parameters);
                 this.bus_stop.push(busStopIntent);
                 break;
-        }
+        };
     }
-    // console.log(this.crossing);
   };
   _parsePolygons(result) {
     this.__parseBuildings(result.wayPolygons);
@@ -324,7 +324,7 @@ export class Osm  {
 
   draw(ctx, viewPoint, zoom){
     this._drawRoads(ctx, viewPoint, zoom);
-    this._drawMarker(ctx, viewPoint, zoom);
+    
     this._drawBuildings(ctx, viewPoint, zoom);
     this._drawPolygons(ctx, viewPoint, zoom);
   };
@@ -352,56 +352,24 @@ export class Osm  {
    
     // параметри 3D
     const layers  = R.map((segment) => { 
-      const levels = this.getRoadLevels(segment);
-      segment.tags.roadLevels = levels;
-      return new Envelope(segment, this.configRoad,  { roadLevels:  levels})
+      return new Envelope(segment, this.configRoad,  {roadLevels:  segment.tags.roadLevels})
     });
 
     for(const layer  of layers) layer.draw(ctx,  this.configRoad);
-    for(const line   of R){
-       if(line.tags.roadLevels > 1) line.draw(ctx,   this.configRoad.dash)
-    };
-   
+    if(zoom < 1) {
+      for(const line   of R){
+         if(line.tags.roadLevels >= 2) line.draw(ctx,   this.configRoad.dash)
+      };
+      this.__drawMarker(ctx, viewPoint, zoom);
+    }
    
     // параметри 2D
     // for(const r of R) r.draw(ctx, optionsRoads);
   };
-  getRoadLevels(segment){
-    let levels = null;
+  __drawMarker(ctx, viewPoint, zoom){
 
-    switch (true) {
-        case (
-          segment.tags.highway === 'residential' && 
-          !segment.tags.lanes                    &&
-          !segment.tags.oneway
-        ):  
-            levels = 2; 
-            break;
-        case (
-          segment.tags.highway === 'primary'  
-        ):  
-            levels = 4; 
-            break;
-        case (
-          segment.tags.oneway  === 'yes' &&
-          !segment.tags.lanes
-        ):  
-            levels = 1; 
-            break;
-        case (
-          'lanes' in segment.tags 
-          ):  
-            levels = parseInt(segment.tags.lanes, 10); 
-            break;
-        default: levels = 1;
-            break;
-    };
-    return levels
-  };
-  _drawMarker(ctx, viewPoint, zoom){
-    
     for(const marker of this.crossing){
-     if(marker) marker.draw(ctx)
+      if(marker) marker.draw(ctx)
     };
     // for(const marker of this.bus_stop){
     //  if(marker) marker.draw(ctx)
@@ -436,6 +404,7 @@ export class Osm  {
       tags ? a.draw(ctx, options.areal) : a.draw(ctx, options.natural)
     }
   };
+
   #filterPolygons(A, viewPoint, zoom){
     return A.map(polygon => {
       const sceleton = polygon.points.filter(point => 
@@ -560,6 +529,46 @@ export class Osm  {
           break;
       };
       return options;
+  };
+  #getRoadLevels(segment){
+    let levels = null;
+
+    switch (true) {
+        case (
+          segment.tags.highway === 'residential' && 
+          !segment.tags.lanes                    &&
+          (segment.tags.oneway  === 'no'         ||
+          !segment.tags.oneway)   
+        ):  
+            levels = 2; 
+            break;
+        case (
+          segment.tags.oneway  === 'yes'          && 
+          (segment.tags.highway === 'tertiary'    || 
+          segment.tags.highway === 'residential') 
+        ):  
+            levels = 2; 
+            break;
+        case (
+          segment.tags.highway === 'primary'  
+        ):  
+            levels = 4; 
+            break;
+        case (
+          segment.tags.oneway  === 'yes' &&
+          !segment.tags.lanes
+        ):  
+            levels = 1; 
+            break;
+        case (
+          'lanes' in segment.tags 
+          ):  
+            levels = parseInt(segment.tags.lanes, 10) || 1; 
+            break;
+        default: levels = 1;
+            break;
+    };
+    return levels
   };
 
 

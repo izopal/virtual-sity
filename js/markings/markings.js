@@ -14,7 +14,7 @@ export class Markings{
         this.directionVector = parameters.directionVector;
         this.roadWidth       = parameters.width *.5;
         this.key             = parameters.key;
-        // console.log(this.data)
+        
 
         this.dataConfig      = this.data.markings[`${this.key }`];
         this.dh              = this.dataConfig.dh;

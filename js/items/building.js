@@ -47,11 +47,13 @@ export class Building{
 
         this.base.draw(ctx, this.config);
         
-        for (const wallPolygon of wallPolygons) {
-          wallPolygon.draw(ctx, this.config.side);
-        };
+        // if(zoom = 4 &&  this.coefficient = ){}
+            for (const wallPolygon of wallPolygons) {
+                wallPolygon.draw(ctx, this.config.side);
+            };
 
-        ceilingPoints.draw(ctx, this.config.ceiling);
+            ceilingPoints.draw(ctx, this.config.ceiling);
+        
     };
 }
 

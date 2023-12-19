@@ -93,11 +93,11 @@ export class MarkingEditor extends Editor {
     }
 
     getIntent (Class, parameters) {
-        const {
+        let {
             segments    = [],
             point       = {}, 
             distance    = null, 
-            roadwidth   = null,  
+            roadWidth   = null,  
           } = parameters
 
         const segment = utils.getNearestSegment(
@@ -108,20 +108,19 @@ export class MarkingEditor extends Editor {
         let intent = null;
         if (segment) {
             const projectPoint = segment.projectPoint(point);
-            // console.log(projectPoint)
             if (projectPoint.offset >= 0 && projectPoint.offset <= 1) {
-
+                const width = segment.tags.roadLevels ? roadWidth * segment.tags.roadLevels : roadWidth;
                 const parameters = {
                     point:           projectPoint.point,
                     directionVector: segment.directionVector(),
-                    width:           roadwidth,
+                    width:           width,
                     key:             Class.name[0].toLowerCase() + Class.name.slice(1),
                 };
                 
-                 intent = new Class(parameters);
+            intent = new Class(parameters);
+            intent.tags = segment.tags
             } else {
              intent = null;
-             console.log(projectPoint);
             }
         } else {
          intent = null;
