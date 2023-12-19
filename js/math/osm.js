@@ -25,32 +25,29 @@ import { Parking }          from '../markings/parking.js';
 
 
 
-
+const SCALE = 10
 
 
 const configRoad = {key:           'road',
           current:        5,
-          width:          2.5,
+          width:          2.5 * SCALE,
           lineWidth:      0,
           colorStroke:    'black',
           lineCap:        'round',
           fill:           '#BBB',
           colorStroke:    '#BBB',
           globalAlpha:    1,
-          border:         {size:         .5,
+          border:         {size:         .5 * SCALE,
                           lineCap:      'round',
                           color:        'white',
                           globalAlpha:  1},
-          dash:           {globalAlpha:  .8,
+          dash:           {globalAlpha:  .6,
                           dash:{
-                                  size:     .5,
-                                  length:   3,
-                                  interval: 2,
+                                  size:     .25 * SCALE,
+                                  length:   2 * SCALE,
+                                  interval: 2 * SCALE,
                                   color:    'white',
                           }}, 
-          point:          {radius:        5,
-                          color:        'white', 
-                          globalAlpha:   .3},
 };
 
 
@@ -78,7 +75,6 @@ export class Osm  {
     this.canvas       = this.config.canvas;
     this.renderRadius = this.config.renderRadius * .6;
     
-
     this.configRoad   = configRoad;
     
     this.cityCoordinates = cityCoordinates;
@@ -86,11 +82,6 @@ export class Osm  {
     this.graph           = graph;
     this.markingEditor   = markingEditor;
     this.data             = markingEditor.data;
-
-
-    
-
-
 
     this.crossing  = [];
     this.bus_stop  = [];
@@ -227,6 +218,7 @@ export class Osm  {
                 this.bus_stop.push(busStopIntent);
                 break;
         };
+        console.log(this.crossing)
     }
   };
   _parsePolygons(result) {
@@ -311,7 +303,7 @@ export class Osm  {
     const deltaLat = this.maxLat - this.minLat;
     const ar = deltaLon / deltaLat;
 
-    this.height = deltaLat * 111000 ;
+    this.height = deltaLat * 111000 * SCALE;
     this.width = this.height * ar * Math.cos(this.maxLat * Math.PI / 180);
   };
   #calculateMapOffset() {
@@ -356,12 +348,12 @@ export class Osm  {
     });
 
     for(const layer  of layers) layer.draw(ctx,  this.configRoad);
-    if(zoom < 1) {
+    // if(zoom < 2) {
       for(const line   of R){
          if(line.tags.roadLevels >= 2) line.draw(ctx,   this.configRoad.dash)
       };
       this.__drawMarker(ctx, viewPoint, zoom);
-    }
+    // }
    
     // параметри 2D
     // for(const r of R) r.draw(ctx, optionsRoads);
