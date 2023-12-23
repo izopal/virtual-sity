@@ -1,21 +1,21 @@
 
-import * as utils       from '../math/utils.js';
-import Editor           from './editor.js';
+import * as utils        from '../math/utils.js';
+import Editor            from './editor.js';
 
-import { Stop }             from '../markings/stop.js';
-import { Pedestrian }       from '../markings/pedestrian.js';
-import { Start }            from '../markings/start.js';
-import { TrafficLights }    from '../markings/trafficLights.js';
-import { Parking }          from '../markings/parking.js';
+import { Stop }          from '../markings/stop.js';
+import { Pedestrian }    from '../markings/pedestrian.js';
+import { Start }         from '../markings/start.js';
+import { TrafficLights } from '../markings/trafficLights.js';
+import { Parking }       from '../markings/parking.js';
 
 
 
 const toolIntents = {
-    stop: Stop,
-    start: Start,
-    parking: Parking,
-    pedestrian: Pedestrian,
-    trafficLights: TrafficLights,
+    stop:           Stop,
+    start:          Start,
+    parking:        Parking,
+    pedestrian:     Pedestrian,
+    trafficLights:  TrafficLights,
 };
 
 export class MarkingEditor extends Editor {
@@ -54,13 +54,13 @@ export class MarkingEditor extends Editor {
     };
 
     #inputMouseDown(e){
-        console.log(this.data)
-        this.graph.markings.push(this.intent);
+        if(this.intent) this.graph.markings.push(this.intent);
         this.intent = null;
 
         // параметри видалення 
         if(this.tools.remove ){
             for(let i = 0; i < this.graph.markings.length; ++i){
+                console.log(this.graph.markings)
                 const polygon = this.graph.markings[i].polygon;
                 //визначаємо чи точка знаходиться всередині полігона
                 if(polygon.containsPoint(this.point)){
@@ -109,7 +109,7 @@ export class MarkingEditor extends Editor {
         if (segment) {
             const projectPoint = segment.projectPoint(point);
             if (projectPoint.offset >= 0 && projectPoint.offset <= 1) {
-                const width = segment.tags.roadLevels ? roadWidth * segment.tags.roadLevels : roadWidth;
+                const width = segment?.tags?.roadLevels ? roadWidth * segment.tags.roadLevels : roadWidth;
                 const parameters = {
                     point:           projectPoint.point,
                     directionVector: segment.directionVector(),

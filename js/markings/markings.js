@@ -12,10 +12,9 @@ export class Markings{
         this.parameters      = parameters;
         this.center          = parameters.point;
         this.directionVector = parameters.directionVector;
-        this.roadWidth       = parameters.width *.5;
+        this.roadWidth       = parameters.width *.5 || this.data.world.road.width *.5;
         this.key             = parameters.key;
         
-
         this.dataConfig      = this.data.markings[`${this.key }`];
         this.dh              = this.dataConfig.dh;
         this.dw              = this.dataConfig.dw;

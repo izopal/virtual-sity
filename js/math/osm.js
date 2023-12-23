@@ -218,7 +218,7 @@ export class Osm  {
                 this.bus_stop.push(busStopIntent);
                 break;
         };
-        console.log(this.crossing)
+        // console.log(this.crossing)
     }
   };
   _parsePolygons(result) {
@@ -498,9 +498,9 @@ export class Osm  {
           b.tags['building:levels'] < 3   ||
           b.tags.building === 'house'     
         ):
-          options.ceiling.fill = 'green';
-          options.side.fill = 'green';
-          options.side.globalAlpha = .6;
+          options.ceiling.fill = 'red';
+          options.side.fill = 'white';
+          options.side.globalAlpha = 1;
           break;
           
         // умова для багатоповерхівок
@@ -509,8 +509,8 @@ export class Osm  {
           b.tags.building === 'apartments'
         ):
           options.ceiling.fill = 'brown';
-          options.side.fill = 'brown';
-          options.side.globalAlpha = .4;
+          options.side.fill = '#BBB';
+          options.side.globalAlpha = 1;
           break;
         
         // умова длоя решти типів будинків
